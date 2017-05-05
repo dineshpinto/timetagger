@@ -1,0 +1,122 @@
+Release 14.7 Map P.20131013 (nt64)
+Xilinx Map Application Log File for Design 'TimeTaggerController'
+
+Design Information
+------------------
+Command Line   : map -filter
+D:/TimeTagger/timetagger/core/iseconfig/filter.filter -intstyle ise -p
+xc3s1200e-ft256-4 -timing -logic_opt off -ol high -xe n -t 1
+-register_duplication off -cm area -ir off -pr off -power off -o
+TimeTaggerController_map.ncd TimeTaggerController.ngd TimeTaggerController.pcf 
+Target Device  : xc3s1200e
+Target Package : ft256
+Target Speed   : -4
+Mapper Version : spartan3e -- $Revision: 1.55 $
+Mapped Date    : Fri Feb 24 12:00:53 2017
+
+Mapping design into LUTs...
+Running directed packing...
+Running delay-based LUT packing...
+Updating timing models...
+Running timing-driven placement...
+Total REAL time at the beginning of Placer: 3 mins 3 secs 
+Total CPU  time at the beginning of Placer: 24 secs 
+
+Phase 1.1  Initial Placement Analysis
+Phase 1.1  Initial Placement Analysis (Checksum:e5ef724b) REAL time: 3 mins 17 secs 
+
+Phase 2.7  Design Feasibility Check
+Phase 2.7  Design Feasibility Check (Checksum:e5ef724b) REAL time: 3 mins 18 secs 
+
+Phase 3.31  Local Placement Optimization
+Phase 3.31  Local Placement Optimization (Checksum:e5ef724b) REAL time: 3 mins 18 secs 
+
+Phase 4.2  Initial Clock and IO Placement
+
+Phase 4.2  Initial Clock and IO Placement (Checksum:b97976f7) REAL time: 3 mins 25 secs 
+
+Phase 5.30  Global Clock Region Assignment
+Phase 5.30  Global Clock Region Assignment (Checksum:b97976f7) REAL time: 3 mins 26 secs 
+
+Phase 6.36  Local Placement Optimization
+Phase 6.36  Local Placement Optimization (Checksum:b97976f7) REAL time: 3 mins 26 secs 
+
+Phase 7.8  Global Placement
+..........................
+....................................................................................................................
+......
+.............................
+................
+................
+................
+........
+Phase 7.8  Global Placement (Checksum:9aecb547) REAL time: 4 mins 
+
+Phase 8.5  Local Placement Optimization
+Phase 8.5  Local Placement Optimization (Checksum:9aecb547) REAL time: 4 mins 
+
+Phase 9.18  Placement Optimization
+Phase 9.18  Placement Optimization (Checksum:2e8af9f0) REAL time: 5 mins 36 secs 
+
+Phase 10.5  Local Placement Optimization
+Phase 10.5  Local Placement Optimization (Checksum:2e8af9f0) REAL time: 5 mins 36 secs 
+
+Total REAL time to Placer completion: 5 mins 37 secs 
+Total CPU  time to Placer completion: 2 mins 38 secs 
+Running post-placement packing...
+WARNING:PhysDesignRules:372 - Gated clock. Clock net test_generator/lut_input<1>
+   is sourced by a combinatorial pin. This is not good design practice. Use the
+   CE pin to control the loading of data into the flip-flop.
+WARNING:PhysDesignRules:1060 - Issue with pin connections and/or configuration
+   on
+   block:<output_buffer/input_fifo/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gnt
+   v_or_sync_fifo.mem/gbm.gbmg.gbmga.ngecc.bmg/blk_mem_generator/valid.cstr/raml
+   oop[0].ram.r/s3_noinit.ram/dpram.dp18x9.ram.B>:<RAMB16_RAMB16B>.  The block
+   is configured to use input parity pins. There are dangling output parity
+   pins.
+WARNING:PhysDesignRules:1063 - Issue with pin connections and/or configuration
+   on
+   block:<output_buffer/output_fifo/U0/xst_fifo_generator/gconvfifo.rf/grf.rf/gn
+   tv_or_sync_fifo.mem/gbm.gbmg.gbmga.ngecc.bmg/blk_mem_generator/valid.cstr/ram
+   loop[0].ram.r/s3_noinit.ram/dpram.dp9x9.ram.A>:<RAMB16_RAMB16A>.  The block
+   is configured to use an input parity pins. There is a dangling output parity
+   pin.
+
+Design Summary
+--------------
+
+Design Summary:
+Number of errors:      0
+Number of warnings:    3
+Logic Utilization:
+  Number of Slice Flip Flops:         9,735 out of  17,344   56%
+  Number of 4 input LUTs:             9,437 out of  17,344   54%
+Logic Distribution:
+  Number of occupied Slices:          7,076 out of   8,672   81%
+    Number of Slices containing only related logic:   7,076 out of   7,076 100%
+    Number of Slices containing unrelated logic:          0 out of   7,076   0%
+      *See NOTES below for an explanation of the effects of unrelated logic.
+  Total Number of 4 input LUTs:       9,746 out of  17,344   56%
+    Number used as logic:             9,084
+    Number used as a route-thru:        309
+    Number used as Shift registers:     353
+
+  The Slice Logic Distribution report is not meaningful if the design is
+  over-mapped for a non-slice resource or if Placement fails.
+
+  Number of bonded IOBs:                100 out of     190   52%
+    IOB Flip Flops:                      67
+    IOB Master Pads:                      8
+    IOB Slave Pads:                       8
+  Number of RAMB16s:                     14 out of      28   50%
+  Number of BUFGMUXs:                     3 out of      24   12%
+  Number of DCMs:                         3 out of       8   37%
+
+Average Fanout of Non-Clock Nets:                2.76
+
+Peak Memory Usage:  630 MB
+Total REAL time to MAP completion:  5 mins 46 secs 
+Total CPU time to MAP completion:   2 mins 46 secs 
+
+Mapping completed.
+See MAP report file "TimeTaggerController_map.mrp" for details.

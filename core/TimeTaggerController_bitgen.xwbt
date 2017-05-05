@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=D:\TimeTagger\timetagger\core\TimeTaggerController.ncd
+OUTFILE=D:\TimeTagger\timetagger\core\TimeTaggerController.bit
+FAMILY=Spartan3E
+PART=xc3s1200e-4ft256
+WORKINGDIR=D:\TimeTagger\timetagger\core
+LICENSE=WebPack
+USER_INFO=211045688_0_0_514

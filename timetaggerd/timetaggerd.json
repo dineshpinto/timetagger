@@ -1,0 +1,1 @@
+{"datastore":{},"httpd":{"document_root":"./timetaggerd/www","listening_ports":"8080"},"backends":{"VJaAMgsRxh":{{"name":"Tagger","max_id":1,"dac":[0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],"filter":0,"modules":}}}

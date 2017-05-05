@@ -1,0 +1,18 @@
+# Output products list for <RamFifo_Input>
+RamFifo_Input.asy
+RamFifo_Input.gise
+RamFifo_Input.ngc
+RamFifo_Input.sym
+RamFifo_Input.v
+RamFifo_Input.veo
+RamFifo_Input.xco
+RamFifo_Input.xise
+RamFifo_Input\doc\fifo_generator_ds317.pdf
+RamFifo_Input\doc\fifo_generator_ug175.pdf
+RamFifo_Input\doc\fifo_generator_v8_1_vinfo.html
+RamFifo_Input\doc\xapp992.pdf
+RamFifo_Input_flist.txt
+RamFifo_Input_xmdf.tcl
+_xmsgs\pn_parser.xmsgs
+fifo_generator_readme.txt
+fifo_generator_ug175.pdf

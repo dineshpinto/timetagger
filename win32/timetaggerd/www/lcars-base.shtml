@@ -1,0 +1,138 @@
+<style>
+	@font-face {
+	    font-family: 'lcars';
+	    //src: url('images/LCARSGTJ3.ttf') format('truetype');
+	    src: url('images/Helvetica LT Compressed.ttf') format('truetype');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+	
+	body {
+		background: #202020;
+		color: #f5bd49;
+		font-family: lcars;
+		xfont-size: 20px;
+		letter-spacing: 0.1em;
+	}
+	
+	th {
+		font-weight: normal;
+	}
+	
+	.wait-icon {
+		display: inline-block;
+		width: 32px;
+		height: 32px;
+		background: url("/images/icon-wait.gif");
+	}
+
+
+	span.lcars-label {
+		display: inline-block;
+		width: 140px
+	}
+
+	.lcars-input  {
+		font-family: lcars;
+		border: 1px solid #9999CB; 
+		background: #202020;
+		color: #f5bd49;
+		font-size: 14px;
+	}
+	.lcars-input:focus {
+		background: #404040;
+	}
+
+	input.lcars-input.lcars-input-long {
+		width: 400px;
+	}
+	textarea.lcars-input {
+		width: 400px;
+		height: 100px;
+		resize: none;
+	}
+	
+	.lcars-error {
+		color: red;
+		font-style: italic;
+		font-size: 14px;
+	}
+
+	.lcars-button {
+		cursor: pointer;
+		background: #F5BD49;
+		border: ipx solid #9C9CFE;
+		border-radius: 12px;
+		padding: 2px 8px;
+		margin-right: 4px;
+		color: black;
+	}
+	.lcars-button.selected {
+		background: #cc6666		
+	}	
+	.lcars-button.disabled {
+		background: #9C9CFE;
+	}	
+	.lcars-button.active {
+		color: #ffffff;
+	}	
+	
+</style>
+
+<script>
+
+$.widget("lcars.button", {
+
+	options: {	
+		enabled: true
+	},
+	_create: function() {
+		var self=this;
+		this.element
+			.disableSelection()
+			.addClass("lcars-button")
+			.hover( function() {
+						if (self.options.enabled) 
+							$(this).addClass("selected"); 
+					},
+					function() { 
+							$(this).removeClass("selected"); 
+					})
+			.click(	function() {
+						$(this).removeClass("selected");
+						if (self.options.enabled && self.options.click)
+							self.options.click.call(self.element[0]);
+					})
+			.mousedown( function(e) {
+							function up() {
+								self.element.removeClass("active");
+								$(document).unbind("mouseup",up);
+							}
+
+							if (self.options.enabled && self.options.click) {
+								self.element.addClass("active");
+								$(document).mouseup(up);
+							}
+						}
+				);
+		for (i in this.options) {
+			this._setOption(i,this.options[i]);
+		}
+	},
+
+	_setOption: function(key,value) {
+		switch(key) {
+		case "enabled": if (value) 
+							this.element.removeClass("disabled"); 
+						else 
+							this.element.addClass("disabled").removeClass("selected");
+						this.options.enabled=value;
+						break;
+		case "click":  this.options.click=value;
+						break;  
+		}
+	}
+
+});
+
+</script>

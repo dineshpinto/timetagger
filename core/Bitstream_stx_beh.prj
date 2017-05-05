@@ -1,0 +1,4 @@
+verilog isim_temp "Multiplexer.v"
+verilog isim_temp "ExtensionSingleShot.v"
+verilog isim_temp "Bitstream.v"
+verilog isim_temp "C:/Xilinx/14.7/ISE_DS/ISE//verilog/src/glbl.v"

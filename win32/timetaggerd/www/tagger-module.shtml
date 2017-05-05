@@ -1,0 +1,383 @@
+<style>
+	#module-subsystem .container {
+		margin-top: 4px;
+	}
+</style>
+
+<script>
+
+function module_subsystem(layout, selector) {
+
+	var self={}
+	var $self=$(selector);
+
+	var $content, $sidebar;
+
+	var dac_panel, config_panel, filename_panel, graph_panel;
+	
+	function init() {
+
+		$content=$(".module-content", $self);
+		$sidebar=$(".module-sidebar", $self);
+
+		dac_panel=dac_subsystem();
+		delay_panel=linedelay_subsystem();
+		config_panel=config_sidebar();
+		filename_panel=filename_sidebar();
+		graph_panel=graph_subsystem();
+	}
+	
+	function stop_module() {		
+		function cb(err, result) {
+			//TODO
+			load_devices();
+		}
+		backend.stopModule(cb, { device:self.device.id, module:self.module.id }); 
+	}
+
+	function start_module() {
+		function cb(err, result) {
+			load_devices();
+		}
+		backend.startModule(cb, { device:self.device.id, module:self.module.id }); 
+	}
+
+	function clear_module() {
+		function cb(err, result) {
+			//TODO
+			load_devices();
+		}
+		backend.clearModule(cb, { device:self.device.id, module:self.module.id }); 
+	}
+
+	function pause_module() {
+		function cb(err, result) {
+			load_devices();
+		}
+		backend.pauseModule(cb, { device:self.device.id, module:self.module.id }); 
+	}
+
+	function resume_module() {
+		function cb(err, result) {
+			load_devices();
+		}
+		backend.resumeModule(cb, { device:self.device.id, module:self.module.id }); 
+	}
+	
+	function client_save() {
+
+		function cb(err, data) {
+			if (err) {
+				alert("error in client_save()::cb()");
+			}
+			//debugger;
+			var blob = new Blob([JSON.stringify(data)], {type: "application/json;charset=utf-8"});
+			saveAs(blob, "data.json");
+			//location.href = "data:application/octet-stream," + encodeURIComponent();
+		}
+		
+		backend.getData(cb, {device: self.device.id, module: self.module.id, maxpoints: 0});
+
+	}
+	
+	function save_dataset() {
+	
+		var record;
+
+		function cb4(err, result) {
+			if (err) {
+				alert("error in save_dataset()::cb4()");
+			}
+			filename_panel.hide();
+		}
+		
+		function cb3(err, data) {
+			if (err) {
+				alert("error in save_dataset()::cb3()");
+			}
+			record.data=data;
+			record.date=new Date().valueOf();
+			backend.createDataset(cb4, record);
+		}
+		function cb2(err, descriptor) {
+			if (err) {
+				alert("error in save_dataset()::cb2()");
+			}
+			record.descriptor=descriptor;
+			backend.getData(cb3, {device: self.device.id, module: self.module.id, maxpoints: 0});
+		}
+		function cb1(err, cfg) {
+			if (err) {
+				alert("error in save_dataset()::cb1()");
+			}
+			record.config=cfg;
+			record.classname=cfg.classname;
+			backend.getModuleClass(cb2, {device: self.device.id, module: self.module.id});
+		}
+
+		function save_it(spec) {
+			record=spec;			
+			backend.getModuleConfig(cb1, {device: self.device.id, module: self.module.id});
+		}
+		
+		filename_panel.create_file(save_it, $sidebar, "save dataset"); 
+	}
+
+	function setup_dac() {
+		config_panel.hide();
+		delay_panel.hide();
+		dac_panel.show(nil, $sidebar, self.device);
+	}
+
+	function setup_delay() {
+		config_panel.hide();
+		dac_panel.hide();
+		delay_panel.show(nil, $sidebar, self.device);
+	}
+
+	function config_module() {
+
+		function reload(err, result) {
+			//TODO
+			load_devices(self.device_id, self.module_id);
+		}
+		function save_it(parms) {
+			backend.setModuleConfig(reload, parms);
+		}
+
+		dac_panel.hide();
+		delay_panel.hide();
+		config_panel.edit(save_it, $sidebar, self.device.id, self.module.id);
+	}
+
+	function reset() {
+		var state;
+
+		function cb2() {
+			if (state!="running")
+				load_devices();
+		}
+		
+		function cb() {
+			backend.startModule(cb2, { device:self.device.id, module:self.module.id });
+		}
+		
+		if (self.device) {
+			state=self.module_config.state;
+			backend.stopModule(cb, { device:self.device.id, module:self.module.id });
+		}
+	}
+	
+	// build layout
+	
+	function load_devices(device_id, module_id) {
+		var menu=[];
+		if (typeof device_id == "undefined") {
+			if (typeof self.device != "undefined")
+				device_id=self.device.id;
+		}		
+		if (typeof module_id == "undefined") {
+			if (typeof self.module != "undefined")
+				module_id=self.module.id;
+		}		
+
+		function on_config_loaded(err, config) {
+			//TODO
+			self.module_config=config;
+
+			menu.push({title:""});
+
+			if (config.state=="stopped") {		
+				menu.push({title:"START", action: start_module});
+			} else {
+				menu.push({title:"STOP", action: stop_module});
+			}
+			menu.push({title:"CLEAR", action: clear_module});
+
+			//menu.push({title:"STORE ON SERVER", action: save_dataset});
+			menu.push({title:""});			
+			menu.push({title:"SAVE", action: client_save});
+			menu.push({title:""});
+			menu.push({title:"EDIT SETTINGS", action: config_module});
+			menu.push({title:"HARDWARE SETUP", action: setup_dac});
+
+			menu.push(self.menu[0]);
+			
+			layout.set_menu(menu);
+
+			plot=0;
+			graph_panel.animate($content, self.module["class"], self.device.id, self.module.id);
+		}
+		
+		function on_modules_loaded(err, modules) {
+			//TODO
+			self.modules=modules;
+
+			var next_module;
+
+			for (var n=0; n<modules.length; ++n) {
+
+				if (n==0)
+					menu.push({ title:""});
+				
+				var name=modules[n].name;
+				var id=modules[n].id;
+				if (name=="") name=id;
+
+				if (id==module_id) {
+					next_module=modules[n];
+				} else if (!next_module) {
+					next_module=modules[n];
+				}
+
+				var action= (function(id) {	// closure to switch device
+					return function() {
+						load_devices(self.device_id, id);
+					};
+				})(id);
+				menu.push({ title: name, action: action, module: id, "class": modules[n].state });				
+			}
+
+			if (next_module) {
+				self.module=next_module;
+				module_id=next_module.id;
+				for (var n=0; n<menu.length; ++n) {
+					if (menu[n].module==next_module.id) {
+						menu[n].active=true;
+					}
+				}
+
+				backend.getModuleConfig(on_config_loaded, {device: device_id, module: module_id});
+				
+				
+			} else {
+				menu.push(self.menu[0]);
+				layout.set_menu(menu);
+				graph_panel.error("there are no modules installed for this device");
+			}
+		}
+		
+		function on_devices_loaded(err, devices) {
+			//TODO
+			var next_device;
+			self.devices=devices;
+			
+			for (var n=0; n<devices.length; ++n) {
+				var name=devices[n].name;
+				var serial=devices[n].id;
+				if (name=="") name=serial;
+
+				if (devices[n].id == device_id)
+					next_device=devices[n];
+
+				if (!next_device) // select first, if none requested 
+					next_device=devices[n];
+				
+
+				var action= (function(id) {	// closure to switch device
+						return function() {
+							load_devices(id);
+						};
+					})(self.devices[n].id);
+				menu.push({ title: name, action: action, device: devices[n].id });
+			}
+			
+			if (next_device) {
+				self.device=next_device;
+				device_id=next_device.id;
+
+				for (var n=0; n<menu.length; ++n) {
+					if (menu[n].device == next_device.id)
+						menu[n].active=true; 
+				}
+				
+				backend.getModuleList(on_modules_loaded, { device: next_device.serial });
+				
+			} else {
+
+				menu.push(self.menu[0]);
+				layout.set_menu(menu);
+				graph_panel.error("there is no device attached to the system");
+				
+			}			
+		}
+
+		layout.set_menu(self.menu);
+
+		graph_panel.begin();
+		dac_panel.hide();
+		config_panel.hide();
+		
+		backend.getDeviceList(on_devices_loaded);		
+	}
+
+	// layout support 
+	
+	function activate(device, module) {
+		layout.set_active_subsystem(self);
+		
+		dac_panel.hide();
+		delay_panel.hide();
+		graph_panel.begin();
+		$self.show();
+
+		layout.set_navigation(self.navigation);
+		
+		load_devices(device, module);		
+	}
+	
+	function deactivate() {
+		graph_panel.stop();
+		$self.hide();
+	}
+
+	// menu callbacks 
+	
+	function show_system() {
+		layout.system.activate();
+	}
+
+	function show_devices() {
+		layout.devices.activate();
+	}
+
+	function show_analysis() {
+		layout.analysis.activate();
+	}
+
+	function nil() {
+	}
+	
+	$.extend(self, {
+		activate: activate, 
+		deactivate: deactivate,
+		reset: reset,
+
+		menu: [
+			    { title: "", action: nil }
+			    //{ title: "INFO", action: nil }
+			],
+			navigation: [
+		        { title: "SYSTEM", action: show_system },
+		        { title: "DEVICE", action: show_devices },
+		        { title: "MODULE", action: nil, active: true  },
+		        //{ title: "ANALYSIS", action: show_analysis},
+		        // { title: "CONFIG", action: nil}
+			],		
+	});
+
+	init();
+	return self;
+}
+
+</script>
+
+<div id="module-subsystem" style="display:none">
+	<table width="100%" height="100%" cellspacing="0" cellpadding="0"border=0>
+	<tr><td class="module-content">	
+		<!--#include "tagger-module-graph.shtml" -->
+	</td></tr>	
+	<tr height="1"><td class="module-sidebar">
+	</td></tr>
+	</table>
+</div>

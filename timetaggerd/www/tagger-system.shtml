@@ -1,0 +1,324 @@
+<script>
+
+var SYSTEM_STATUS_TIMEOUT=1;
+var SYSTEM_DEVICE_TIMEOUT=15;
+
+function system_subsystem(layout, selector) {
+	var self={};
+	var $self=$(selector);
+
+	var $sidebar;
+
+	var $sysinfo, $devicelist, $device_table;
+	var $scanned_devices, $scanned_table;
+	var $device_rename;
+	
+	var stop_update=false;
+
+	function init() {
+		$sysinfo=$(".sys-info",$self);
+		$sysinfo.container({ title: "System Info", busy: true });
+
+		$devicelist=$(".device-list", $self);
+		$devicelist.container({ title: "Attached Devices", busy:true });
+
+		$device_table=$(".device-table", $self);
+		$device_table.table({
+			columns: [
+			   { id: 'name', title: 'Name'},
+			   { id: 'serial', title: 'Serial' },
+			   { id: 'hardware', title: 'Hardware' },
+			   { id: 'state', title: 'State' },
+			   { id: 'module_count', title: 'Modules' }				   
+			], 
+			button_hook: device_table_buttonhook 
+		});
+
+		
+		$scanned_devices=$(".scanned-devices", $self);
+		$scanned_devices.container({ title: "Scanned Devices", busy:false });
+		$scanned_devices.container("hide");
+		
+		$scanned_table=$(".scanned-table", $self);
+		$scanned_table.table({
+				columns: [
+				   { id: 'serial', title: 'Serial' },
+				   { id: 'hardware', title: 'Hardware' },
+				   { id: 'id', title: 'ID' },
+				   { id: 'state', title: 'State' }				   
+				], 
+				button_hook: scanned_devices_buttonhook 
+			});
+		$(".close", $scanned_devices).button( { click: function() { $scanned_devices.container("hide"); } });
+
+		$device_rename=$(".device-rename", $self);
+		$device_rename.container({title: "Rename Device", visible: false});		
+		$(".submit", $device_rename).button({click: rename_device});
+		$(".cancel", $device_rename).button({click: function() { $device_rename.container("hide"); }});
+
+		$sidebar=$(".module-sidebar", $self);
+		
+	}
+	
+	function refresh_sysinfo() {
+		function cb(err, info) {
+			if (err) {
+				//TODO
+				alert("error in refresh_sysinfo");
+			}
+			
+			if (stop_update) return;
+			
+			$(".version",$sysinfo).text(info.version)
+			$(".listener",$sysinfo).text(info.listener)
+			$(".uptime",$sysinfo).text(info.uptime)
+			
+			$sysinfo.container("end");
+			
+			setTimeout(refresh_sysinfo, SYSTEM_STATUS_TIMEOUT*1000);
+		}
+
+		backend.getSystemInfo(cb);
+	}
+
+
+	function scanned_devices_buttonhook($td, row) {
+
+		function click() {
+
+			function cb(err, result) {
+				if (err) {
+					alert("error in scanned_devices_buttonhook");
+				}
+				$scanned_devices.container("hide");
+				rescan();				
+			}
+			
+			var action=$(this).button("option","tag");
+			var node=$(this).parent().parent();
+			var id=node.attr("row_id");
+
+			$scanned_devices.container("begin");
+			serial = $("td[col_id='serial']",node).text();
+			backend.createDevice(cb, { name:"Tagger", serial: serial });			
+		}
+		
+		$("<span class='add'>ADD</span>")
+			.button({click: click, tag: "addDevice", enabled: true })
+			.appendTo($td);
+	}
+
+	function scan_for_devices() {
+		function cb(err, devices) {
+			if (err) {
+				alert("error in scan_for_devices");
+			}
+
+			$scanned_table.table("update_rows", devices);
+			$scanned_devices.container("end");
+		}
+
+		$scanned_devices.container("show");
+		$scanned_devices.container("begin");
+
+		backend.scanDevices(cb, {});
+	}
+	
+	
+	function rename_device() {
+		function cb(err, result) {
+			if (err) {
+				//TODO
+				alert("error in rename_device");
+			}
+			rescan();
+		}
+		
+		var serial=$(".serial",$device_rename).val();
+		var name=$(".name",$device_rename).val();
+		$device_rename.container("hide");
+		backend.renameDevice(cb, {device: serial, name:name} );
+	}
+
+	function device_table_buttonhook($td, row) {
+		function cb() {
+
+			function refresh(err, result) {
+				//TODO
+
+				rescan();
+			}
+			
+			var action=$(this).button("option","tag");
+			var node=$(this).parent().parent();
+			var id=node.attr("row_id");			
+
+			if (action=="viewDevice") {
+				layout.devices.activate(id);
+				
+			} else if (action=="renameDevice") {
+				var name=$("td[col_id=name]", node).text();
+
+				$(".name",$device_rename).val(name);
+				$(".serial",$device_rename).val(id);
+				$device_rename.container("show");
+				
+			} else {
+				$device_rename.container("hide");
+				$devicelist.container("begin");
+				backend[action](refresh , { device: id});
+			}
+		}
+		
+		$("<span>REMOVE</span>")
+			.button({click: cb, tag: "removeDevice" })
+			.appendTo($td);		
+		$("<span>RENAME</span>")
+			.button({click: cb, tag: "renameDevice" })
+			.appendTo($td);
+		$("<span>VIEW</span>")
+		.button({click: cb, tag: "viewDevice" })
+		.appendTo($td);
+	}
+		
+	function refresh_devices() {
+
+		function cb(err, devices) {
+			if (err) {
+				//TODO
+				alert("error in refresh_devices");
+			}
+			
+			if (stop_update) return;
+			
+			$device_table.table("update_rows", devices);
+			$devicelist.container("end");
+			
+			setTimeout(refresh_devices, SYSTEM_DEVICE_TIMEOUT * 1000);
+		}
+
+		backend.getDeviceList(cb);
+	}
+
+	function rescan() {
+		$device_rename.container("hide");
+		$devicelist.container("begin");
+		refresh_devices();
+	}
+
+
+	/* menu hooks */
+	
+
+	function create_virtual() {
+	}
+	
+	function load_config() {
+	}
+	
+	function save_config() {
+	}
+	
+	function show_info() {
+	}
+
+	function nil() {
+	}
+
+	/* menu hooks */
+
+	function show_devices() {
+		layout.devices.activate();
+	}
+
+	function show_module() {
+		layout.module.activate();
+	}
+
+	function show_anaylsis() {
+		layout.analysis.activate();
+	}
+
+	/* framework hooks */
+	
+	function activate() {
+		layout.set_active_subsystem(self);
+
+		$self.show();
+		layout.set_menu(self.menu);
+		layout.set_navigation(self.navigation);
+		
+		stop_update=false;		
+		refresh_sysinfo();
+		rescan();
+
+	}
+
+	function deactivate() {
+		$self.hide();
+		stop_update=true;
+	}
+
+	/* module description */
+	
+	$.extend(self, {
+		title: "TIMETAGGER - system overview",
+		menu: [
+				{ title:"SCAN FOR DEVICES", action: scan_for_devices },
+				//{ title:""},
+				//{ title:"create virtual device", action: create_virtual, disabled: true },
+				/*
+				{ title:""},
+				{ title:"load configuration", action: load_config, disabled: true },	
+				{ title:"save configuration",action: save_config, disabled: true },
+				*/
+				//{ title:"INFO",action: show_info }	
+		],
+		navigation: [
+		        { title: "SYSTEM", action: nil, active: true},
+		        { title: "DEVICE", action: show_devices},
+		        { title: "MODULE", action: show_module },
+		        //{ title: "ANALYSIS", action: show_anaylsis},
+		        //{ title: "CONFIG", action: nil}
+		],
+
+		activate: activate,
+		deactivate: deactivate
+	});	
+
+	init();
+	return self;
+}
+
+</script>
+
+	<div id="system-subsystem">
+		<table cellspacing="0" cellpadding="0" width="100%" height="100%">
+		<tr><td height="40">
+			<div class="sys-info">
+				timetaggerd <span class="version"></span> running on <span class="listener"></span>.<br/> 
+				uptime: <span class="uptime"></span>.
+			</div>
+			<div class="device-list">
+				<div class="device-table"></div>
+			</div>
+		</td></tr>
+		<tr><td></td></tr>
+		<tr><td height="40">
+			<div class="scanned-devices">
+				<div class="scanned-table"></div>
+				<div style="margin-top: 6px;">
+					<span class="close">CLOSE</span>
+				</div>
+			</div>
+			<div class="device-rename">
+				<span class="lcars-label">Serial:</span><input class="serial lcars-input" readonly="true"><br/>
+				<span class="lcars-label">Name:</span><input class="name lcars-input">
+				<span class="submit">SAVE</span>
+				<span class="cancel">CANCEL</span>
+			</div>
+		</td></tr>
+		</table>
+	</div>
+
+	

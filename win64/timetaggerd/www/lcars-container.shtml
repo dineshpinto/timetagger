@@ -1,0 +1,201 @@
+
+<style>
+	.container {
+		margin-bottom: 4px;
+	}
+	.inner-top-row {
+		height:18px;
+	}
+	.inner-top-left {
+		width: 18px;
+		height:18px;
+		background: url("/images/inner-top-left.png");
+		display: inline-block;
+	}
+	.inner-top-left-spacer {
+		width: 4px;
+		height:18px;
+		display: inline-block;		
+	}
+	.inner-top-headline {
+		width: 13px;
+		height: 18px;
+		display: inline-block;		
+	}
+	.inner-top-fill {
+		height:18px;
+		background: #F5BD49;
+	}
+	.inner-top-right {
+		width: 18px;
+		height:18px;
+		background: url("/images/inner-top-right.png"); 
+		display: inline-block;		
+	}
+
+	.inner-right {
+		width:18px;
+		background: #F5BD49;
+	}
+	
+	.inner-right-top { 
+		width:8px; height: 8px;
+		background: url("/images/inner-right-top.png");
+	}
+	.inner-right-bottom span { 
+		width:8px; height: 8px;
+		background: url("/images/inner-right-bottom.png");
+		display: inline-block;
+	}
+
+
+	.inner-bottom-row {
+		height:8px;
+	}
+	.inner-bottom-left {
+		width: 8px;
+		height:8px;
+		background: url("/images/inner-bottom-left.png");
+		display: inline-block;
+	}
+	.inner-bottom-fill {
+		height:8px;
+		background: #F5BD49;
+	}
+	.inner-bottom-right {
+		width: 18px;
+		height:8px;
+		background: blue; 
+		background: url("/images/inner-bottom-right.png");
+		display: inline-block;		
+	}
+	
+	.inner-content {
+		padding: 8px;
+	}
+</style>
+
+<script type="text/x-tmpl" id="lcars-container">
+	<table class="container" width="100%" cellspacing="0" cellpadding="0">
+	<tr class="inner-top-row"><td>
+		<table height="100%" width="100%" cellspacing="0" cellpadding="0"><tr>
+			<td class="inner-top-left"><span></span></td>
+			<td class="inner-top-left-spacer"><span></span></td>
+			<td class="inner-headline" width="23">
+				<nobr></nobr>
+			</td>
+			<td class="inner-top-left-spacer"><span></span></td>
+			<td class="inner-top-fill"><span></span></td>
+			<td class="inner-top-right"><span></span></td>
+		</tr></table>
+	</td></tr>	
+	<tr><td>
+		<table width="100%" height="100%" cellspacing="0" cellpadding="0">
+		<tr><td valign="top" rowspan="3">
+				<div class="inner-content">
+				</div>	
+				<table class="inner-wait" width="100%" height="100%">
+				<tr><td align="center"><span class="wait-icon"></span></td></tr>				
+				</table>
+			</td>
+			<td class="inner-right-top"></td>
+			<td class="inner-right"><span></span></td>
+		</tr>
+		<tr><td></td>
+		    <td class="inner-right"></td></tr>
+		<tr><td class="inner-right-bottom" valign="bottom"><span></span></td>
+			<td class="inner-right"></td></tr>
+		</table>
+	</td></tr>
+
+	<tr class="inner-bottom-row"><td>
+		<table height="100%" width="100%" cellspacing="0" cellpadding="0"><tr>
+			<td class="inner-bottom-left"><span></span></td>
+			<td class="inner-bottom-fill"><span></span></td>
+			<td class="inner-bottom-right"><span></span></td>
+		</tr></table>
+	</td></tr>
+	</table>
+</script>
+
+<script>
+
+$.widget("lcars.container", {
+	options: {
+		title: "",
+		visible: true,
+		busy: false
+	},
+	_create: function() {
+		var $element=this.element;
+
+		var $widget=$(tmpl("lcars-container", {}));
+		this.$widget=$widget;
+
+		$widget.insertBefore($element);
+		var $content=this._content_div();
+		$content.append($element);
+
+		for (i in this.options) {
+			this._setOption(i,this.options[i]);
+		}
+	},
+	
+	_destroy: function () {
+	},
+
+	_content_div: function() {
+		return $(">tbody >tr >td >table >tbody >tr >td >div.inner-content", this.$widget);						
+	},
+
+	_wait_div: function() {
+		return $(">tbody >tr >td >table >tbody >tr >td >table.inner-wait", this.$widget);						
+	},
+
+	_setOption: function (key, value) {
+		switch(key) {
+		case "title":	this._set_title(value); break;
+		case "busy":	if (value) this.begin(); else this.end(); break;
+		case "visible":	if (value) this.show(); else this.hide(); break;
+		}
+	},
+
+	_set_title: function(msg) {
+		if(msg) {
+			$(">tbody >tr.inner-top-row td.inner-top-left-spacer",this.$widget).show()
+			$(">tbody >tr.inner-top-row td.inner-headline",this.$widget).show()
+			$(">tbody >tr.inner-top-row td.inner-headline nobr",this.$widget).text(msg)
+		} else {
+			$(">tbody >tr.inner-top-row td.inner-top-left-spacer",this.$widget).hide()
+			$(">tbody >tr.inner-top-row td.inner-headline",this.$widget).hide()
+		}
+	},
+
+	widget: function() {
+		return this.$widget;
+	},
+	
+	show: function() {
+		this.$widget.show();
+	},
+		
+	hide: function() {
+		this.$widget.hide();
+		this.options.visible=false;
+	},
+
+	begin: function () {
+		this._content_div().hide();
+		this._wait_div().show();
+		this.options.busy=true;
+	},
+
+	end: function () {
+		this._content_div().show();
+		this._wait_div().hide();
+		this.options.busy=false;
+	}
+	
+});
+
+</script>	

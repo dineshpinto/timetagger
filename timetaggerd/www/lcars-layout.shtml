@@ -1,0 +1,385 @@
+
+<!-- background -->
+<!-- frame:			#F5BD49   	#F5BD49-->
+<!-- button: 		#9C9CFE 	#9C9CFE -->
+<!-- active: 		#f5bd49 -->
+<!-- inactive: 		#F5BD49 -->
+
+
+<style>
+	.layout-left {
+		width: 190px;
+	}
+	.layout-upper-left {
+		height: 60px; 
+		width: 190px;
+		background: url("/images/layout-top-left.png");
+	}
+	.layout-middle-left {
+	}
+	.layout-lower-left {
+		height: 60px; 
+		width: 190px;
+		background: url("/images/layout-bottom-left.png");
+	}	
+	tr.layout-item > td {
+		height: 20px; 
+		width: 170px;
+		padding-top: 2px;
+		padding-left: 4px;
+		background: #F5BD49;
+		color: black;
+		cursor: pointer;
+	}
+	tr.layout-item.selected > td {
+		background: #cc6666;		
+	}
+	tr.layout-item.active > td {
+		color: #ffffff;
+	}
+	tr.layout-item.stopped > td {
+		color: #555555;
+		xfont-style: italic;
+	}
+	tr.layout-item.disabled > td {
+		background: #9C9CFE;
+		cursor: default;
+	}
+
+	tr.layout-item-spacer > td {
+		height: 20px; 
+		width: 170px;
+		padding-top: 2px;
+		padding-left: 4px;
+		background: #F5BD49;
+		color: black;
+	}
+
+
+	tr.last-layout-item.selected > td {
+		background: #cc6666;
+	}
+	tr.last-layout-item.active > td {
+		color: #ffffff;
+	}
+	tr.last-layout-item > td {
+		height: 20px; 
+		width: 170px;
+		padding-top: 2px;
+		padding-left: 4px;
+		background: #F5BD49;
+		color: black;
+	}
+	tr.layout-spacer > td {
+		height: 4px;
+	}
+	tr.last-layout-spacer > td {
+		height: 4px;
+	}
+	tr.lower-layout-spacer > td {
+		height: 4px;
+	}
+	.layout-fill {
+		padding-left: 4px;
+		background: #F5BD49;
+	}	
+	.layout-upper-spacer {
+		height: 26px; 
+		width: 4px;
+	}
+	.layout-upper-center {
+		height: 26px; 
+		background: #F5BD49;
+		text-align: right;
+	}
+	.layout-upper-center >nobr {
+		display: inline-block;		
+		background: black;
+		color: #f5bd49;
+		height: 26px;
+		padding-left: 4px;		
+		font-size: 32px;
+		line-height: 26px;
+	}
+	.layout-upper-center >nobr >span {
+		
+	}
+	
+	.layout-upper-right {
+		height: 26px; width: 20px; 
+		background: url("/images/layout-top-right.png");
+	}
+	
+	.layout-lower-spacer {
+		width: 4px;
+	}
+	.layout-lower-center {
+		background: red;
+	}
+	.layout-lower-center {
+		display: inline-block;
+		height: 26px; 
+		background: #F5BD49;
+		
+	}
+	.layout-lower-button {
+		display: inline-block;
+		height: 8px;
+		width: 80px;
+		text-align: center;
+		color: black;
+		background: #F5BD49;
+		cursor: pointer;
+	}
+	.layout-lower-button.selected {
+		background: #cc6666;
+	}
+	.layout-lower-button.active {
+		color: #ffffff;
+	}
+
+	.layout-lower-right {
+		background: url("/images/layout-bottom-right.png");
+		width: 18px;
+	}
+
+	.layout-content {
+		height: 100%;	
+		padding-top: 16px;	
+		padding-bottom: 16px;
+	}
+	.layout-content > div {
+		height: inherit;
+	}
+</style>
+	
+<script type="text/x-tmpl" id="lcars-menu">	
+<table width="100%" height="100%" cellspacing="0" cellpadding="0">
+<tr>
+	<td class="layout-left"> 
+		<table cellspacing="0" cellpadding="0" height="100%">
+			<tr><td class="layout-upper-left"></td></tr>
+			<tr><td class="layout-middle-left">
+				<table class="menu" cellspacing="0" cellpadding="0" height="100%">
+
+					<tr class="last-layout-spacer"><td></td></tr>
+					<tr><td valign="bottom" class="layout-fill">
+					</td></tr>
+					<tr class="last-layout-item"><td class="layout-item">
+						<span class="title"></span>
+					</td></tr>
+					<tr class="lower-layout-spacer"><td></td></tr>								
+				</table>
+			</td></tr>
+			<tr><td class="layout-lower-left"></td></tr>
+		</table>
+	</td>				
+	<td class="layout-right">
+		<table width="100%" height="100%" cellspacing="0" cellpadding="0">
+		<tr height="20"><td class="layout-head">
+			<table width="100%" height="100%" cellspacing="0" cellpadding="0">
+			<tr>
+				<td class="layout-upper-center">
+					<nobr class="title"><span>TIMETAGGER</span></nobr>
+				</td>
+				<td class="layout-upper-spacer"></td>
+				<td class="layout-upper-right"></td>
+			</tr>
+			</table>
+		</td></tr>
+		<tr><td>
+			<div class="layout-content">
+				
+			</div>
+		</td></tr>
+		<tr><td class="layout-footer" height="8">
+			<table width="100%" height="100%" cellspacing="0" cellpadding="0">
+			<tr>
+				<td class="layout-lower-center"><span></span></td>
+				<td class="layout-lower-spacer"></td>
+				
+				<td class="layout-lower-right"></td>
+			</tr>
+			</table>
+		</td></tr>
+		</table>
+	
+	</td>
+</tr>
+</table>
+</script>
+
+<script>
+$.widget("lcars.layout", {
+	options: {
+	},
+	_create: function() {
+		var $element=this.element;
+
+		var $widget=$(tmpl("lcars-menu", {}));
+		$widget.addClass("layout-outer");
+		this.$widget=$widget;
+
+		$widget.insertBefore($element);
+		var $content=this._content_div();
+		$content.append($element);
+
+		for (i in this.options) {
+			this._setOption(i,this.options[i]);
+		}
+	},
+	
+	_destroy: function () {
+	},
+
+	_content_div: function() {
+		return $(" >tbody >tr >td.layout-right >table >tbody >tr >td >div.layout-content", this.$widget);
+	},
+	
+     _setOption: function(key, value) {
+		switch(key) {
+		case "title": this._set_title(value); break;
+		case "navigation": this._set_navigation(value); break;
+		case "menu": this._set_menu(value); break;
+		}
+	},
+
+	_set_title: function(str) {		
+		var $header=$("> tbody > tr > .layout-right > table >tbody >tr >td.layout-head ", this.$widget);
+		$(".title",$header).text(str);	
+	},
+	_set_navigation: function(descr) {
+		var $footer=$("> tbody > tr > .layout-right > table >tbody >tr >td.layout-footer", this.$widget);
+		
+		var $navigation=$("table tr",$footer);
+		$("td.layout-lower-button", $navigation).remove();
+		$("td.layout-lower-spacer", $navigation).remove();
+	
+		var $ref=$(".layout-lower-right",$navigation);
+		var $spacer=$("<td class='layout-lower-spacer'></td>");	
+		$spacer.insertBefore($ref);
+		for (var n=0; n<descr.length; ++n) {
+			var title=descr[n].title;
+			var $btn=$("<td class='layout-lower-button'><span>"+title+"</span></td>");
+			var $spacer=$("<td class='layout-lower-spacer'></td>");
+			$btn.insertBefore($ref);
+			$spacer.insertBefore($ref);
+
+			if (descr[n].active) {
+				$btn.addClass("active"); 
+				$btn.addClass("selected");
+			} else {
+				var action=descr[n].action;
+				$btn.disableSelection()
+					.hover(function() {
+							$(this).addClass("selected");
+						}, function() {
+							$(this).removeClass("selected");
+					})
+					.mousedown(
+							(function(btn) {
+									return function(e) {
+										function up() {
+											btn.removeClass("active");
+											$(document).unbind("mouseup",up);
+										}
+										btn.addClass("active");
+										$(document).mouseup(up);
+									};
+							})($btn)
+				 	)
+					.click(
+					(function(action) {	
+						return function() {
+							action();
+						}
+					})(action)
+				);
+			}
+			
+		}
+	},
+	
+	_set_menu: function(descr) {
+		var self=this;
+		
+		var $menu=$("> tbody > tr > .layout-left  .menu", this.$widget);
+	
+		$("tr.layout-item", $menu).remove();
+		$("tr.layout-item-spacer", $menu).remove();
+		$("tr.layout-spacer", $menu).remove();
+		$("tr.last-layout-item", $menu).remove();
+		$("tr.lower-layout-spacer", $menu).remove();
+		
+		$ref=$(".last-layout-spacer", $menu);
+		for (var n=0; n<descr.length; ++n) {
+			var title=descr[n].title;
+
+			if (title=="") {
+				var $spacer=$("<tr class='layout-spacer'><td></td></tr>");
+				var $item=$("<tr class='layout-item-spacer'><td><span></span></td></tr>");
+				$spacer.insertBefore($ref);
+				$item.insertBefore($ref);
+				
+			} else {
+				if (n==descr.length-1) {
+					var $spacer1=$("<tr class='lower-layout-spacer'><td></td></tr>");
+					var $spacer2=$("<tr class='lower-layout-spacer'><td></td></tr>");
+					var $item=$("<tr class='last-layout-item'><td><span>" + title + "</span></td></tr>");
+					$menu.append($spacer1)
+					$menu.append($item)
+					$menu.append($spacer2)
+				} else {
+					var $spacer=$("<tr class='layout-spacer'><td></td></tr>");
+					var $item=$("<tr class='layout-item'><td><span>" + title + "</span></td></tr>");
+					$spacer.insertBefore($ref);
+					$item.insertBefore($ref);
+				}
+
+				if (descr[n].class) {
+					$item.addClass(descr[n].class);
+				}
+				
+				if (descr[n].active) {
+					$item.addClass("active").addClass("selected");
+				} else if (descr[n].disabled) {
+						$item.addClass("disabled");
+				} else {
+					var action=descr[n].action;
+					$item
+						.disableSelection()
+						.hover(function() {
+								$(this).addClass("selected");
+							}, function() {
+								$(this).removeClass("selected");
+							})			
+						.mousedown(
+								(function(item) {
+										return function(e) {
+											function up() {
+												item.removeClass("active");
+												$(document).unbind("mouseup",up);
+											}
+											item.addClass("active");
+											$(document).mouseup(up);
+										};
+									})($item)
+							 	)
+						.click( (function(action) {
+									return function() {
+										action();
+									}
+								  })(action)
+						 
+					);
+				}				
+			}
+		}
+	},
+	
+});
+
+
+</script>
+
+	

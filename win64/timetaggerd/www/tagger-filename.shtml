@@ -1,0 +1,121 @@
+
+<style>
+
+</style>
+
+<script>
+
+function filename_sidebar() {
+
+	var self={};
+	var $self;
+
+	// singleton
+	if (filename_sidebar._instance) {
+		return filename_sidebar._instance;
+	}
+	filename_sidebar._instance=self;
+	
+	function init() {
+		$self=$("#filename-sidepanel");
+		$self.container({ visible: false });
+
+		$(".ok-btn", $self).button();
+		$(".cancel-btn", $self).button({
+			click: hide
+		});
+	}
+	
+
+	function save() {
+		var result={
+			id: ($("[name='id']",$self).val()||"").trim(),
+			name: ($("[name='name']",$self).val()||"").trim(),
+			description: ($("[name='description']",$self).val()||"").trim(),
+			comment: ($("[name='comment']",$self).val()||"").trim()
+		};
+		if (result.name == "") {
+			$("[name='name']",$self).next().text("please specify a name");
+		} else {
+			$self.container("begin");
+			$self.container("option","title", "saving..");
+			self.callback(result);
+		}
+	}
+	
+	function rename_file(cb, container, data) {
+		container.append($self.container("widget"));
+		$(".ok-btn", $self).button("option", "click", save);
+		$self.container("show");
+		$self.container("begin");
+		
+		$("[name='id']", $self).val(data.id || "");
+		$("[name='name']", $self).val(data.name || "");
+		$("[name='description']", $self).val(data.description || "");
+		$("[name='comment']", $self).val(data.comment || "");
+
+		self.callback=cb;
+		$self.container("end");
+	}
+	
+	function create_file(cb, container, title) {		
+		container.append($self.container("widget"));
+		$self.container("option", "title", title);
+		$self.container("show");
+		$self.container("end");
+
+		$("input", $self).val("");
+		$("textarea", $self).val("");
+		$(".lcars-error", $self).text("");
+
+		self.callback=cb;
+		$(".ok-btn", $self).button("option", "click", save);
+	}
+
+	function hide(cb) {
+		$self.container("hide");		
+	}
+
+	$.extend(self, {
+		create_file: create_file,	
+		rename_file: rename_file,
+
+		hide: hide
+	});
+
+	init();
+	return self;	
+}
+
+</script>
+
+<div id="filename-sidepanel">
+	<table cellspacing="0" cellpadding="0">
+		<input type="hidden" name="id" value=""></input>
+		<div>
+			<span class="lcars-label">name:</span>
+			<input class="lcars-input" name="name" value="" datatype="text"></input>
+			<span class="lcars-error"></span>
+		</div>
+		<div>
+			<span class="lcars-label">description:</span>
+			<input class="lcars-input lcars-input-long" name="description" value="" datatype="text"></input>
+			<span class="lcars-error"></span>
+		</div>
+		<div style="">
+			<span class="lcars-label" style="vertical-align: top">comment:</span>
+			<textarea class="lcars-input lcars-text" name="comment" value="" datatype="text"></textarea>
+			<span class="lcars-error"></span>
+		</div>
+	<tr><td>
+	
+	</td>
+	<td valign="bottom">
+		<div>
+			<span class="ok-btn">save</span>
+			<span class="cancel-btn">cancel</span>
+		</div>
+	</td>	
+	</tr>
+	</table>
+</div>

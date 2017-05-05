@@ -1,0 +1,389 @@
+# JSON-RPC command set
+
+ - System specific commands
+   - [getSystemInfo](#getSystemInfo)
+   - [scanDevices](#scanDevices)
+   - [getDeviceList](#getDeviceList)
+   - [createDevice](#createDevice)
+ - Device specific commands 
+   - [getDeviceInfo](#getDeviceInfo)
+   - [getFilter](#getFilter)
+   - [setFilter](#setFilter)
+   - [getTestsignal](#getTestsignal)
+   - [setTestsignal](#setTestsignal)
+   - [getDACSettings](#getDACSettings)
+   - [setDACValue](#setDACValue)
+   - [getLineDelay](#getLineDelay)
+   - [setLineDelay](#setLineDelay)
+ - Module specific commands 
+   - [getModuleClasses](#getModuleClasses)
+   - [createModule](#createModule)
+   - [getModuleList](#getModuleList)
+ - Module commands  
+   - [getModuleClass](#getModuleClass)
+   - [getModuleConfig](#getModuleConfig)
+   - [setModuleConfig](#setModuleConfig)
+   - [startModule](#startModule)
+   - [stopModule](#stopModule)
+   - [getData](#getData)
+ - dataset commands 
+   - [getDatasetList](#getDatasetList)
+   - [createDataset](#createDataset)
+   - [getDataset](#getDataset)
+   - [saveDataset](#saveDataset)
+   - [downloadDataset](#downloadDataset)
+ 
+  
+
+## getSystemInfo
+### PARAMETER
+	{
+	}
+### RETURN
+	{
+		version			string
+		listener		string
+		uptime			string
+	}
+	
+	
+## scanDevices
+### PARAMETER
+	{
+	}
+### RETURN
+	[ {
+		serial			string
+		hardware		uint32
+		id				string
+		state			string(idle,running)		
+	} ]
+	
+
+## createDevice
+### PARAMETER
+	{
+		serial			string
+	}
+### RETURN
+	{
+	}
+
+
+## getDeviceList	
+### PARAMETER
+	{
+	}
+### RETURN
+	[ {
+		id				string
+		serial			string
+		## NAME			string
+		hardware		string
+		state			string(error,running,idle,stopped)
+		module_count	int
+		overflows		uint64		
+	} ]
+	
+## removeDevice
+### PARAMETER
+	{
+		device			string
+	}
+### RETURN
+	{
+	}
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+## getDeviceInfo
+### PARAMETER
+	{
+		device			string
+	}
+### RETURN
+	{
+		id				string
+		serial			string
+		## NAME			string
+		hardware		string
+		state			string(error,running,idle,stopped)
+		module_count	int
+		overflows		uint64		
+	} 
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+	
+	
+## re## NAMEDevice
+### PARAMETER
+	{
+		device			string
+	}
+### RETURN
+	{
+	}
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+## getDACSettings
+### PARAMETER
+	{
+		device			string
+	}
+### RETURN
+	[
+			double
+	]
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+## setDACValue
+### PARAMETER
+	{
+		device			string
+		channel			string
+		value			double
+	}
+### RETURN
+	{
+	}
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+## getFilter
+### PARAMETER
+	{
+		device			string
+	}	
+### RETURN
+	{
+		filter			int
+	}
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+## setFilter
+### PARAMETER
+	{
+		device			string
+		filter			int
+	}
+### RETURN
+	{
+	}
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+## getLineDelay
+### PARAMETER
+	{
+		device			string
+	}
+### RETURN
+	[
+		timestamp
+	]
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+## setLineDelay
+### PARAMETER
+	{
+		device			string
+		channel			int
+		delay			timestamp
+	}
+### RETURN
+	{
+	}
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+
+
+
+## getModuleClasses
+### PARAMETER
+	{
+		device			string
+	}
+### RETURN
+	[ {
+		## NAME			string
+		### PARAMETER		[ {
+			## NAME		string
+			type		string(channel,long_number,int_number,...)
+			default		any
+		} ]			
+	} ]
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+## NAME	
+	getModuleList
+### PARAMETER
+	{
+		device			string
+	}
+### RETURN
+	[ {
+		id				string
+		class			string
+		## NAME			string
+		state			string(error,running,idle,stopped)		
+	} ]
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+## createModule
+### PARAMETER
+	{
+		device			string
+		class## NAME		string
+		... varying additional arguments, according to class  
+	}
+### RETURN
+	{
+	}
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+	200		unknown module class
+	201		missing class## NAME
+
+## getModuleList
+### PARAMETER
+	{
+		device			string
+	}
+### RETURN
+	[ { 
+	} ]
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+## startModule
+### PARAMETER
+	{
+		device			string
+		module			string
+	}
+### RETURN
+	{
+	}
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+
+## stopModule
+### PARAMETER
+	{
+		device			string
+		module			string
+	}
+### RETURN
+	{
+	}
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+
+## removeModule
+### PARAMETER
+	{
+		device			string
+		module			string
+	}
+### RETURN
+	{
+	}
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+## NAME	
+	getModuleClass
+### PARAMETER
+	{
+		device			string
+		module			string
+	}
+### RETURN
+	{
+		name			string
+		parameter
+		[ {
+			name		string
+			type		string(channel,long_number,int_number,...)
+			default		any
+		} ]			
+	}
+### ERRORS
+	23		backend not found
+	3		bad device identifier
+
+
+## getModuleConfig
+### PARAMETER
+### RETURN
+
+## setModuleConfig
+### PARAMETER
+### RETURN
+
+## getData
+### PARAMETER
+### RETURN
+
+## NAME	
+	getDatasetList
+### PARAMETER
+### RETURN
+
+## createDataset
+### PARAMETER
+### RETURN
+
+## removeDataset
+### PARAMETER
+### RETURN
+
+## getDataset
+### PARAMETER
+### RETURN
+
+## downloadDataset
+### PARAMETER
+### RETURN
+
+## saveDataset
+### PARAMETER
+### RETURN
+	

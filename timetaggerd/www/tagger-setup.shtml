@@ -1,0 +1,384 @@
+<style>
+	.hw-slider {
+		margin-left: 12px;
+		margin-right: 12px;
+		background: #F5BD49;
+	}
+	input.hw-input {
+		width: 30px;
+	}
+	.hw-slider .ui-state-default {
+		background: #F5BD49;
+		border: 1px solid black;
+		color: #555;
+		font-weight: normal;
+	}	
+	.hw-slider .ui-state-default.ui-state-hover {
+		background: #CC6666;
+	}
+	.hw-slider .ui-state-focus.ui-state-default,
+	.hw-slider .ui-state-active.ui-state-default {
+		background: #CC6666 !important;
+		border: 1px solid white;
+	}
+</style>
+
+<script>
+
+function dac_subsystem() {
+
+	var self={};
+	var $self;
+
+	var line_delay_units=[0,0,0,0,0,0,0,0];
+	var line_delay_values=[0,0,0,0,0,0,0,0];
+
+	var units=["ps","ns", "us"];
+	var scales=[1,1e3,1e6,1e9];
+
+	// singleton
+	if (dac_subsystem._instance) {
+		return dac_subsystem._instance;
+	}
+	dac_subsystem._instance=self;
+		
+	function init() {
+		$self=$("#hw-panel");
+		$self.container({ title: "Hardware Setup", visible: false});
+
+		init_dac();
+	}
+
+	function nil() {}
+
+	function init_dac() {
+		var MAX=2.5;
+		var SCALE=100;
+		var tm=0;
+		
+		function set_dac_value(channel, value) {
+			if (tm) {
+				clearTimeout(tm);
+			}
+			tm=setTimeout(function() { 
+				backend.setDACValue(nil, {device: self.device.id, channel: channel, value: value }); 
+			}, 100);
+		}
+		
+		function slider_cb(event, ui) {
+			var id=$(this).slider("option","tag");
+			$(".dac-val"+id, $self).val(ui.value/SCALE);
+			set_dac_value(id, ui.value/SCALE);
+		}
+		
+		function input_cb() {
+			var v=Number($(this).val());
+			var id=parseInt($(this).attr("tag"));
+			if (v.toString()=="NaN") {
+				$(this).val($(".dac-"+id,$self).slider("option", "value")/SCALE);				
+			} else {
+				v=Math.floor(Math.max(0,Math.min(MAX,v))*SCALE);
+				$(this).val(v/SCALE);
+				$(".dac-"+id,$self).slider("option", "value", v);
+				set_dac_value(id, v/SCALE); 
+			}
+			
+		}
+
+		function checkbox_cb(event, ui) {
+			var id=parseInt($(this).attr("tag"));
+			var enable=$(this).attr("checked");
+			backend.setTestsignal(nil, {device: self.device.id, channel: id, enable:enable })
+		}
+		
+		function delay_slider_cb(event, ui) {
+			var $slider=$(this);
+			var id=$slider.slider("option","tag");
+			var $input=$(".delay-val"+id, $self);
+			var value=ui.value;
+			var last_value=line_delay_values[id];
+			
+			line_delay_values[id]=value;
+
+			if (value==last_value) {
+				if (value==0) {
+					if (line_delay_units[id]>0) {
+						line_delay_units[id]--;
+						$slider.slider("option", "value", 1000);
+						value=1000;						 
+					}
+				} else if (value==1000) {
+					if (line_delay_units[id]<2) {
+						line_delay_units[id]++;
+						$slider.slider("option", "value", 1);
+						value=1;						 
+					}
+				}
+			}
+			var txt=value + units[line_delay_units[id]];
+			if (txt=="0ps") txt="0";
+			if (txt=="1000us") txt="1ms";
+			$input.val(txt);	
+
+			var delay=value * scales[line_delay_units[id]];
+			backend.setLineDelay(nil, {device: self.device.id, channel: id, delay: delay});		
+		}
+		
+		
+		function input_cb() {
+			var v=Number($(this).val());
+			var id=parseInt($(this).attr("tag"));
+			if (v.toString()=="NaN") {
+				$(this).val($(".dac-"+id,$self).slider("option", "value")/SCALE);				
+			} else {
+				v=Math.floor(Math.max(0,Math.min(MAX,v))*SCALE);
+				$(this).val(v/SCALE);
+				$(".dac-"+id,$self).slider("option", "value", v);
+				set_dac_value(id, v/SCALE); 
+			}
+			
+		}
+		
+		function delay_input_cb(event) {
+			var txt=$(this).val().trim();
+			var scale;
+			var id=$(this).attr("tag");
+			switch(txt.substr(txt.length-2,2).toLowerCase()) {
+			case 'ps':	scale=0; break;
+			case 'ns':  scale=1; break;
+			case 'us':  scale=2; break;
+			case 'ms':  scale=3; break;
+			default:    scale=0; txt=txt+"ps";
+			}
+			txt=txt.substr(0, txt.length-2);
+			var val=Number(txt);
+
+			if (val.toString()=="NaN") {				
+				txt=$(".delay-"+id,$self).slider("option", "value");
+				txt+=units[line_delay_units[id]];
+				if (txt=="0ps") txt="0";
+				$(this).val(txt);
+			} else {
+				while (scale>0 && val<0) {
+					val*=1000; --scale;
+				}
+				while (scale<2 && val>1000) {
+					val/=1000; ++scale;
+				}
+				
+				if (scale>2 || val*scales[scale]>1000000000) { scale=2; val=1000;}
+
+				line_delay_units[id]=scale;
+				txt=val+units[scale];
+				$(this).val(txt);
+				$(".delay-"+id,$self).slider("option", "value", val);
+				
+				backend.setLineDelay(nil, {device: self.device.id, channel: id, delay: val*scales[scale]});		
+			}
+		}
+		
+		
+		function filter_cb() {
+		}
+
+		function set_defaults() {
+			for (var n=0; n<8; ++n) {				
+				$(".dac-"+n, $self).slider("option", "value", MAX*SCALE/2);
+				$(".dac-val"+n, $self).val(MAX/2);
+
+				backend.setDACValue(nil, {device: self.device.id, channel: n, value: MAX/2 });
+			}
+			for (var n=0; n<8; ++n) {				
+				$(".delay-"+n, $self).slider("option", "value", 0);
+				line_delay_units[n]=0;
+				line_delay_values[n]=0;				
+				backend.setLineDelay(nil, {device: self.device.id, channel: n, delay: n});		
+			}
+		}
+		
+		for (var n=0; n<8; ++n) {
+			$(".dac-"+n,$self).slider({
+					max: MAX*SCALE,
+					change: slider_cb,
+					slide: slider_cb,
+					tag: n
+			});
+			$(".dac-val"+n, $self)
+				.change(input_cb)
+				.attr("tag", n);
+		}
+
+		for (var n=0; n<8; ++n) {
+			$(".delay-"+n,$self).slider({
+					max: 1000,
+					change: delay_slider_cb,
+					slide: delay_slider_cb,
+					tag: n
+			});
+			$(".delay-val"+n, $self)
+				.change(delay_input_cb)
+				.attr("tag", n);
+		}
+
+		for (var n=0; n<8; ++n) {
+			$(".calibration-"+n, $self)
+				.change(checkbox_cb)
+				.attr("tag", n);
+		}
+
+		$(".laserfilter", $self).click(function() {
+			v= $(this).attr("checked") ? true:false;
+			backend.setFilter(nil, {device: self.device.id, filter: v});
+		});
+		
+		$(".hw-close",$self).button({
+			click: function() { $self.container("hide"); }
+		});
+		$(".hw-default",$self).button({
+			click: set_defaults
+		});
+
+	}
+
+	function setup_dac() {
+		function cb1(err, dac) {
+			//TODO
+			for (var n=0; n<8; ++n) {
+				$(".dac-"+n,$self).slider("option", "value", dac[n]*100);
+				$(".dac-val"+n,$self).val(dac[n]);	
+			}
+
+			backend.getFilter(cb2, { device: self.device.id });
+		}
+
+		function cb2(err, filter) {
+			if (filter.laserfilter) {
+				$(".laserfilter", $self).attr("checked", true);
+			} else {
+				$(".laserfilter", $self).removeAttr("checked");
+			}
+			$self.container("end");
+		}
+
+		$self.container("show");
+		$self.container("begin");
+		backend.getDACSettings(cb1, { device: self.device.id });
+	}
+
+
+	function show(cb, container, device) {
+		self.callback=cb;
+		self.device=device;
+		container.append($self.container("widget"));
+		setup_dac();
+	}
+
+/*	
+	function is_hidden() {
+		//$(element).is(":visible")
+		//return true;
+		return $self.container.is(":visible");
+	}
+*/
+	
+	function hide() {
+		$self.container("hide");
+	}
+	
+	$.extend(self, {
+		show: show,
+		hide: hide
+		//is_hidden: is_hidden
+	});
+	init();
+	return self;
+}
+
+</script>
+
+
+<div id="hw-panel">
+	<table cellspacing="0" cellpadding="0" width="100%" border="0">
+	<tr>
+		<th>&nbsp;</th>
+		<th><nobr>Trigger Level</nobr></th>
+		<th>&nbsp;</th>
+		<th><nobr>Input Delay</nobr></th>
+		<th>&nbsp;</th>
+		<th><nobr>Test Signal</nobr></th>
+	</tr>
+	<tr>
+		<td><nobr>channel 0</nobr></td>
+		<td width=50%><div class="dac-0 hw-slider"></div></td>
+		<td><input class="dac-val0 lcars-input hw-input"></td>
+		<td width=50%><div class="delay-0 hw-slider"></div></td>
+		<td><input class="delay-val0 lcars-input hw-input"></td>
+		<td><input class="calibration-0" type="checkbox"></input></td>
+	</tr>
+	<tr>
+		<td><nobr>channel 1</nobr></td>
+		<td width=50%><div class="dac-1 hw-slider"></div></td>
+		<td><input class="dac-val1 lcars-input hw-input"></td>
+		<td width=50%><div class="delay-1 hw-slider"></div></td>
+		<td><input class="delay-val1 lcars-input hw-input"></td>
+		<td><input class="calibration-1" type="checkbox"></input></td>
+	</tr>
+	<tr>
+		<td><nobr>channel 2</nobr></td>
+		<td width=50%><div class="dac-2 hw-slider"></div></td>
+		<td><input class="dac-val2 lcars-input hw-input"></td>
+		<td width=50%><div class="delay-2 hw-slider"></div></td>
+		<td><input class="delay-val2 lcars-input hw-input"></td>
+		<td><input class="calibration-2" type="checkbox"></input></td>
+	</tr>
+	<tr>
+		<td><nobr>channel 3</nobr></td>
+		<td width=50%><div class="dac-3 hw-slider"></div></td>
+		<td><input class="dac-val3 lcars-input hw-input"></td>
+		<td width=50%><div class="delay-3 hw-slider"></div></td>
+		<td><input class="delay-val3 lcars-input hw-input"></td>
+		<td><input class="calibration-3" type="checkbox"></input></td>
+	</tr>
+	<tr>
+		<td><nobr>channel 4</nobr></td>
+		<td width=50%><div class="dac-4 hw-slider"></div></td>
+		<td><input class="dac-val4 lcars-input hw-input"></td>
+		<td width=50%><div class="delay-4 hw-slider"></div></td>
+		<td><input class="delay-val4 lcars-input hw-input"></td>
+		<td><input class="calibration-4" type="checkbox"></input></td>
+	</tr>
+	<tr>
+		<td><nobr>channel 5</nobr></td>
+		<td width=50%><div class="dac-5 hw-slider"></div></td>
+		<td><input class="dac-val5 lcars-input hw-input"></td>
+		<td width=50%><div class="delay-5 hw-slider"></div></td>
+		<td><input class="delay-val5 lcars-input hw-input"></td>
+		<td><input class="calibration-5" type="checkbox"></input></td>
+	</tr>
+	<tr>
+		<td><nobr>channel 6</nobr></td>
+		<td width=50%><div class="dac-6 hw-slider"></div></td>
+		<td><input class="dac-val6 lcars-input hw-input"></td>
+		<td width=50%><div class="delay-6 hw-slider"></div></td>
+		<td><input class="delay-val6 lcars-input hw-input"></td>
+		<td><input class="calibration-6" type="checkbox"></input></td>
+	</tr>
+	<tr>
+		<td><nobr>channel 7</nobr></td>
+		<td width=50%><div class="dac-7 hw-slider"></div></td>
+		<td><input class="dac-val7 lcars-input hw-input"></td>
+		<td width=50%><div class="delay-7 hw-slider"></div></td>
+		<td><input class="delay-val7 lcars-input hw-input"></td>
+		<td><input class="calibration-7" type="checkbox"></input></td>
+	</tr>
+	</table>
+	<nobr>filter channel 0 / 7<input class="laserfilter" type="checkbox"></input></nobr>
+	<table cellspacing="0" cellpadding="0" width="100%" border="0">
+	<tr>
+		<td width="50%">
+			<span class="hw-close">CLOSE</span>
+			<span class="hw-default">DEFAULTS</span>
+		</td>
+	</tr>
+	</table>
+</div>

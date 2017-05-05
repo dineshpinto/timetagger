@@ -1,0 +1,2 @@
+vhdtdtfi -lib work C:/Users/User/Documents/TimeTagger/timetagger/core/ExtensionSingleShot.v -lang verilog -prj core -o ExtensionSingleShot.spl -module ExtensionSingleShot -template C:/Xilinx/14.7/ISE_DS/ISE//data/splveri.tft -deleteonerror 
+spl2sym -intstyle ise -family spartan3e ExtensionSingleShot.spl C:/Users/User/Documents/TimeTagger/timetagger/core/ExtensionSingleShot.sym 

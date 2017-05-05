@@ -1,0 +1,580 @@
+{
+    "getConfiguration": {
+        "category": "system",
+        "description": "",
+        "parameter": {},
+        "result": {}
+    },
+    "getSystemInfo": {
+        "category": "system",
+        "description": "",
+        "parameter": {},
+        "result": {
+            "version": {
+                "type": "string",
+                "description": ""
+            },
+            "listener": {
+                "type": "string",
+                "description": ""
+            },
+            "uptime": {
+                "type": "string",
+                "description": ""
+            }
+        }
+    },
+    "scanDevices": {
+        "category": "system",
+        "description": "",
+        "parameter": {},
+        "result": {
+            "serial": {
+                "type": "string",
+                "description": ""
+            },
+            "hardware": {
+                "type": "uint32",
+                "description": ""
+            },
+            "id": {
+                "type": "string",
+                "description": ""
+            },
+            "state": {
+                "type": "variant",
+                "values": [
+                    "idle",
+                    "running"
+                ],
+                "description": ""
+            }
+        }
+    },
+    "createDevice": {
+        "category": "system",
+        "description": "",
+        "parameter": {
+            "serial": {
+                "type": "string",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {}
+    },
+    "getDeviceList": {
+        "category": "system",
+        "description": "",
+        "parameter": {},
+        "result_list": {
+            "id": {
+                "type": "string",
+                "description": ""
+            },
+            "serial": {
+                "type": "string",
+                "description": ""
+            },
+            "name": {
+                "type": "string",
+                "description": ""
+            },
+            "hardware": {
+                "type": "string",
+                "description": ""
+            },
+            "state": {
+                "type": "variant",
+                "values": [
+                    "error",
+                    "running",
+                    "idle",
+                    "stopped"
+                ],
+                "description": ""
+            },
+            "module_count": {
+                "type": "int",
+                "description": ""
+            },
+            "overflows": {
+                "type": "int64",
+                "description": ""
+            }
+        }
+    },
+    "removeDevice": {
+        "category": "system",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {}
+    },
+    "getDeviceInfo": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {
+            "id": {
+                "type": "string",
+                "description": ""
+            },
+            "serial": {
+                "type": "string",
+                "description": ""
+            },
+            "name": {
+                "type": "string",
+                "description": ""
+            },
+            "hardware": {
+                "type": "string",
+                "description": ""
+            },
+            "state": {
+                "type": "variant",
+                "values": [
+                    "error",
+                    "running",
+                    "idle",
+                    "stopped"
+                ],
+                "description": ""
+            },
+            "module_count": {
+                "type": "int",
+                "description": ""
+            },
+            "overflows": {
+                "type": "uint64",
+                "description": ""
+            },
+            "channel_count": {
+                "type": "int",
+                "description": ""
+            }
+        }
+    },
+    "renameDevice": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "name": {
+                "type": "string",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {}
+    },
+    "getDACSettings": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result_list": "double"
+    },
+    "setDACValue": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "channel": {
+                "type": "channel",
+                "mandatory": true,
+                "description": ""
+            },
+            "value": {
+                "type": "double",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {}
+    },
+    "getFilter": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {
+            "filter": {
+                "type": "int"
+            }
+        }
+    },
+    "setFilter": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "filter": {
+                "type": "int",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {}
+    },
+    "getTestsignal": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result_list": "int64"
+    },
+    "setTestsignal": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "channel": {
+                "type": "int",
+                "mandatory": true,
+                "description": ""
+            }
+            "enable": {
+                "type": "int",
+                "mandatory": true,
+                "description": ""
+        },
+        "result": {}
+    },
+    "getLineDelay": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result_list": "int64"
+    },
+    "setLineDelay": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "channel": {
+                "type": "channel",
+                "mandatory": true,
+                "description": ""
+            },
+            "delay": {
+                "type": "int64",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {}
+    },
+    "getModuleClasses": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result_list": {
+            "name": {
+                "type": "string",
+                "description": ""
+            },
+            "parameter": {
+                "type": "object",
+                "description": "",
+                "structure": {
+                    "name": {
+                        "type": "string",
+                        "description": ""
+                    },
+                    "type": {
+                        "type": "variant",
+                        "description": "",
+                        "values": [
+                            "channel",
+                            "long_number",
+                            "int_number",
+                            ".."
+                        ],
+                        "default": "string"
+                    }
+                }
+            }
+        }
+    },
+    "getModuleList": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result_list": {
+            "id": {
+                "type": "string",
+                "description": ""
+            },
+            "class": {
+                "type": "string",
+                "description": ""
+            },
+            "name": {
+                "type": "string",
+                "description": ""
+            },
+            "state": {
+                "type": "variant",
+                "values": [
+                    "error",
+                    "running",
+                    "idle",
+                    "stopped"
+                ],
+                "description": ""
+            }
+        }
+    },
+    "createModule": {
+        "category": "device",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "name": {
+                "type": "string",
+                "mandatory": true,
+                "description": ""
+            },
+            "classname": {
+                "type": "module-class",
+                "mandatory": true,
+                "description": ""
+            },
+            "...": {
+                "type": "module-parameter",
+                "description": ""
+            }
+        },
+        "result_list": {
+            "id": {
+                "type": "string",
+                "description": ""
+            },
+            "class": {
+                "type": "string",
+                "description": ""
+            },
+            "name": {
+                "type": "string",
+                "description": ""
+            },
+            "state": {
+                "type": "variant",
+                "values": [
+                    "error",
+                    "running",
+                    "idle",
+                    "stopped"
+                ],
+                "description": ""
+            }
+        }
+    },
+    "startModule": {
+        "category": "module",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "module": {
+                "type": "module-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {}
+    },
+    "stopModule": {
+        "category": "module",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "module": {
+                "type": "module-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {}
+    },
+    "removeModule": {
+        "category": "module",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "module": {
+                "type": "module-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {}
+    },
+    "getModuleClass": {
+        "category": "module",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "module": {
+                "type": "module-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {
+            "name": "string",
+            "parameter": [
+                {
+                    "name": "string",
+                    "type": "string",
+                    "default": "any"
+                }
+            ]
+        }
+    },
+    "getModuleConfig": {
+        "category": "module",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "module": {
+                "type": "module-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {
+            "...": "any"
+        }
+    },
+    "setModuleConfig": {
+        "category": "module",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "module": {
+                "type": "module-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "...": {
+                "type": "module-parameter"
+            }
+        },
+        "result": {
+            "...": "any"
+        }
+    },
+    "getData": {
+        "category": "module",
+        "description": "",
+        "parameter": {
+            "device": {
+                "type": "device-id",
+                "mandatory": true,
+                "description": ""
+            },
+            "module": {
+                "type": "module-id",
+                "mandatory": true,
+                "description": ""
+            }
+        },
+        "result": {
+            "...": "any"
+        }
+    }
+}

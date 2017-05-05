@@ -1,0 +1,35 @@
+How could the class SSRTimeTrace be used?
+
+1. Create an instance of the TimeTagger
+	tagger=createTimeTagger()
+
+2. Create an instance of SSRTimeTrace
+	trace=SSRTimeTrace(tagger, APD1, APD2, SSR, SWAP, N_SSR, N_MEM)
+	APD1&2	-->	Those are the signals of the APD, if you only have one, use CHANNEL_INVALID for one channel.
+	SSR	-->	This is the channel where you should send a trigger if you begin a SSR measurement. With this you increase the current SSR counter.
+	SWAP	-->	This channel should receive the same trigger that is used for the laser. With this signal you change the current memory.
+	N_SSR	-->	This is the maximum number of consecutive SSRs.
+	N_MEM	-->	This describes how many different frequencies/signals you use. For two different microwaves, this would be N_MEM=2.
+
+3. If the measurement reached N_SSR, it automatically stops and you can read the data with
+	data = trace.getData()
+   REMEMBER: If you want to run another full cycle you have to start trace again and clear it!!
+	trace.clear()
+	trace.start()
+
+How could the automatic Flipper be used?
+
+For the automatic Flipper, there are the following important channels:
+	0&1 	--> Here should the photons arrive
+	2	--> This is the SSR trigger (when a SSR measurement starts). It is used to reset the internal memories and the current memory.
+	3	--> This is the SWAP trigger (namely the trigger when the laser is on).
+	4	--> This is the readout signal. If this signal is send, the Flipper is high or low depending on the contents of the memories.
+	5	--> DO NOT USE THIS CHANNEL!
+	6	--> Free for use.
+	7	--> Free for use.
+
+One possible sequence could look like this:
+
+	SSR____LASER____SOME PHOTONS____LASER____LESS PHOTONS____READOUT____...
+
+Since the first memory would be higher, the Flipper is now high and can be reset with the next SSR command.

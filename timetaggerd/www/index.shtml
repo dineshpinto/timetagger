@@ -1,0 +1,139 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+ 
+<script src="/script/jquery-1.7.min.js"></script>
+<script src="/script/jquery-ui-1.8.min.js"></script>
+
+<link rel="stylesheet" href="/style/jquery-ui-1.8.css">
+
+<script src="/script/jsonrpc.js"></script>
+<script src="/script/tmpl.js"></script>
+
+<script src="/script/jquery.flot.js"></script>
+<script src="/script/jquery.flot.categories.js"></script>
+<script src="/script/jquery.flot.resize.js"></script>
+<script src="/script/jquery.flot.selection.js"></script>
+<script src="/script/jquery.flot.navigate.js"></script>
+<script src="/script/jquery.flot.canvas.min.js"></script>
+<script src="/script/jquery.flot.origins.js"></script>
+
+<script src="/script/ace/ace.js"></script>
+
+<script src="/script/FileSaver.js"></script>
+
+<script>
+
+function system_layout(selector) {
+	var self={
+			active_subsystem: false
+			};
+	var $self=$(selector);
+	
+	function init() {
+		$self.layout();
+	}
+
+
+	function set_menu(menu) {
+		$self.layout("option", "menu", menu);
+	}
+	function set_navigation(navigation) {
+		$self.layout("option", "navigation", navigation);
+	}
+
+	function set_active_subsystem(system) {
+		if (self.active_subsystem && self.active_subsystem!=system) {
+			self.active_subsystem.deactivate();
+		}
+		self.active_subsystem=system;
+	}
+	
+	$.extend(self, {
+		set_menu: set_menu,
+		set_navigation: set_navigation,
+		set_active_subsystem: set_active_subsystem
+	});
+
+	init();
+	return self;
+}
+
+
+var backend = new JSONRPCProxy("/json-rpc", 
+		[	  "getSystemInfo", "getDeviceList", "scanDevices", "createDevice",
+			  "renameDevice", "removeDevice",
+
+			  "getDACSettings", "setDACValue", 
+			  "getTestsignal", "setTestsignal",
+			  "getFilter", "setFilter",
+			  "getLineDelay", "setLineDelay",
+
+			  "getModuleClasses", "getModuleList", "createModule",
+			  "startModule", "stopModule", "clearModule", "pauseModule", "resumeModule", 
+			  "removeModule",  
+			  "getModuleClass", "getModuleConfig", "setModuleConfig",
+			  "getData",
+
+			  "getDatasetList", "createDataset", "removeDataset", 
+			  "getDataset", "saveDataset", "downloadDataset"
+		]
+	);
+
+var layout;
+$(function() {
+
+	if ($.browser.webkit) {
+		$("body").disableSelection();
+		layout=system_layout("#layout");
+		layout.system=system_subsystem(layout, "#system-subsystem");
+		layout.devices=devices_subsystem(layout, "#devices-subsystem");
+		layout.module=module_subsystem(layout, "#module-subsystem");
+		layout.analysis=analysis_subsystem(layout, "#analysis-subsystem");
+
+		$("#timetagger").show();
+		layout.system.activate();
+	} else {
+		$("#browser-support").dialog(
+			{ modal: true,
+			  title: "unsupported user agent",
+			  resizable: false
+				   
+			}
+		);	
+		$("a.ui-dialog-titlebar-close", $("#browser-support").dialog("widget")).hide();
+	}
+});
+</script>
+
+</head><body>
+
+<div id="timetagger" style="display:none">
+	<!--#include "lcars-base.shtml" -->
+	<!--#include "lcars-layout.shtml" -->
+	<!--#include "lcars-container.shtml" -->
+	<!--#include "lcars-table.shtml" -->
+	
+	<!--#include "tagger-setup.shtml" -->
+	<!--#include "tagger-module-config.shtml" -->	
+	<!--#include "tagger-module-delay.shtml" -->	
+	<!--#include "tagger-filename.shtml" -->	
+	<!--#include "tagger-texteditor.shtml" -->	
+	
+	<div id="layout" style="overflow: hidden;">
+		<!--#include "tagger-system.shtml" -->
+		<!--#include "tagger-device.shtml" -->
+		<!--#include "tagger-module.shtml" -->
+		<!--#include "tagger-analysis.shtml" -->
+	</div>
+</div>			
+
+
+<div id="browser-support" style="display:none">
+	<p>We are sorry, currently only webkit based browsers are supported by this software.</p>
+	<p>Please install <a href='http://www.google.de/intl/de/chrome/browser/'>Google Chrome</a>
+	   to use this application.</p>
+</div>
+
+</body></html>
+
+

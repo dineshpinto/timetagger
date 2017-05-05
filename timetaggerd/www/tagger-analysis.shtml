@@ -1,0 +1,263 @@
+<style>
+	svg {
+		border:1px solid green;
+	}
+</style>
+
+<script>
+
+function analysis_subsystem(layout, selector) {
+	var self={};
+	var $self;
+
+	var $content, $sidebar;
+	
+	var $dataset_list, $dataset_table;
+	var $script_list, $script_table;
+
+	var filename_panel, config_panel, graph_panel, editor_panel;
+	
+	function init() {
+		$self=$(selector);
+		$content=$(".content", $self);
+		$sidebar=$(".sidebar", $self);
+		
+		$dataset_list=$(".dataset-list", $self);
+		$dataset_list.container({ title:"saved datasets" });
+
+		$dataset_table=$(".dataset-table", $self);
+		$dataset_table.table({
+				columns: [
+				   { id: 'id', title: 'ID'},
+				   { id: 'name', title: 'Name'},
+				   { id: 'classname', title: 'Classname' },
+				   { id: 'date', title: 'Date' },
+				   { id: 'description', title: 'Description' },
+				], 
+				button_hook: dataset_table_buttonhook 
+			});
+
+		filename_panel=filename_sidebar();
+		config_panel=config_sidebar();
+		graph_panel=graph_subsystem();
+		editor_panel=editor_subsystem();
+		
+		$script_list=$(".script-list", $self);
+		$script_list.container({ title:"scripts" });
+	}
+
+
+	function view_source(id) {
+		layout.set_menu([
+			{ title:"GRAPH", action:function() { view_graph(id); } },
+         	{ title:"JSON SOURCE", action:nil, active: true },
+   			{ title:"", action:nil },    			
+   			{ title:"CLOSE", action:load_datasets },
+   			//{ title:"INFO", action:show_info }
+		]);
+		$dataset_list.container("hide");			
+		graph_panel.hide();
+
+		editor_panel.show_dataset($sidebar, id);
+	}
+
+	function open_screenshot() {
+		graph_panel.screenshot();
+	}
+
+	
+	function view_graph(id) {
+		layout.set_menu([
+			{ title:"GRAPH", action:nil, active: true },
+         	{ title:"JSON SOURCE", action:function() { view_source(id); } },
+   			{ title:"", action:nil },    			
+   			{ title:"SCREENSHOT", action:open_screenshot },
+   			{ title:"", action:nil },    			
+   			{ title:"CLOSE", action:load_datasets },
+   			//{ title:"INFO", action:show_info }
+		]);
+		$dataset_list.container("hide");
+		editor_panel.hide();			
+		graph_panel.view($sidebar, id);
+	}
+
+	function dataset_table_buttonhook($td, row) {
+
+		function reload(err, result) {
+			//TODO
+			load_datasets();
+		}
+
+		function info(err, dataset) {
+			//TODO
+
+			function save_info(data) {
+				backend.saveDataset(reload, data);			
+			}
+			filename_panel.rename_file(save_info, $sidebar, dataset);
+			config_panel.hide();
+		}
+
+		function config(err, dataset) {
+			config_panel.view(nil, $sidebar, dataset);
+			filename_panel.hide();			
+		}
+
+		
+		function cb() {
+			var action=$(this).button("option","tag");
+			var node=$(this).parent().parent();
+			var id=node.attr("row_id");
+
+			switch(action) {
+			case "removeDataset": 
+				backend.removeDataset(reload, {id: id});
+				break;
+			case "info": 
+				backend.getDataset(info, { id: id});
+				break;
+			case "viewConfig": 
+				backend.getDataset(config, { id: id});
+				break;
+			case "viewDataset": 
+				view_graph(id);				
+				break;
+			case "analyze": 
+				break;
+			}
+			
+		}
+		
+		$("<span>REMOVE</span>")
+		.button({click: cb, tag: "removeDataset", enabled: true })
+		.appendTo($td);
+		$("<span>INFO</span>")
+		.button({click: cb, tag: "info", enabled: true })
+		.appendTo($td);
+		$("<span>SETTINGS</span>")
+		.button({click: cb, tag: "viewConfig", enabled: true })
+		.appendTo($td);
+		$("<span>VIEW</span>")
+		.button({click: cb, tag: "viewDataset", enabled: true })
+		.appendTo($td);
+		/*
+		$("<span>analyze</span>")
+		.button({click: cb, tag: "analyze", enabled: true })
+		.appendTo($td);
+		*/
+	
+	}
+	
+	function load_datasets() {
+
+		function date_string(intnum) {
+			var date=new Date(intnum);
+			if (date.toDateString() == new Date().toDateString()) {
+				return date.toLocaleTimeString();
+			} else {
+				return date.toLocaleDateString();
+			}
+		}
+		
+		function cb(err, datasets) {
+			for (var n=0; n<datasets.length; ++n) {
+				datasets[n].date=date_string(datasets[n].date);
+			}
+			$dataset_table.table("update_rows", datasets);
+			$dataset_list.container("end");
+		}
+
+
+		$script_list.container("hide");
+
+		self.menu[0].active=true;
+		self.menu[1].active=false;
+		
+		layout.set_menu(self.menu);
+		
+		$dataset_list.container("show");
+		$dataset_list.container("begin");
+
+		filename_panel.hide();
+		config_panel.hide();
+		graph_panel.hide();
+		editor_panel.hide();
+		
+		backend.getDatasetList(cb);
+	}
+	
+	function activate() {
+		layout.set_active_subsystem(self);
+
+		layout.set_menu(self.menu);
+		layout.set_navigation(self.navigation);
+
+		$self.show();
+		
+		load_datasets();
+	}
+
+	function deactivate() {
+		$self.hide();
+	}
+
+	function show_system() {
+		layout.system.activate();
+	}
+	function show_devices() {
+		layout.devices.activate();
+	}
+
+	function show_module() {
+		layout.module.activate();
+	}
+
+	function show_info() {
+		layout.module.activate();
+	}
+
+	function nil() {
+	}
+	
+	$.extend(self, {
+		activate: activate,
+		deactivate: deactivate,
+		menu: [ 
+			{ title:"DATASETS", action:nil },
+			//{ title:"scripts", action:nil },			
+			//{ title:"", action:nil },
+			//{ title:"create script", action:nil },
+			
+			//{ title:"INFO", action: nil }
+		],
+		navigation: [
+	        { title: "SYSTEM", action: show_system },
+	        { title: "DEVICE", action: show_devices},
+	        { title: "MODULE", action: show_module },
+	        { title: "ANALYSIS", action: nil, active: true },
+	        // { title: "CONFIG", action: nil}
+		]
+		
+	});
+	init();
+	return self;
+}
+
+</script>
+
+
+<div id="analysis-subsystem" style="display:none">
+	<table cellspacing="0" cellpadding="0" width="100%" height="100%">
+	<tr><td valign="top" height="10" class="content">
+		<div class="dataset-list">
+			<div class="dataset-table"></div>
+		</div>
+		<div class="script-list">
+			<div class="script-table"></div>
+		</div>
+	</td></tr>
+	<tr><td valign="bottom" class="sidebar">
+	</td></tr>
+	</table>
+
+</div>

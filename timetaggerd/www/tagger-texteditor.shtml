@@ -1,0 +1,109 @@
+<style>
+
+#textedit-ace-editor {
+	width: 100%;
+	height:100%;
+}
+</style>
+
+<script>
+
+
+function editor_subsystem() {
+
+	var self={};
+	var $self;
+
+	var $editor, editor;
+
+	function init() {
+		$self=$("#textedit-subsystem");
+		$self.container({visible: false});
+
+		$self.container("widget").css("height", "100%");
+		$self.parent().css("height","100%");
+
+		$editor=$("textedit-ace-editor");
+		editor=ace.edit("textedit-ace-editor");
+		editor.setTheme("ace/theme/merbivore");
+		editor.getSession().setMode("ace/mode/javascript");
+	}
+
+
+	function show() {
+		$self.container("show");
+	}
+	
+	function hide() {
+		$self.container("hide");
+	}
+	
+	function begin() {
+		$self.container("show");
+		$self.container("begin");
+	}
+
+	function end() {
+		$self.container("end");
+	}
+
+	function show_dataset(container, dataset_id) {
+
+		function cb(err, dataset) {
+			$self.container("option", "title", "json source:"+dataset.name);			
+
+
+			var src='{\n\t"id": "'+dataset.id+'",\n' 
+			          +'\t"name": "'+dataset.name+'",\n'
+			          +'\t"description": "'+dataset.description+'",\n'
+			          +'\t"comment": "'+dataset.comment+'",\n'
+			          +'\t"classname": "'+dataset.classname+'",\n'
+			          +'\t"date": "'+dataset.date+'",\n'
+			          +'\t"friendly_date": "'+Date(dataset.classname)+'",\n';
+
+			var dat={ config: dataset.config, descriptor: dataset.descriptor };
+			dat=JSON.stringify(dat, 0, "\t");			
+			src += dat.substr(2, dat.length-4) + ',\n';
+
+			dat= { data: dataset.data }
+			src += JSON.stringify(dat, null, "\t").substr(2);
+			
+			editor.setValue(src);
+			editor.gotoLine(1);
+			editor.scrollToLine(0);
+			
+			
+			
+			editor.setReadOnly(true);
+			end();
+			editor.resize();
+		}
+		
+		container.append($self.container("widget"));
+		$self.container("option", "title", "loading..");
+		begin();
+		
+		backend.downloadDataset(cb, { id: dataset_id});		
+	}
+	
+
+
+	$.extend(self, {
+		show: show,
+		hide: hide,
+		begin: begin,
+		end: end,
+
+		show_dataset: show_dataset
+	});
+	init();
+	return self;
+}
+
+
+</script>
+
+<div id="textedit-subsystem">
+	<div id="textedit-ace-editor"></div>
+</div>
+

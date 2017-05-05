@@ -1,0 +1,17 @@
+# Output products list for <PurifierBuffer>
+PurifierBuffer.asy
+PurifierBuffer.gise
+PurifierBuffer.ngc
+PurifierBuffer.sym
+PurifierBuffer.v
+PurifierBuffer.veo
+PurifierBuffer.xco
+PurifierBuffer.xise
+PurifierBuffer\doc\fifo_generator_ds317.pdf
+PurifierBuffer\doc\fifo_generator_ug175.pdf
+PurifierBuffer\doc\fifo_generator_v8_1_vinfo.html
+PurifierBuffer\doc\xapp992.pdf
+PurifierBuffer_flist.txt
+PurifierBuffer_xmdf.tcl
+fifo_generator_readme.txt
+fifo_generator_ug175.pdf

@@ -1,0 +1,373 @@
+<style>
+	.first-button {
+		width: 60px;
+		display: inline-block;
+		text-align: center;
+	}
+</style>
+<script>
+function devices_subsystem(layout, selector) {
+	var self={};
+	var $self=$(selector);
+
+	var $device_status, $module_list, $module_table;
+	var $sidebar;
+
+	var dac_panel;
+
+	var stop_update;
+	
+	function init() {
+		$device_status=$(".device-status", $self);
+		$device_status.container({ title: "Device Status", busy: true });		
+
+		dac_panel=dac_subsystem();
+
+		$module_list=$(".module-list", $self);
+		$module_list.container({ title: "Installed Modules", visible: false });
+
+		$module_table=$(".module-table", $module_list);
+		$module_table.table({
+			columns: [
+			    { id: "id", title: "Id" },
+			    { id: "name", title: "Name" },
+			    { id: "class", title:"Class" },
+			    { id: "state", title: "State" }
+			],
+			button_hook: module_button_hook
+		});
+
+		$sidebar=$(".device-sidebar", $self); 
+
+		config_panel=config_sidebar();
+	}
+
+	function config_module(module_id) {
+		function reload(err, result) {
+			if (err) {
+				alert("error in config_module");
+			}
+			config_panel.hide();
+			load_modules();
+		}
+		function cb(params) {
+			backend.setModuleConfig(reload, params);
+		}
+		
+		config_panel.edit(cb, $sidebar, self.device.id, module_id);
+	}
+	
+	function create_module(descriptor) {
+		function reload(err, result) {
+			if (err) {
+				alert("error in create_module");
+			}
+			config_panel.hide();
+			load_modules();
+		}
+		function cb(params) {
+			backend.createModule(reload, params);
+		}
+		
+		config_panel.create(cb, $sidebar, self.device.id, descriptor);
+	}
+
+
+	function module_button_hook($td, module) {
+
+		function reload(err, result) {
+			if (err) {
+				alert("module_button_hook");
+			}
+			load_modules();
+		}
+		
+		function cb() {
+			var action=$(this).button("option","tag");
+			var node=$(this).parent().parent();
+			var id=node.attr("row_id");			
+
+			switch(action) {
+			case "startModule":
+				$module_list.container("begin");
+				backend.startModule(reload, {device: self.device.serial, module: id});
+				break;
+			case "stopModule":
+				$module_list.container("begin");
+				backend.stopModule(reload, {device: self.device.serial, module: id});
+				break;
+			case "removeModule":
+				$module_list.container("begin");
+				backend.removeModule(reload, {device: self.device.serial, module: id});
+				break;
+			case "editModule":
+				config_module(id); 
+				break;
+			case "resumeModule":
+				$module_list.container("begin"); 
+				backend.resumeModule(reload, {device: self.device.serial, module: id});
+				break;
+			case "viewModule":
+				layout.module.activate(self.device.id, id);
+			}
+		}
+
+		switch(module.state) {
+		case "error":
+		case "stopped":
+			$("<span class='first-button'>START</span>")
+			.button({click: cb, 
+			     tag: "startModule", 
+			     enabled: module.state=="stopped" })
+			.appendTo($td);
+			break;
+		case "running":
+		case "idle":
+			$("<span class='first-button'>STOP</span>")
+			.button({click: cb, 
+				     tag: "stopModule", 
+				     enabled: module.state=="idle" || module.state=="running" })
+			.appendTo($td);
+			break;
+		case "paused":
+			$("<span class='first-button'>RESUME</span>")
+			.button({click: cb, 
+				     tag: "resumeModule"
+					})
+			.appendTo($td);
+			break;
+		}
+		$("<span class='stop'>EDIT</span>")
+			.button({click: cb, 
+			     tag: "editModule", 
+			     enabled: true })
+			.appendTo($td);		
+		$("<span class='stop'>REMOVE</span>")
+		.button({click: cb, 
+		     tag: "removeModule", 
+		     enabled: true })
+		.appendTo($td);		
+		$("<span class='stop'>VIEW</span>")
+		.button({click: cb, 
+		     tag: "viewModule", 
+		     enabled: true })
+		.appendTo($td);		
+	}
+	
+	function load_modules() {
+		function cb(err, modules) {
+			if (err) {
+				alert("error in load_modules()");
+			}
+			$module_table.table("update_rows", modules);
+			$module_list.container("end");
+		}
+		
+		$module_list.container("show");
+		$module_list.container("begin");
+		backend.getModuleList(cb, { device: self.device.serial });
+	}
+	
+	function set_device_info(err, device) {
+		if (err) {
+			alert("error in set_device_info()");
+		}
+		
+		$(".name",$device_status).text(device.name);
+		$(".serial",$device_status).text(device.serial);
+		$(".hardware",$device_status).text(device.hardware);
+		$(".state",$device_status).text(device.state);
+		$(".overflows",$device_status).text(device.overflows);
+		
+		$(".empty",$device_status).hide();
+		$(".status",$device_status).show();
+		$device_status.container("end");
+
+		
+	}
+	
+	function load_devices() {
+
+		var menu=[];
+
+		function status_update(err, data) {
+			if (err) {
+				alert("error in status_update()");
+			}
+			if (stop_update) return;
+		}
+		
+		function cb(err, devices) {
+			if (err) {
+				alert("error in load_devices()");
+			}
+			 
+			var next_device;
+			self.devices=devices;
+			
+			for (var n=0; n<devices.length; ++n) {
+				var name=devices[n].name;
+				var serial=devices[n].id;
+				if (name=="") name=serial;
+
+				if (devices[n].id == self.device_id)
+					next_device=devices[n];
+				
+				if (!next_device) // select first, if none requested
+					next_device=devices[n];
+
+				var action= (function(id) {	// closure to switch device
+						return function() {
+							self.device_id=id;
+							load_devices();
+						};
+					})(self.devices[n].id);
+				menu.push({ title: name, action: action, device: devices[n].id });
+			}
+			
+			if (next_device) {
+				self.device=next_device;
+				menu.push({ title:""});
+				
+				for (var n=0; n<menu.length; ++n) {
+					if (menu[n].device == next_device.id)
+						menu[n].active=true; 
+				}
+				backend.getModuleClasses(cb2, { device: next_device.serial });
+				
+			} else {
+				$(".empty",$device_status).show();
+				$(".status",$device_status).hide();
+				$device_status.container("end");
+			}
+		}
+
+		function cb2(err, classes) {
+			//TODO
+			self.classes=classes;
+			for (var n=0; n<classes.length; ++n) {
+				var t="NEW "+classes[n].name.toUpperCase();
+				var a=(function(n) {
+						return function() {
+							create_module(self.classes[n]);
+						}
+					})(n)
+				 menu.push({ title:t, action:a });
+			}
+			menu.push({title:""});
+			menu.push({title:"HARDWARE SETUP", action: setup_dac});
+			menu.push(self.menu[0]);			
+
+			layout.set_menu(menu);
+			set_device_info(undefined, self.device);
+
+			load_modules();				
+		}
+		
+		
+		config_panel.hide();
+		layout.set_menu(self.menu);
+		backend.getDeviceList(cb);
+	}
+	
+	function activate(device_id) {
+		layout.set_active_subsystem(self);
+
+		if (device_id)
+			self.device_id=device_id;
+		
+		$self.show();		
+		layout.set_navigation(self.navigation);
+
+		load_devices();
+	}
+
+	function deactivate() {
+		stop_update=true;
+		$self.hide();		
+	}
+
+	function show_info() {
+	}
+
+	function nil() {
+	}
+	function setup_dac() {
+		//var dp = $(dac_panel);
+		//var vis = $(dac_panel).is(":visible");
+		//debugger;
+		//if ( vis ) {
+		//if (dac_panel.is_hidden()) {
+		//	dac_panel.hide();
+		//} else {
+		dac_panel.show(nil, $sidebar, self.device);
+		//}
+	}
+	
+	function show_system() {
+		layout.system.activate();
+	}
+
+	function show_module() {
+		layout.module.activate();
+	}
+
+	function show_anaylsis() {
+		layout.analysis.activate();
+	}
+	
+	$.extend(self, {
+
+		menu: [
+			    { title: "", action: nil  }
+			    //{ title: "INFO", action: nil  }
+		],
+		navigation: [
+	        { title: "SYSTEM", action: show_system },
+	        { title: "DEVICE", action: nil, active: true },
+	        { title: "MODULE", action: show_module },
+	        { title: "ANALYSIS", action: show_anaylsis},
+	        // { title: "CONFIG", action: nil}
+		],
+
+		activate: activate,
+		deactivate: deactivate
+	});
+
+	init();
+	return self;	
+}
+</script>
+
+	<div id="devices-subsystem" style="display: none">
+	
+		<table cellspacing="0" cellpadding="0" width="100%" height="100%">		
+		<tr><td height="80">
+			<div class="device-status">
+				<div class="status">
+					Name: <span class="name">&lt;no name&gt;</no></span>
+					&nbsp;&nbsp;
+					Serial: <span class="serial"></span>
+					&nbsp;&nbsp;
+					Hardware: <span class="hardware"></span>
+					&nbsp;&nbsp;
+					State: <span class="state"></span>
+					&nbsp;&nbsp;	
+					Overflows: <span class="overflows"></span>
+					&nbsp;&nbsp;	
+				</div>
+				<div class="empty">
+					there are no devices attached to the system.
+				</div>		
+			</div>
+			<div class="module-list">
+				<div class="module-table"></div>
+			</div>		
+		</td></tr>
+		
+		<tr><td></td></tr>
+		<tr><td height="80" valign="bottom" class="device-sidebar">
+		</td></tr>
+		</table>
+		
+	</div>

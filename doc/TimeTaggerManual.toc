@@ -1,0 +1,54 @@
+\contentsline {chapter}{Contents}{1}
+\contentsline {chapter}{Introduction}{2}
+\contentsline {chapter}{Hardware}{3}
+\contentsline {subsection}{Data connection}{3}
+\contentsline {subsection}{Input channels}{3}
+\contentsline {subsubsection}{electrical characteristics}{3}
+\contentsline {subsection}{Laser synchronization filter}{3}
+\contentsline {subsection}{General purpose IO (available upon request)}{4}
+\contentsline {chapter}{Software}{5}
+\contentsline {subsection}{Web application and JSON-RPC interface}{5}
+\contentsline {subsection}{precompiled libraries and high level language bindings}{5}
+\contentsline {subsection}{C++ API}{6}
+\contentsline {chapter}{Quick Start}{7}
+\contentsline {subsection}{Start the web application}{7}
+\contentsline {subsection}{Starting a measurement: a count rate}{8}
+\contentsline {subsection}{Adjusting the trigger levels}{9}
+\contentsline {subsection}{Adding another measurement: a cross-correlation}{9}
+\contentsline {subsection}{Save your data}{10}
+\contentsline {chapter}{Application Programmer's Interface}{11}
+\contentsline {subsection}{API documentation}{11}
+\contentsline {subsection}{Samples}{11}
+\contentsline {subsection}{Units}{11}
+\contentsline {subsection}{Rising and falling edges}{11}
+\contentsline {section}{Organization}{12}
+\contentsline {subsubsection}{Classes}{12}
+\contentsline {section}{The TimeTagger class}{12}
+\contentsline {subsubsection}{Methods}{13}
+\contentsline {section}{Analysis threads}{13}
+\contentsline {subsubsection}{Methods}{14}
+\contentsline {subsection}{Countrate}{14}
+\contentsline {subsubsection}{Arguments}{14}
+\contentsline {subsubsection}{Methods}{14}
+\contentsline {subsection}{Counter}{15}
+\contentsline {subsubsection}{Arguments}{15}
+\contentsline {subsubsection}{Methods}{15}
+\contentsline {subsection}{CountBetweenMarkers}{15}
+\contentsline {subsubsection}{Arguments}{15}
+\contentsline {subsubsection}{Methods}{15}
+\contentsline {subsection}{TimeDifferences}{16}
+\contentsline {subsubsection}{Arguments}{16}
+\contentsline {subsubsection}{Methods}{17}
+\contentsline {subsection}{*}{17}
+\contentsline {subsubsection}{Arguments}{17}
+\contentsline {subsubsection}{Methods}{17}
+\contentsline {subsection}{*}{17}
+\contentsline {subsubsection}{Arguments}{18}
+\contentsline {subsubsection}{Methods}{18}
+\contentsline {subsection}{*}{18}
+\contentsline {subsubsection}{Arguments}{18}
+\contentsline {subsubsection}{Methods}{18}
+\contentsline {section}{Defining custom analysis threads by subclassing Iterator}{18}
+\contentsline {chapter}{Python module}{19}
+\contentsline {chapter}{Web application}{20}
+\contentsline {section}{Web Daemon / SCPI Interface}{20}

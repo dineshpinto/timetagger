@@ -1,0 +1,23 @@
+Running: C:\Xilinx\14.7\ISE_DS\ISE\bin\nt64\unwrapped\fuse.exe -intstyle ise -incremental -lib unisims_ver -lib unimacro_ver -lib xilinxcorelib_ver -o D:/TimeTagger/timetagger/core/Bitstream_isim_beh.exe -prj D:/TimeTagger/timetagger/core/Bitstream_beh.prj work.Bitstream work.glbl 
+ISim P.20131013 (signature 0x7708f090)
+Number of CPUs detected in this system: 4
+Turning on mult-threading, number of parallel sub-compilation jobs: 8 
+Determining compilation order of HDL files
+Analyzing Verilog file "D:/TimeTagger/timetagger/core/Multiplexer.v" into library work
+Analyzing Verilog file "D:/TimeTagger/timetagger/core/ExtensionSingleShot.v" into library work
+Analyzing Verilog file "D:/TimeTagger/timetagger/core/Bitstream.v" into library work
+Analyzing Verilog file "C:/Xilinx/14.7/ISE_DS/ISE//verilog/src/glbl.v" into library work
+Starting static elaboration
+WARNING:HDLCompiler:1016 - "D:/TimeTagger/timetagger/core/Bitstream.v" Line 69: Port testmem is not connected to this instance
+Completed static elaboration
+Compiling module ExtensionSingleShot
+Compiling module MUX(N=5)
+Compiling module Bitstream
+Compiling module glbl
+Time Resolution for simulation is 1ps.
+Waiting for 1 sub-compilation(s) to finish...
+WARNING:Simulator - Unable to copy libPortabilityNOSH.dll to the simulation executable directory: boost::filesystem::copy_file: Das System kann den angegebenen Pfad nicht finden, "isim\Bitstream_isim_beh.exe.sim\libPortability.dll".
+Compiled 4 Verilog Units
+Built simulation executable D:/TimeTagger/timetagger/core/Bitstream_isim_beh.exe
+Fuse Memory Usage: 27396 KB
+Fuse CPU Usage: 437 ms

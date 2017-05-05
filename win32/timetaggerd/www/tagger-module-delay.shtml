@@ -1,0 +1,258 @@
+<style>
+	.delay-slider {
+		margin-left: 12px;
+		margin-right: 12px;
+		background: #F5BD49;
+	}
+	input.delay-input {
+		width: 50px;
+		text-align:right;
+	}
+	.delay-slider .ui-state-default {
+		background: #F5BD49;
+		border: 1px solid black;
+		color: #555;
+		font-weight: normal;
+	}	
+	.delay-slider .ui-state-default.ui-state-hover {
+		background: #CC6666;
+	}
+	.delay-slider .ui-state-focus.ui-state-default,
+	.delay-slider .ui-state-active.ui-state-default {
+		background: #CC6666 !important;
+		border: 1px solid white;
+	}
+
+</style>
+
+<script>
+
+
+function linedelay_subsystem() {
+
+	var self={};
+	var $self;
+
+	var line_delay_units=[0,0,0,0,0,0,0,0];
+	var line_delay_values=[0,0,0,0,0,0,0,0];
+
+	var units=["ps","ns", "us"];
+	var scales=[1,1e3,1e6,1e9];
+
+	// singleton
+	if (linedelay_subsystem._instance) {
+		return linedelay_subsysstem._instance;
+	}
+	linedelay_subsystem._instance=self;
+	
+	function init() {
+		$self=$("#linedelay-panel");
+		$self.container({ title: "setup line delays", visible: false});
+
+		function slider_cb(event, ui) {
+			var $slider=$(this);
+			var id=$slider.slider("option","tag");
+			var $input=$(".delay-val"+id, $self);
+			var value=ui.value;
+			var last_value=line_delay_values[id];
+			
+			line_delay_values[id]=value;
+
+			if (value==last_value) {
+				if (value==0) {
+					if (line_delay_units[id]>0) {
+						line_delay_units[id]--;
+						$slider.slider("option", "value", 1000);
+						value=1000;						 
+					}
+				} else if (value==1000) {
+					if (line_delay_units[id]<2) {
+						line_delay_units[id]++;
+						$slider.slider("option", "value", 1);
+						value=1;						 
+					}
+				}
+			}
+			var txt=value + units[line_delay_units[id]];
+			if (txt=="0ps") txt="0";
+			if (txt=="1000us") txt="1ms";
+			$input.val(txt);	
+
+			var delay=value * scales[line_delay_units[id]];
+			backend.setLineDelay(nil, {device: self.device.id, channel: id, delay: delay});		
+		}
+
+		function input_cb(event) {
+			var txt=$(this).val().trim();
+			var scale;
+			var id=$(this).attr("tag");
+			switch(txt.substr(txt.length-2,2).toLowerCase()) {
+			case 'ps':	scale=0; break;
+			case 'ns':  scale=1; break;
+			case 'us':  scale=2; break;
+			case 'ms':  scale=3; break;
+			default:    scale=0; txt=txt+"ps";
+			}
+			txt=txt.substr(0, txt.length-2);
+			var val=Number(txt);
+
+			if (val.toString()=="NaN") {				
+				txt=$(".delay-"+id,$self).slider("option", "value");
+				txt+=units[line_delay_units[id]];
+				if (txt=="0ps") txt="0";
+				$(this).val(txt);
+			} else {
+				while (scale>0 && val<0) {
+					val*=1000; --scale;
+				}
+				while (scale<2 && val>1000) {
+					val/=1000; ++scale;
+				}
+				
+				if (scale>2 || val*scales[scale]>1000000000) { scale=2; val=1000;}
+
+				line_delay_units[id]=scale;
+				txt=val+units[scale];
+				$(this).val(txt);
+				$(".delay-"+id,$self).slider("option", "value", val);
+				
+				backend.setLineDelay(nil, {device: self.device.id, channel: id, delay: val*scales[scale]});		
+			}
+		}
+		
+		function set_defaults() {
+			for (var n=0; n<8; ++n) {				
+				$(".delay-"+n, $self).slider("option", "value", 0);
+				line_delay_units[n]=0;
+				line_delay_values[n]=0;				
+				backend.setLineDelay(nil, {device: self.device.id, channel: n, delay: n});		
+			}
+		}
+		
+		for (var n=0; n<8; ++n) {
+			$(".delay-"+n,$self).slider({
+					max: 1000,
+					change: slider_cb,
+					slide: slider_cb,
+					tag: n
+			});
+			$(".delay-val"+n, $self)
+				.change(input_cb)
+				.attr("tag", n);
+		}
+
+		$(".delay-close",$self).button({
+			click: function() { $self.container("hide"); }
+		});
+		$(".delay-default",$self).button({
+			click: set_defaults
+		});		
+
+		$(".delay-reset",$self).button({
+			click: function() { 
+				layout.module.reset();
+			}
+		});
+	}
+
+	function nil() {
+	}
+	
+	function show(cb, container, device) {
+
+		function got_delay(err, list) {
+			for (var n=0; n<list.length; ++n) {
+				var val=list[n];
+				var scale=0;
+				
+				while (val>1000) {
+					val=(val/1000).toFixed(0);
+					scale++;
+				}
+				$(".delay-"+n,$self).slider("option", "value", val);
+				line_delay_units[n]=scale;
+
+				var txt=val + units[scale];
+				if (txt=="0ps") txt="0";
+				if (txt=="1000us") txt="1ms";
+				$(".delay-val"+n, $self).val(txt);					
+			}
+			
+			$self.container("end");
+		}
+
+		self.callback=cb;
+		self.device=device;
+
+		container.append($self.container("widget"));
+
+		$self.container("show");
+		$self.container("begin");
+		backend.getLineDelay(got_delay, { device: device.id} );		
+	}
+	
+	function hide() {
+		$self.container("hide");
+	}
+	
+	$.extend(self, {
+		show: show,
+		hide: hide
+	});
+
+	init();
+	return self;
+}
+
+</script>
+
+<div id="linedelay-panel"> 
+
+	<table cellspacing="0" cellpadding="0" width="100%" border="0">
+	<tr>
+		<td width="10"><nobr>channel 0</nobr></td>
+		<td><div class="delay-0 delay-slider"></div></td>
+		<td width="10"><input class="delay-val0 lcars-input delay-input"></td>
+		<td width="10">&nbsp;</td>
+		<td width="10"><nobr>channel 4</nobr></td>
+		<td><div class="delay-4 delay-slider"></div></td>
+		<td width="10"><input class="delay-val4 lcars-input delay-input"></td>
+	</tr>
+	<tr>
+		<td width="10"><nobr>channel 1</nobr></td>
+		<td><div class="delay-1 delay-slider"></div></td>
+		<td width="10"><input class="delay-val1 lcars-input delay-input"></td>
+		<td width="10">&nbsp;</td>
+		<td width="10"><nobr>channel 5</nobr></td>
+		<td><div class="delay-5 delay-slider"></div></td>
+		<td width="10"><input class="delay-val5 lcars-input delay-input"></td>
+	</tr>
+	<tr>
+		<td width="10"><nobr>channel 2</nobr></td>
+		<td><div class="delay-2 delay-slider"></div></td>
+		<td width="10"><input class="delay-val2 lcars-input delay-input"></td>
+		<td width="10">&nbsp;</td>
+		<td width="10"><nobr>channel 6</nobr></td>
+		<td><div class="delay-6 delay-slider"></div></td>
+		<td width="10"><input class="delay-val6 lcars-input delay-input"></td>
+	</tr>
+	<tr>
+		<td width="10"><nobr>channel 3</nobr></td>
+		<td><div class="delay-3 delay-slider"></div></td>
+		<td width="10"><input class="delay-val3 lcars-input delay-input"></td>
+		<td width="10">&nbsp;</td>
+		<td width="10"><nobr>channel 7</nobr></td>
+		<td><div class="delay-7 delay-slider"></div></td>
+		<td width="10"><input class="delay-val7 lcars-input delay-input"></td>
+	</tr>
+	</table>
+	<table cellspacing="0" cellpadding="0" width="100%" border="0">
+	<tr>
+		<td width="50%">
+			<span class="delay-close">CLOSE</span>
+			<span class="delay-default">DEFAULTS</span>
+			<span class="delay-reset">RESET MODULE</span>
+		</td>
+	</tr>
+	</table>	
+</div>

@@ -1,0 +1,1246 @@
+<style>
+
+#graph-panel .status {
+	height: 18px; 
+	position: absolute;
+	color: green;
+}
+#graph-panel .status .graph-text {
+}
+#graph-panel .status .graph-fps {
+	float: right;
+	width: 60px;
+	text-align: right;
+} 
+#graph-panel .status .graph-ctl {
+	float: right;
+} 
+ 
+#graph-panel .pager  {
+	position: absolute;
+	xborder: 1px solid white;
+} 
+
+#graph-panel .overlay-content {
+	margin: 4px;
+	font-size: 64px;
+	white-space:nowrap;
+}
+</style>
+
+
+<script>
+
+var plot;
+var plot_overview;
+var plot_options;
+var plot_data;
+var plot_range;
+
+function format_ps(val) {
+	if (val >= 1e12)
+        return (val / 1e12).toFixed(0) + " sec";
+	else if (val >= 1e9)
+        return (val / 1e9).toFixed(0) + " msec";
+	else if (val >= 1e6)
+        return (val / 1e6).toFixed(0) + " usec";
+    else if (val >= 1e3)
+        return (val / 1e3).toFixed(0) + " nsec";
+    else
+        return val.toFixed(0) + " psec";	
+}
+
+function PsFormatter(val, axis) {
+	var sign="";
+	if (val<0) { 
+		sign="-"; val=-val;
+	}
+
+	if(val==0) return "0";
+		
+	if (val >= 1e12)
+        return sign+(val).toFixed(axis.tickDecimals)  / 1e12 + " sec";
+	else if (val >= 1e9)
+        return sign+(val).toFixed(axis.tickDecimals) / 1e9 + " msec";
+	else if (val >= 1e6)
+        return sign+(val).toFixed(axis.tickDecimals)  / 1e6 + " usec";
+    else if (val >= 1e3)
+        return sign+(val).toFixed(axis.tickDecimals)  / 1e3 + " nsec";
+    else
+        return sign+val.toFixed(axis.tickDecimals) + " psec";	
+}
+
+function PercentFormatter(val, axis) {
+	return val.toFixed(axis.tickDecimals) + "%";
+}
+
+function format_hz(val) {
+    if (val >= 1e6)
+        return (val / 1e6).toFixed(2) + " MHz";
+    else if (val >= 1e3)
+        return (val / 1e3).toFixed(2) + " kHz";
+    else
+        return val.toFixed(2) + " Hz";	
+}
+
+function HzFormatter(val, axis) {
+    if (val >= 1e6)
+        return (val).toFixed(axis.tickDecimals) / 1e6 + " MHz";
+    else if (val >= 1e3)
+        return (val).toFixed(axis.tickDecimals+1) / 1e3 + " kHz";
+    else
+        return val.toFixed(axis.tickDecimals+1) + " Hz";
+}
+
+
+function status_countrate(object, config, data) {
+	var s= "channel frequencies";
+
+	s+=", state: "+config.state
+	s+=", "+data.overflows+" overflows"
+
+	object.status=s;
+}
+
+function prepare_countrate(graph, config, data) {
+	var series=[];
+	var rates=data.data;
+	var channel=config.channel;
+	var i=0;
+	for (var n=0; n<8; n++) {
+		if (1<<n&channel) {
+			series.push( [ "channel "+n, rates[i] ] );
+			i += 1;
+		}
+	}
+	graph.data=[series];
+	
+	graph.options = 
+			{	series: {
+					color: "cyan",
+					bars: {
+						show: true,
+						barWidth: 0.6,
+						align: "center"
+					}
+				},
+				xaxis: {
+					mode: "categories",		// x-axis show channel name
+					tickLength: 0,
+					font: {
+						family: "lcars",
+						color: "green"
+					}
+				},
+				yaxis: {
+					min:0,
+					font: {
+					family: "lcars",
+					color: "green"
+					},			
+					tickFormatter: HzFormatter // y-axis show frequency
+				},
+				canvas: true
+			};
+}
+
+
+function prepare_counter(object, config, data) {
+	var series=[];
+	var max=0;
+
+	var counts=data.data;
+	var max_x=counts.length*config.binwidth;
+	for (var n=0; n<counts.length; ++n) {
+		var val=counts[n];
+		val=10e11*(val / config.binwidth);
+		series.push( [ (n*config.binwidth)-max_x, val ] );
+	}
+	object.data=[ series ];
+	
+	object.options=
+			{	series: {
+					lines: {
+						show: true,						
+					},
+					color: "cyan"
+				},
+				xaxis: {
+					tickLength: 0,
+					ticks: 10,					
+					font: {
+						family: "lcars",
+						color: "green"
+					},
+					tickFormatter: PsFormatter,		// show timestamps on x-axes
+				},
+				yaxis: {
+					font: {
+					family: "lcars",
+					color: "green"
+					},
+					tickFormatter: HzFormatter			
+				},
+				//selection: {
+				//	mode: "xy"
+				//},
+			};
+	if (config.fromzero) {
+		object.options.yaxis.min=0;
+	}
+}
+
+function status_counter(object, config, data) {
+	var s= "counter showing ticks / "+ format_ps(config.binwidth);
+	object.status=s;	
+}
+
+function prepare_counter8(object, config, data) {
+	var series=[];
+	var max=0;
+
+	var ps_faktor=config.binwidth;
+	var colors=["cyan", "red", "yellow", "orange", "blue", "brown", "green", "magenta"];
+
+	var counts=data.data;
+	
+	object.data=[];
+	for (var s=0; s<counts.length; ++s) {
+		var values=[];
+		var max_x=counts[s].data.length*config.binwidth;
+		for (var n=0; n<counts[s].data.length; ++n) {
+			var val=counts[s].data[n];
+			val=10e11*(val / config.binwidth);
+			values.push( [ (n*config.binwidth)-max_x, val ] );
+		}
+		object.data.push({ label: "channel "+counts[s].channel, color: colors[s], data: values });			
+	}
+	
+	object.options=
+			{	series: {
+					lines: {
+						show: true,						
+					},
+					color: "blue"
+				},
+				xaxis: {
+					ticks: 10,					
+					font: {
+						family: "lcars",
+						color: "green"
+					},
+					tickFormatter: PsFormatter,	// show timestamps on x-axes
+				},
+				yaxis: {
+					font: {
+					family: "lcars",
+					color: "green",					
+					},
+					tickFormatter: HzFormatter
+				},
+				//selection: {
+				//	mode: "xy"
+				//},
+				legend: {
+					position: "sw",
+					backgroundOpacity: 0
+				},
+				grid: {
+					color: "green"
+				}
+				
+			};
+
+	if (config.fromzero) {
+		object.options.yaxis.min=0;
+	}
+}
+
+function status_counter8(object, config, data) {
+	var s= "counter8 showing ticks / "+ format_ps(config.binwidth);
+	s+=", state: "+config.state
+	s+=", "+data.overflows+" overflows"
+	object.status=s;
+}
+
+
+function status_histogram(object, config, data) {
+	var s;
+	if (config.normalize)
+		s="Histogram showing distribution"
+	else
+		s= "Histogram showing ticks";
+	s+=", state: "+config.state
+	s+=", "+data.overflows+" overflows"
+
+	var hz= data.duration && (data.counts / data.duration * 1e12);
+	s+="["+format_hz(hz)+"]"
+
+	object.status=s;
+}
+
+function prepare_histogram(object, config, data) {
+	var series=[];
+
+	var cnt=1;
+	if (config.normalize) {
+		cnt=data.counts||1;
+	} 	
+	
+	var values=data.data;
+	var max=0;
+	for (var n=0; n<values.length; ++n) {
+		var v=values[n][1]/cnt;
+		series.push( [ values[n][0], v ] );
+		if (v>max) max=v;
+	}
+	if (series.length==0) {
+		series.push([0,0],[1,0]);
+	} else if (series.length==1)
+		series.push([series[0][0]+1, series[0][1]/cnt]);
+	object.data=[ series ];
+
+	object.options=
+			{	series:  
+				{
+					lines: {
+						show: true,						
+					},
+					color: "cyan",
+					downsample: { 
+						threshold: 1000 
+					}
+				},
+				xaxis: {
+					//tickLength: 0,
+					ticks: 10,					
+					font: {
+						family: "lcars",
+						color: "green"
+					},
+					tickFormatter: PsFormatter,
+					
+					drawOrigin: true					
+				},
+				yaxis: {
+					min: 0,
+					font: {
+					family: "lcars",
+					color: "green"
+					}			
+				},
+				selection: {
+					mode: "xy"
+				},
+				grid: {
+					show: true,
+					backgroundColor: { colors: [ "#000", "#444" ] },
+					color: "#ccc"
+				},
+				canvas: true
+				
+			};
+}
+
+function status_distribution(object, config, data) {
+	var s= "Distribution "
+	object.status=s;
+}
+
+function prepare_distribution(object, data) {
+	var series=[];
+	for (var n=0; n<data.length; ++n) {
+		var val=data[n][0];
+		series.push( [ n, data[n] ] );
+	}
+	if (series.length==1)
+		series.push([series[0][0]+1, series[0][1]]);
+	object.data=[ series ];
+	
+	object.options=
+			{	series:  
+							{
+								lines: {
+									show: true,						
+								},
+								color: "cyan"
+							},
+				xaxis: {
+					mode: "categories",
+					tickLength: 0,
+					ticks: 10,					
+					font: {
+						family: "lcars",
+						color: "green"
+					}
+				},
+				yaxis: {
+					min: 0,
+					//max: max,
+					font: {
+					family: "lcars",
+					color: "green"
+					}			
+				},
+				selection: {
+					mode: "xy"
+				},
+				canvas: true
+			};
+}
+
+function status_timedifferences(object, config, data) {
+	var s;
+		if (config.normalize)
+			s="timedifferences showing distribution"
+		else
+			s= "timedifferences showing ticks";
+		s+=", state: "+config.state
+		s+=", "+data.overflows+" overflows"
+		
+		var hz=data.duration && (data.counts / data.duration * 1e12);
+		s+="["+format_hz(hz)+"]"
+		
+	object.status=s;
+}
+
+function prepare_timedifferences(object, config, data) {
+	object.data=data.data;
+
+	object.options=
+			{	series:  
+					{
+						lines: {
+							show: true,						
+						},
+						origins: true,
+						color: "cyan"
+					},
+				xaxis: {
+					font: {
+						family: "lcars",
+						color: "green"
+					},
+					
+					ticks: 10,
+					tickDecimals: 2,
+					
+					tickFormatter: PsFormatter,
+					drawOrigin: true
+					
+				},
+				yaxis: {
+					//min: 0,
+					//max: max,
+					max: 1.1,					
+					font: {
+						family: "lcars",
+						color: "green"
+					},
+				},
+				grid: {
+					show: true,
+					backgroundColor: { colors: [ "#000", "#444" ] },
+					color: "#ccc"
+				},
+				selection: {
+					mode: "xy"
+				},
+				canvas: true				
+			};
+
+	if (config.normalize) {
+		object.options.yaxis.tickFormatter=PercentFormatter;
+	}
+}
+
+function status_flim(object, config, data) {
+	var s;
+		if (config.normalize)
+			s="flim showing distribution"
+		else
+			s= "flim showing ticks";
+		s+=", state: "+config.state
+		s+=", "+data.overflows+" overflows"
+		
+		var hz=data.duration && (data.counts / data.duration * 1e12);
+		s+="["+format_hz(hz)+"]"
+		
+	object.status=s;
+}
+
+function prepare_flim(object, config, data) {
+
+	object.data=[];	
+	var cnt=1;
+	if (config.normalize) {
+		cnt=data.counts || 1;
+		cnt=(data.points/cnt);
+	} 
+	var seqs=data.data;
+	for (var s=0; s<seqs.length; ++s) {
+		var counts=seqs[s];
+		var graph=[]
+		for (var n=0; n<counts.length; ++n) {
+			var v=(counts[n]*cnt);			
+			graph.push([data.tmin+(data.tstep*n), v ]);
+		}
+		object.data.push(graph);
+	}
+
+	object.options=
+			{	series:  
+					{
+						lines: {
+							show: true,						
+						},
+						color: "cyan"
+					},
+				xaxis: {
+					font: {
+						family: "lcars",
+						color: "green"
+					},
+					
+					ticks: 10,
+					tickDecimals: 2,
+					
+					tickFormatter: PsFormatter,
+					
+				},
+				yaxis: {
+					//min: 0,
+					//max: max,					
+					font: {
+					family: "lcars",
+					color: "green"
+					}			
+				},
+				grid: {
+					show: true,
+					backgroundColor: { colors: [ "#000", "#444" ] },
+					color: "#ccc"
+				},
+				selection: {
+					mode: "xy"
+				},
+				canvas: true
+				
+			};
+
+	if (config.normalize) {
+		object.options.yaxis.tickFormatter=PercentFormatter;
+	}
+}
+
+function status_correlation(object, config, data) {
+	var s;
+		if (config.normalize)
+			s="correlation showing distribution"
+		else
+			s= "correlation showing ticks";
+		s+=", state: "+config.state
+		s+=", "+data.overflows+" overflows"
+		
+		var hz=data.duration && (data.counts / data.duration * 1e12);
+		s+="["+format_hz(hz)+"]"
+		
+	object.status=s;
+}
+
+function prepare_correlation(object, config, data) {
+
+	object.data=[];	
+	var cnt=1;
+	if (config.normalize) {
+		cnt=data.counts || 1;
+		cnt=(data.points/cnt);
+	} 
+	var counts=data.data;
+	var graph=[]
+	for (var n=0; n<counts.length; ++n) {
+		var v=(counts[n]*cnt);			
+		graph.push([data.tmin+(data.tstep*n), v ]);
+	}
+	object.data=[ graph ];
+
+	object.options=
+			{	series:  
+					{
+						lines: {
+							show: true,						
+						},
+						color: "cyan"
+					},
+				xaxis: {
+					font: {
+						family: "lcars",
+						color: "green"
+					},
+					
+					ticks: 10,
+					tickDecimals: 2,
+					
+					tickFormatter: PsFormatter,
+					
+				},
+				yaxis: {
+					//min: 0,
+					//max: max,					
+					font: {
+					family: "lcars",
+					color: "green"
+					}			
+				},
+				grid: {
+					show: true,
+					backgroundColor: { colors: [ "#000", "#444" ] },
+					color: "#ccc"
+				},
+				selection: {
+					mode: "xy"
+				},
+				canvas: true
+				
+			};
+
+	if (config.normalize) {
+		object.options.yaxis.tickFormatter=PercentFormatter;
+	}
+}
+
+
+
+
+
+function graph_subsystem(layout, selector) {
+
+	var self={};
+
+	// singleton
+	if (graph_subsystem._instance) {
+		return graph_subsystem._instance;
+	}
+	graph_subsystem._instance=self;
+
+	var $graph_panel;
+	var $graph_canvas, $wait_message, $error_message; 
+	var $graph_pager, $graph_status, $graph_overview, $graph_overlay;
+	
+	var stop_redraw=false;
+
+	var plot, overview;
+	var overview_shown;
+	var overlay_shown;
+	
+	var graph = {};
+	var graph_is_shown=false;;
+	var first_graph, graph_count; 
+
+	var plot_range={}
+	var timer, rpc;
+
+	var normalize=false;
+	var fromzero=false;
+
+	var graph_config;
+	var graph_parm;
+	
+	function init() {
+		$graph_panel=$("#graph-panel");
+		$wait_message=$(".wait-message",$graph_panel);
+		$error_message=$(".error-message",$graph_panel);
+
+
+		$graph_canvas=$(".graph",$graph_panel);
+		$graph_status=$(".status", $graph_panel);
+		$graph_overview=$(".overview", $graph_panel);
+		$graph_overlay=$(".overview", $graph_panel);
+		$graph_pager=$(".pager", $graph_panel);
+		$graph=$(".canvas", $graph_panel);
+		
+		prepare_zoom($graph, $graph_overview);
+
+		$graph
+		.mousedown(function() {
+			stop_redraw=true;		
+		})
+		.mouseup(function() {
+			stop_redraw=false;		
+		});			
+	}
+
+
+	function plot_overview(options, data) {
+		var opts=$.extend({},options, {legend: {show: false}});
+		if (overview) {
+			overview.setData(graph.data);
+			overview.setupGrid();
+			overview.draw();
+		} else {
+			overview=$.plot($graph_overview, data, opts);
+		}
+	}
+	function plot_graph(options, data) {
+		if (0 && plot) {
+			plot.setData(graph.data);
+			plot.setupGrid();
+			plot.draw();			
+		} else 
+			plot=$.plot($graph, data, $.extend(true, {}, graph.options, plot_range));
+		XXX=plot;
+	}
+
+
+	var plot_selection;
+	
+	function prepare_zoom() {
+
+		function on_select(event, ranges) {
+			if (!overview_shown) {
+			 	$graph_overview.show();
+			 	$graph_pager.show();
+			 	overview_shown=true;
+			 	plot_overview(graph.options, graph.data);
+			}
+			 
+			// clamp the zooming to prevent eternal zoom
+		
+			if (ranges.xaxis.to - ranges.xaxis.from < 0.00001) {
+				ranges.xaxis.to = ranges.xaxis.from + 0.00001;
+			}
+		
+			if (ranges.yaxis.to - ranges.yaxis.from < 0.00001) {
+				ranges.yaxis.to = ranges.yaxis.from + 0.00001;
+			}
+		
+			// do the zooming
+		
+			plot_range={
+					xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
+					yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
+			};
+
+			console.log("TMIN", ranges.xaxis.from);
+			console.log("TMAX", ranges.xaxis.to);
+			console.log("CONFIG", graph_config);
+			//plot=false;
+			//plot_graph($.extend(true, {}, graph.options, plot_range), graph.data);
+			plot=$.plot($graph, graph.data, $.extend(true, {}, graph.options, plot_range)); 
+		
+			// don't fire event on the overview to prevent eternal loop
+			overview.setSelection(ranges, true);
+			plot_selection=ranges;
+			first_graph=new Date()
+			graph_count=0;			
+		}
+		$graph.bind("plotselected", on_select);
+
+		$graph_overview.bind("plotselected", function(event, ranges) {
+			plot.setSelection(ranges);
+			plot_selection=ranges;
+			console.log(plot_selection);
+			first_graph=new Date()
+			graph_count=0;
+		}); 
+
+		$graph.bind("plotunselected", function(event) {
+			$graph_overview.hide();
+			$graph_pager.hide();
+			overview_shown=false;
+			plot_range={};
+			plot=undefined;
+			show_graph();
+		}); 
+		$graph_overview.bind("plotunselected", function(event) {
+			$graph_overview.hide();
+			$graph_pager.hide();
+			plot_range={};
+			plot=undefined;
+			overview_shown=false;
+			show_graph();
+		});
+
+
+		$(".up",$graph_pager).click(function () {
+			//var sel=overview.getSelection();
+			var sel=plot_selection;
+			var d=(sel.yaxis.to-sel.yaxis.from)/5;
+			sel.yaxis.to +=d;
+			sel.yaxis.from +=d;
+			plot.setSelection(sel);
+			
+		});
+		$(".down",$graph_pager).click(function () {
+			//var sel=overview.getSelection();
+			var sel=plot_selection;
+			var d=(sel.yaxis.to-sel.yaxis.from)/5;
+			sel.yaxis.to -=d;
+			sel.yaxis.from -=d;
+			plot.setSelection(sel);
+		});
+		 		
+		$(".left",$graph_pager).click(function () {
+			//var sel=overview.getSelection();
+			var sel=plot_selection;
+			var d=(sel.xaxis.to-sel.xaxis.from)/5;
+			sel.xaxis.to -=d;
+			sel.xaxis.from -=d;
+			plot.setSelection(sel);
+			
+		});
+		$(".right",$graph_pager).click(function () {
+			//var sel=overview.getSelection();
+			var sel=plot_selection;
+			var d=(sel.xaxis.to-sel.xaxis.from)/5;
+			sel.xaxis.to +=d;
+			sel.xaxis.from +=d;
+			plot.setSelection(sel);
+		});
+
+		$(".zoom-in",$graph_pager).click(function () {
+			//var sel=overview.getSelection();
+			var sel=plot_selection;
+			
+			var dx=(sel.xaxis.to-sel.xaxis.from);
+			var px= sel.xaxis.from + dx/2;
+			sel.xaxis.from=px-(dx*0.4);
+			sel.xaxis.to=px+(dx*0.4);
+			
+			var dy=(sel.yaxis.to-sel.yaxis.from);
+			var py= sel.yaxis.from + dy/2;
+			sel.yaxis.from=py-(py*0.4);
+			sel.yaxis.to=py+(dy*0.4);
+
+			plot.setSelection(sel);
+		});
+
+		$(".zoom-out",$graph_pager).click(function () {
+			//var sel=overview.getSelection();
+			var sel=plot_selection;
+			
+			var dx=(sel.xaxis.to-sel.xaxis.from);
+			var px= sel.xaxis.from + dx/2;
+			sel.xaxis.from=px-(dx*0.6);
+			sel.xaxis.to=px+(dx*0.6);
+			
+			var dy=(sel.yaxis.to-sel.yaxis.from);
+			var py= sel.yaxis.from + dy/2;
+			sel.yaxis.from=py-(dy*0.6);
+			sel.yaxis.to=py+(dy*0.6);
+
+			plot.setSelection(sel);
+		});
+	}
+
+	function show_graph() {
+		first_graph=new Date()
+		graph_count=0;
+		plot_range={ };
+		plot=undefined;
+
+		plot_graph(graph.options,graph.data);
+		//if (rpc) rpc.abort();
+		//if (timer) clearTimeout(timer);
+			
+	}
+
+
+	function show_overlay(freqs) {
+		$graph_overlay.html(freqs);
+		$graph_overlay.show();
+		
+		var p = $graph.position();
+		$graph_overlay
+		//.css("width", $graph.width()/3)
+		.css("height", $("div",$graph_overlay).height()+8)
+		.css("width", 500)
+		.css("top", p.top + $graph.height() - $graph_overlay.height() - 4 )
+		.css("left", p.left + 2);		
+	}
+	
+	function draw_graph(config, data) {
+
+		graph_config=config;
+		
+		$graph_status.width( $graph.width() - 40 );
+		var p = $graph.position();
+		$graph_status.css("top", p.top - 25).css("left", p.left +20);
+
+		$graph_overview
+			.css("width", $graph.width()/4)
+			.css("height", $graph.height()/4)
+			.css("top", p.top + $graph.height() - $graph_overview.height())
+			.css("left", p.left + $graph.width() - $graph_overview.width());
+
+		$graph_pager
+		.css("top", p.top+10)
+		.css("left", p.left + $graph.width()-$graph_pager.width()-30);
+		
+
+
+		graph_count++;
+		var msecs=(new Date()-first_graph)/graph_count;
+
+		graph.status="";
+		
+		switch(config.classname) {
+		case "counter": 	prepare_counter(graph, config, data); 
+							status_counter(graph, config, data);
+							if (overlay_shown) {
+								var markup="";
+								var dats=data.data;
+								var freq= dats[dats.length-1] ? (dats[dats.length-1] / config.binwidth) : 0;
+								
+								markup +="<span class=''>Channel "+config.channel+":</span>&nbsp;";
+								markup +="<span class=''>"+format_hz(freq*10e11)+"</span><br/>";
+								
+								show_overlay("<div class='overlay-content'>"+markup+"</div>");
+							} else {
+								$graph_overlay.hide();
+							}
+							break;
+		case "counter8": 	prepare_counter8(graph, config, data); 
+							status_counter8(graph, config, data);
+
+							if (overlay_shown) {
+								var markup="";
+								for (var n=0; n<data.data.length; ++n) {
+									var dats=data.data[n].data;
+									var freq= dats[dats.length-1] ? (dats[dats.length-1] /  config.binwidth) : 0;
+									
+									markup +="<span class=''>Channel "+data.data[n].channel+":</span>&nbsp;";
+									markup +="<span class=''>"+format_hz(freq*10e11)+"</span><br/>";
+								}
+								show_overlay("<div class='overlay-content'>"+markup+"</div>");
+							} else {
+								$graph_overlay.hide();
+							}
+							break;
+		case "countrate": 	prepare_countrate(graph, config, data);
+							status_countrate(graph, config, data);
+							break;
+		case "histogram": 	prepare_histogram(graph, config, data);
+							status_histogram(graph, config, data);
+							break;
+		case "distribution":prepare_distribution(graph, data);
+							break;
+		case "timedifferences":	
+							prepare_timedifferences(graph, config, data);
+							status_timedifferences(graph, config, data);
+							break;
+		case "flim":	
+							prepare_flim(graph, config, data);
+							status_flim(graph, config, data);
+							break;
+		case "correlation":	
+							prepare_correlation(graph, config, data);
+							status_correlation(graph, config, data);
+							break;
+		default:							
+			console.log("unknown graph:"+config.classname);
+			console.log(data);
+		}
+		plot_graph(graph.options,graph.data); 
+
+		var fps;
+		if (msecs<1000) 
+			fps=Math.floor(1000/msecs);
+		else 
+			fps=Math.floor(100000/msecs)/100;
+
+		$(".graph-text", $graph_status).text(graph.status);		
+		$(".graph-fps", $graph_status).text( fps +" fps")
+	}
+
+
+	function animate_module($container, classname, device_id, module_id) {
+
+		var config;
+		var waiting_for_answer;
+		
+		function redraw() {
+			if (waiting_for_answer)
+				return;
+			waiting_for_answer=true;
+console.log("RANGE", plot_range);
+			var parm={ device: device_id, module:module_id };
+			if (plot_range.xaxis) {
+				parm.tmin=plot_range.xaxis.min;
+				parm.tmax=plot_range.xaxis.max;
+			}
+			rpc=backend.getData(draw_frame, parm);
+			
+		}
+		
+
+		function draw_frame(err, data) {
+			if (!stop_redraw) {
+				end();
+				draw_graph(config, data);
+			}
+			waiting_for_answer=false;
+		}
+
+		function cb(err, cfg) {
+			if (err) {
+			}
+			
+			config=cfg;
+
+			$(".graph-ctl", $graph_status).text("");
+			switch(config.classname) {
+			case "counter":
+			case "counter8":
+
+				var checkbox1=$("<input type='checkbox'>");
+				if (overlay_shown) {
+					checkbox1.attr("checked",true);
+					config.fromzero=true;
+				}
+				checkbox1.click(function() {
+					if(checkbox1.attr("checked")) {
+						overlay_shown=true;
+					} else {
+						overlay_shown=false;
+					}
+				});
+				$(".graph-ctl", $graph_status)
+				.append(checkbox1)
+				.append("<span>actual values</span>");
+				
+				
+				var checkbox2=$("<input type='checkbox'>");
+				if (fromzero) {
+					checkbox2.attr("checked",true);
+					config.fromzero=true;
+				}
+				checkbox2.click(function() {
+					if(checkbox2.attr("checked")) {
+						fromzero=config.fromzero=true;
+					} else {
+						fromzero=config.fromzero=false;
+					}
+				});
+				$(".graph-ctl", $graph_status)
+					.append(checkbox2)
+					.append("<span>full range</span>");
+				break;
+								
+			case "timedifferences":
+				break;
+			case "correlation":
+			case "histogram":
+				checkbox=$("<input type='checkbox'>");
+				if (normalize) {
+					checkbox.attr("checked",true);
+					config.normalize=true;
+				}
+				checkbox.click(function() {
+					if(checkbox.attr("checked")) {
+						normalize=config.normalize=true;
+					} else {
+						normalize=config.normalize=false;
+					}
+				});
+				$(".graph-ctl", $graph_status)
+					.append(checkbox)
+					.append("<span>normalize</span>");
+			}
+			
+			rpc=backend.getData(draw_frame, { device: device_id, module:module_id });
+		}
+		
+		stop();
+
+		$container.append($graph_panel);
+		show();
+		begin();
+		stop_redraw=false;
+		overview_shown=false;
+		$graph_overview.hide();
+		$graph_pager.hide();
+		first_graph=new Date()
+		graph_count=0;
+		plot=overview=false;
+
+		plot_range={ };
+		plot=undefined;
+		if (rpc) rpc.abort();
+		if (timer) clearInterval(timer);
+
+		timer=setInterval(redraw, 200);
+		backend.getModuleConfig(cb, { device: device_id, module:module_id });
+	}
+
+	function view_dataset($container, dataset_id) {
+
+		
+		function cb(err, dataset) {
+			end();
+			draw_graph(dataset.config, dataset.data);		
+		}
+
+		$container.append($graph_panel);
+		show();
+		begin();
+			
+		stop_redraw=false;
+		overview_shown=false;
+		$graph_overview.hide();
+		$graph_pager.hide();
+
+		plot_range={ };
+		plot=undefined;
+		if (rpc) rpc.abort();
+		if (timer) clearInterval(timer);
+
+		backend.downloadDataset(cb, { id: dataset_id});
+	}
+
+	function screenshot() {
+		var canvas=$("canvas.flot-base", $graph_canvas);		
+		var dataUrl = canvas[0].toDataURL();
+		var win=window.open(dataUrl, "_blank", "width="+canvas.width()+", height="+canvas.height());
+		win.focus();
+		win.setTimeout(function() { focus(); }, 1000);
+	}
+	
+	function stop() {
+		if (timer) clearInterval(timer);
+		if(rpc) rpc.abort();
+		stop_redraw=true;
+	}
+	
+	function error(msg) {
+		graph_is_shown=false;
+		$graph_canvas.hide();
+		$wait_message.hide();
+		$error_message.show();
+		$(".error-text", $error_message).text(msg);
+		$graph_panel.show();
+	}
+	
+	function begin() {
+		graph_is_shown=false;
+		$graph_canvas.hide();
+		$wait_message.show();
+		$error_message.hide();
+		$graph_panel.show();
+	}
+
+	function end() {
+		graph_is_shown=true;
+		$graph_canvas.show();
+		$wait_message.hide();
+		$error_message.hide();
+		$graph_panel.show();
+	}
+
+	function hide() {
+		stop();
+		$graph_panel.hide();
+
+	}
+	
+	function show() {
+		$graph_panel.show();
+	}
+
+	$.extend(self, {
+
+		animate: animate_module,
+		stop: stop,
+
+		view: view_dataset,
+		
+		begin: begin,
+		error: error,
+		end: end,
+
+		screenshot: screenshot,
+
+		show: show,
+		hide: hide
+	});
+	
+	init();
+	return self;
+}
+
+</script>
+
+
+<div id="graph-panel" style="height: 100%" style="display:none">
+<table width="100%" height="100%" cellspacing="0" cellpadding="0" border=0>
+	<tr height="8">
+		<td colspan="2">						
+			<img src="/images/graph-topleft.png">
+		</td>
+		<td colspan="2" align="right"><img src="/images/graph-topright.png"></td>
+	</tr>
+	<tr>
+		<td valign="top" width="8"><img src="/images/graph-vertical.png"></td> 
+		<td colspan="2" rowspan="2">
+		
+			<div style="padding: 4px;height: 100%;">
+				<div style="border: 1px solid green; height: 100%;">
+				
+					<div class="wait-message" style="height: 100%; display: none">
+					<table width="100%" height="100%">
+					<tr><td align="center">
+						<span class="wait-icon"></span>
+					</td></tr></table>
+					</div>
+					
+					<div class="error-message" style="height: 100%; display: none">								
+					<table width="100%" height="100%">
+					<tr><td align="center">
+						<span class="error-text">some text</span>
+					</td></tr></table>
+					</div>
+					
+					<div class="graph" style="height: 100%; display: none">
+						<div class="canvas" style="height: 100%">
+						</div>
+						<div class="status">
+							<div class="graph-fps">y</div>							
+							<div class="graph-ctl">y</div>
+							<div class="graph-text">x</div>
+						</div>
+						<div class="overview" style="border: 1px solid green; position: absolute; background: #000000;">
+						</div>
+						<div class="overlay" style="border: 1px solid green; position: absolute; background: #000000;">
+						</div>
+						<div class="pager">
+						<table cellspacing="0", cellpadding="0">
+						<tr><td><img src="/images/zoomin.png" class="zoom-in"></img></td>
+						    <td><img src="/images/arrow-up.gif" class="up"></img></td>
+						    <td><img src="/images/zoomout.png" class="zoom-out"></img></td></tr>
+						<tr><td><img src="/images/arrow-left.gif" class="left"></img></td>
+							<td></td>
+							<td><img src="/images/arrow-right.gif" class="right"></img></td>
+							</tr>
+						<tr><td></td>
+							<td><img src="/images/arrow-down.gif" class="down"></img></td>
+							<td></td></tr>
+						</table>
+						</div>
+					</div>
+				
+				</div>
+			</div>
+			
+		</td>
+		<td valign="top" width="8" align="right"><img src="/images/graph-vertical.png"></td> 
+	</tr>
+	<tr>
+		<td valign="bottom"><img src="/images/graph-vertical.png"></td> 
+		<td valign="bottom" align="right"><img src="/images/graph-vertical.png"></td> 
+	</tr>
+	<tr height="8">
+		<td colspan="2"><img src="/images/graph-bottomleft.png"></td>
+		<td colspan="2" align="right"><img src="/images/graph-bottomright.png"></td>
+	</tr>				
+</table>
+</div>

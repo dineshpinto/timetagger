@@ -1,0 +1,1 @@
+-intstyle "ise" -incremental -lib "unisims_ver" -lib "unimacro_ver" -lib "xilinxcorelib_ver" -o "D:/TimeTagger/timetagger/core/Bitstream_isim_beh.exe" -prj "D:/TimeTagger/timetagger/core/Bitstream_beh.prj" "work.Bitstream" "work.glbl" 

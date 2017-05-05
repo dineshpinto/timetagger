@@ -1,0 +1,632 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+
+		<link rel="stylesheet" href="/style/jquery-ui-1.8.css">
+		<link rel="stylesheet" href="/style/jsrpc-shell.css">
+		 
+		<script src="/script/jquery-1.7.min.js"></script>
+		<script src="/script/jquery-ui-1.8.min.js"></script>
+		<script src="/script/jsonrpc.js"></script>
+		<script src="/script/tmpl.js"></script>
+		<script src="/script/ace/ace.js"></script>
+		
+		<script src="/script/jsrpc-shell.js"></script>		
+	</head>
+	<body>
+		<form>
+			<fieldset>
+				<fieldset>
+					<legend>command <span class="slidebutton open"></span></legend>
+					<div class="content" id="command">
+						<div id="">
+							<select id="cmd-categories">
+							</select>
+							<select id="cmd-methods">
+							</select>
+							<span id="cmd-description"></span>							
+						</div>
+						
+						<div id="parameter">
+						</div>
+						
+					</div>
+				</fieldset>
+				<fieldset>
+					<legend>request <span class="slidebutton open"></span></legend>
+					<div class="content" id="request">
+						<pre id="jsonrpc-request">
+						</pre>
+					</div>
+				</fieldset>
+				<div id="submit">
+				<button type="submit">execute</button>
+				</div>
+			</fieldset>
+				
+			<div id="response">		
+				<fieldset>
+					<legend>response <span class="slidebutton open"></span></legend>
+					<div class="content" id="request">
+						<pre id="jsonrpc-response">
+						</pre>
+					</div>
+				</fieldset>
+			</div>
+			
+			<div id="loader" class="loader" style="display: none;"/>
+		</form>
+			
+		
+		
+		<style>				
+			/* slidebutton stuff */
+			span.slidebutton {
+				display: inline-block;
+				width: 12px;
+				height: 12px;
+				cursor: pointer;
+			}
+			span.slidebutton.open::after {
+				content: "↑";
+			}
+			span.slidebutton.closed::after {
+				content: "↓";
+			}
+			
+			/* json pp */
+			pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+			.string { color: green; }
+			.number { color: darkorange; }
+			.boolean { color: blue; }
+			.null { color: magenta; }
+			.key { color: red; }			
+			
+			.loader {
+				background: url("data:image/gif;base64,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")
+							rgba(255,255,255,0.85) center center no-repeat;;
+				position: absolute;
+				top: 0px;
+				width: 100%;
+				height: 100%;									
+			}
+			
+			/* parameter form */
+			form {
+				display: block;
+			}
+			
+			label {
+				width: 120px; 
+				display: inline-block;
+			}
+			.validation-failed {
+				border-color: red;
+			}
+			
+			.channel-set {
+				display: inline-block;
+			}
+			.channel-set label {
+				width: 40px;
+			} 
+		
+		
+			.json-lpar, .json-lspar {
+				cursor: pointer;
+			}
+			.json-closed.json-lpar::after {
+				content: '…}';
+			}
+			.json-closed.json-lspar::after {
+				content: '…]';
+			}
+			
+		</style>
+		
+		<script>
+		var descriptor;
+		var rpc_method, 
+		    rpc_params;
+		var rpc_request, 
+		    rpc_response;
+		
+		$categories=$("#cmd-categories");
+		$methods=$("#cmd-methods");
+		$parameter=$("#parameter");
+		
+		$categories.on("change", select_category);
+		$methods.on("change", select_method);
+		$("form").on("submit", submit_form);
+		
+		
+		
+		function setup_categories() {
+			var cats={};
+			for (cmd in descriptor) {
+				if (descriptor[cmd].category)
+					cats[descriptor[cmd].category]=1;
+			}
+			
+				
+			var o=$("<option value=''>-all-</option>");
+			$categories.append(o)
+			for(c in cats) {
+				o=$("<option value='" + c + "'>" +c + "</option>");
+				$categories.append(o)
+			}			
+			select_category()
+		}
+		
+		// when a category is selected..
+		function select_category() {
+			var c=$categories.val();
+			$methods.empty(o)
+			$methods.append(o)
+			for(cmd in descriptor) {
+				var cm=descriptor[cmd].category;
+				if ((!c) || ( cm && cm==c) ) {
+					var o=$("<option value='" + cmd + "'>" +cmd + "</option>");
+					$methods.append(o);
+				}					
+			}
+			select_method();
+		}
+		
+		// when a method ist selected...
+		function select_method() {
+			var cmd=$methods.val();
+			$parameter.empty();			
+			var parameter=descriptor[cmd].parameter;
+
+			add_fields($parameter, parameter)
+			
+			buildRpc();
+			empty_result();
+		}
+		
+		function add_fields($parameter, parameter) {
+			for (p in parameter) {
+				add_field($parameter, p, parameter[p]);
+			}			
+		} 
+		
+		
+		function add_field($parameter, name, spec) {
+			var div=$("<div />")
+			$(div).appendTo($parameter);
+
+			if (name!="...")
+				div.append($('<label>' + name + '</label>'));
+			
+			// create parameter input field
+			var cls="parm";
+			if (spec.mandatory)
+				cls+=' mandatory';
+			
+			switch(spec.type) {
+			case 'device-id':
+				(function (div) {
+					var input = $('<select class="text ' + cls +'" name="' + name + '" />');
+					div.append(input);
+					
+					jsonRpc("getDeviceList", {}, function (response) {
+						for (var n=0; n<response.result.length; ++n) {
+							id=response.result[n].id;
+							input.append('<option>' + id +'</option>')
+						}
+						buildRpc();
+						input.change(validate_parameter);
+						input.keyup(validate_parameter);
+						input.mouseup(validate_parameter);		
+						
+						input.change(reload_device_info);
+						input.keyup(reload_device_info);
+						input.mouseup(reload_device_info);			
+						
+						reload_device_info();
+					})
+				})(div);					
+				break;
+				
+			case 'module-id':
+				var input = $('<select class="text module-id ' + cls +'" name="' + name + '" />');
+				div.append(input);
+				input.change(validate_parameter);
+				input.keyup(validate_parameter);
+				input.mouseup(validate_parameter);		
+				break;
+				
+			case "channel":
+				var input = $('<select class="text channel ' + cls +'" name="' + name + '" />');
+				div.append(input);
+				input.change(validate_parameter);
+				input.keyup(validate_parameter);
+				input.mouseup(validate_parameter);		
+				break;
+				
+			case "channel-set":
+				var input = $('<div class="text channel-set ' + cls +'" name="' + name + '" />');
+				div.append(input);
+				break;
+
+			case 'module-class':
+				var input = $('<select class="text module-class ' + cls +'" name="' + name + '" />');
+				div.append(input);
+				input.change(reload_module_parameter);
+				input.keyup(reload_module_parameter);
+				input.mouseup(reload_module_parameter);						
+				break;
+				
+			case 'module-parameter':
+				div.append($('<div class="module-parameter" />'));
+				break;
+				
+			default:
+				input = $('<input class="text ' + cls +'" name="' + name + '" placeholder=""/>');
+				div.append(input);
+				input.change(validate_parameter);
+				input.keyup(validate_parameter);
+				input.mouseup(validate_parameter);
+			}					
+		}
+		
+		// when a device is selected
+		function reload_device_info() {
+			reload_channels();
+			reload_module_classes();
+			reload_module_list();			
+		}
+		
+		function reload_channels() {		
+			
+			function update_channel() {
+				console.log("update channe-set for" , $(this).parent()[0]);
+				var input=$($("input", $(this).parent())[0]);
+				var checks=$("label input", $(this).parent());
+				var v=0;
+				for (var c=0; c<checks.length; ++c) {
+					if ($(checks[c]).is(":checked")) {
+						v |= (parseInt($(checks[c]).val()));
+					}
+				}
+				input.val(v);
+				buildRpc();
+			}
+			
+			var dev=$("form [name='device']").val();
+			var $channel=$("form .channel, form .channel-set");
+			if ($channel.length>0) {
+				console.log('reload channels for #'+dev);
+				jsonRpc("getDeviceInfo",{device: dev}, function(response) {
+					var channel_count=8;					
+					for (var n=0; n<$channel.length; ++n) {
+						var input=$($channel[n]);
+						var name=input.attr("name");
+						if (input.hasClass("channel")) {
+							input.empty();
+							for (var c=0; c<channel_count; ++c) {
+								$('<option value="' +c+ '">'+c+'</option>').appendTo(input);
+							}
+						} else if (input.hasClass("channel-set")) {
+							input.empty();
+							input.append($('<input type="hidden" value="0" name="' +  name +'" />'));
+							for (var c=0; c<channel_count; ++c) {
+								var checkbox=$('<label><input target="' + name + '" type="checkbox" value="' +(1 << c)+ '"/>'+c+'</label>');
+								checkbox.appendTo(input);
+								checkbox.click(update_channel);
+								checkbox.change(update_channel);
+							}
+						}
+					}
+					buildRpc();
+				})				
+			}
+			
+		}
+		
+		function reload_module_classes() {
+			var dev=$("form [name='device']").val();
+			var $cls=$("form .module-class");
+			if ($cls.length>0) {
+				console.log('reload module classes for #'+dev);
+				jsonRpc("getModuleClasses",{device: dev}, function(response) {
+					for (var n=0; n<$cls.length; ++n) {
+						var input=$($cls[n]);
+						if (input.hasClass("module-class")) {
+							var input=$($cls[n]);
+							input.empty();
+							for (var c=0; c<response.result.length; ++c) {
+								$('<option value="' +response.result[c].name+ '">'+response.result[c].name+'</option>').appendTo(input);
+							}
+						}
+					}
+					reload_module_parameter();
+					buildRpc();
+				});
+			}
+		}
+
+		function reload_module_list() {			
+			var dev=$("form [name='device']").val();
+			var $list=$("form .module-id");
+			if ($list.length>0) {
+				console.log('reload module list for #'+dev);
+				jsonRpc("getModuleList",{device: dev}, function(response) {
+					for (var n=0; n<$list.length; ++n) {
+						var input=$($list[n]);
+						input.empty();
+						for (var c=0; c<response.result.length; ++c) {
+							$('<option value="' +response.result[c].id+ '">'+response.result[c].name+'</option>').appendTo(input);
+						}						
+					}
+					buildRpc();
+				});
+				
+			}
+		}
+		
+		function reload_module_parameter() {
+			var dev=$("form [name='device']").val();
+			var $parm=$("form .module-parameter");
+			var cls=$("form .module-class").val();
+			if ($parm.length>0) {
+				console.log('reload module parameter for #'+dev+"."+cls);
+				jsonRpc("getModuleClasses",{device: dev}, function(response) {
+					for (var n=0; n<$parm.length; ++n) {
+						
+						var div=$($parm[n]);
+						div.empty();
+						
+						var methods=response.result;						
+						for (var m=0; m<methods.length; ++m) {
+							if (methods[m].name==cls) {
+								for (var p=0; p<methods[m].parameter.length; ++p) {
+									add_field(div, methods[m].parameter[p].name, methods[m].parameter[p]);
+								}
+							} 
+							reload_channels();
+						}
+					}
+					buildRpc();
+				});
+			}
+		}		
+		
+		// when a module is selected
+		
+		
+		function validate_parameter() {
+			validate_parm(this);
+			buildRpc();
+		}
+		
+		function validate_parm(p) {			
+			var parm=$(p);
+			var val=parm.val();
+			var failed=false;
+			if (val=="") {
+				failed=parm.hasClass("mandatory");
+			} else {
+				
+			}
+			
+			parm.toggleClass("validation-passed", !failed);
+			parm.toggleClass("validation-failed", failed);
+			
+			var next=parm.next();
+			if (next.hasClass('validation-advice'))
+				next.remove();
+			if (failed) {
+				valid=false;
+				$('<span class="validation-advice">&lowast;</span>').insertAfter(parm);
+			}						
+			return !failed;
+		}
+		
+		function validate() {
+			var parameter=$(".parm", $parameter);
+			var valid=true;
+			for (var p=0; p<parameter.length; ++p) {
+				var parm=parameter[p];				
+				if (!validate_parm(parm))
+					valid=false;
+			}
+			buildRpc();
+			
+			return valid;
+		}
+		
+		function buildRpc() {
+			rpc_method=$("#cmd-methods").val();
+			rpc_params={};
+			var arr=$("form").serializeArray();
+			for (var k=0; k<arr.length; ++k) {
+				rpc_params[arr[k].name]=arr[k].value;
+			}			
+			var rpc={
+					jsonrpc: '2.0',
+					id: 1,
+					method: rpc_method,
+					params: rpc_params
+			};
+			rpc_request=JSON.stringify(rpc,undefined,4);
+			$("#jsonrpc-request").html(ppJson(rpc_request));			
+			$('#jsonrpc-request .json-lpar, #jsonrpc-request .json-lspar').click(ppJsonCollapse);
+
+		}
+
+		function set_error(msg, src) {
+			err=msg+"<hr/>"+src;
+			$("#jsonrpc-response").html(err);
+		}
+		
+		function empty_result() {
+			rpc_response="";
+			$("#jsonrpc-response").html(rpc_response);
+		}
+		function set_result(json) {
+			rpc_response=json;
+			var jsrpc=JSON.stringify(json,undefined,4);
+			$("#jsonrpc-response").html(ppJson(jsrpc));
+			$('#jsonrpc-response .json-lpar, #jsonrpc-response .json-lspar').click(ppJsonCollapse);
+		}
+		
+		var loader_cnt=0;
+		function show_loader() {
+			++loader_cnt;
+			$("#loader").show();
+		} 
+		function hide_loader() {
+			loader_cnt>0 && --loader_cnt;
+			if (!loader_cnt)
+				$("#loader").hide();
+		}
+		function remove_loader() {
+			loader_cnt=0;
+			$("#loader").hide();
+		}
+		
+		function submit_form(e) {
+			buildRpc();
+			if (validate()) {				
+				empty_result();
+				show_loader();
+				$.ajax( {
+					url: '/json-rpc',
+					type: "POST",
+					data: rpc_request,
+					dataType: "text",
+					contentType: "application/json", 
+				    success: function(rpcRes) {
+				    	try {
+				    		var result=JSON.parse(rpcRes);
+				    		set_result(result);
+				    	} catch (e) {
+				    		console.log(e.stack)
+				    		set_error("syntax error in response: "+e.message, rpcRes);
+				    	}
+				    },
+				    error: function (err,textStatus,errorThrown) {
+				    	set_error("rpctransport error: "+textStatus,errorThrown);
+				    },
+				    complete: function () {
+				    	setTimeout(hide_loader, 300);
+				    }
+				});
+			}
+			
+			e.preventDefault();
+			return false;
+		}
+		
+		
+		function jsonRpc(method, params, success) {
+			show_loader();
+			var rpc={
+					jsonrpc: '2.0',
+					id: 1,
+					method: method,
+					params: params
+			};		
+			$.ajax( {
+				url: '/json-rpc',
+				type: "POST",
+				data: JSON.stringify(rpc),
+				dataType: "text",
+				contentType: "application/json", 
+			    success: function(rpcRes) {
+			    	try {
+			    		var result=JSON.parse(rpcRes);
+			    		success(result);
+			    	} catch (e) {
+			    		set_error("syntax error in response: "+e.message, rpcRes);
+			    	}
+			    },
+			    error: function (err,textStatus,errorThrown) {
+			    	set_error("rpctransport error: "+textStatus,errorThrown);
+			    },
+			    complete: function () {
+			    	setTimeout(hide_loader, 300);
+			    }
+			});			
+		}
+		
+		
+		function ppJson(json) {
+		    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		    json = json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+		        var cls = 'number';
+		        if (/^"/.test(match)) {
+		            if (/:$/.test(match)) {
+		                cls = 'key';
+		            } else {
+		                cls = 'string';
+		            }
+		        } else if (/true|false/.test(match)) {
+		            cls = 'boolean';
+		        } else if (/null/.test(match)) {
+		            cls = 'null';
+		        }
+		        return '<span class="' + cls + '">' + match + '</span>';
+		    });
+		    
+		    json=json.replace( /{[\n]/g, function(match) {
+		    	return "<span class='json-lpar'>{</span><span class='json-block'>\n";		    
+		    });
+		    json=json.replace( /\n[ \t]*}/g, function(match) {
+		    	return match+"</span>";		    
+		    });
+
+		    json=json.replace( /\[[\n]/g, function(match) {
+		    	return "<span class='json-lspar'>[</span><span class='json-block'>\n";		    
+		    });
+		    json=json.replace( /\n[ \t]*\]/g, function(match) {
+		    	return match+"</span>";		    
+		    });
+		    
+		    return json;
+		}
+		
+		function ppJsonCollapse() {			
+			if ($(this).hasClass('json-closed')) { 
+				$(this).removeClass('json-closed').next().show();
+			} else {
+				$(this).addClass('json-closed').next().hide();
+			}
+		}		
+
+		function init() {
+			
+			$(".slidebutton").on("click", function() {
+				if ($(this).hasClass("open")) {
+					$(this).removeClass("open").addClass("closed");
+					$(".content", $(this).parent().parent()).hide();
+				} else {
+					$(this).removeClass("closed").addClass("open");
+					$(".content", $(this).parent().parent()).show();
+				}
+			})
+			
+			
+			$.ajax("jsonrpc.json", {
+				success: function(a,b) {
+					descriptor=a;		
+					setup_categories();
+				},
+				error: function(a,b) {
+					console.log("ERROR FETCHING DESCRIPTOR", a);
+				},
+				complete: function() {
+					console.log("done");
+				}
+			});
+			
+		}
+		
+		
+		init();
+		
+		</script>
+	</body>
+</html>

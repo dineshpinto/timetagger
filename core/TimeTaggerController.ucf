@@ -1,0 +1,152 @@
+# --- clocks ---
+NET "sdram_clk"		LOC = A8;
+NET "clk" 		LOC = B8;
+
+# --- DAC ---
+NET "dac_sync"  LOC = R2; # L_19_P3 JP4-13
+NET "dac_sdout" LOC = R1; # L_19_N3 JP4-15
+NET "dac_sclk"  LOC = P2; # L_18_P3 JP4-17
+
+# --- differential inputs (LVDS) ---
+NET "trig_ds_p[4]" LOC = L12; # L05P_1 JP3-34
+NET "trig_ds_n[4]" LOC = L13; # L05N_1 JP3-36
+NET "trig_ds_p[5]" LOC = L14; # L06P_1 JP3-29
+NET "trig_ds_n[5]" LOC = L15; # L06N_1 JP3-31
+NET "trig_ds_p[6]" LOC = H12; # L12P_1 JP3-45
+NET "trig_ds_n[6]" LOC = H11; # L12N_1 JP3-49
+NET "trig_ds_p[7]" LOC = K16; # L09P_1 JP3-46
+NET "trig_ds_n[7]" LOC = J16; # L09N_1 JP3-48
+NET "trig_ds_p[0]" LOC = N7;  # L07P_2 JP4-10
+NET "trig_ds_n[0]" LOC = P7;  # L07N_2 JP4-8
+NET "trig_ds_p[1]" LOC = K5;  # L15P_3 JP4-26
+NET "trig_ds_n[1]" LOC = L5;  # L15N_3 JP4-22
+NET "trig_ds_p[2]" LOC = H3;  # L09P_3 JP4-50
+NET "trig_ds_n[2]" LOC = H4;  # L09N_3 JP4-46
+NET "trig_ds_p[3]" LOC = E3;  # L03P_3 JP4-68
+NET "trig_ds_n[3]" LOC = E4;  # L03N_3 JP4-66
+
+# --- external clock input ---
+# NET "ext_clk"      LOC = "C8"; # GCLK10 JP4-77
+
+# --- GPIO ---
+NET "gpio[0]"         LOC = D8; # L11_N0, GCLK11 JP4-75
+NET "gpio[1]"         LOC = B2; # L01_N3 JP4-65
+NET "gpio[2]"         LOC = B1; # L01_P3 JP4-63
+NET "gpio[3]"         LOC = C2; # L02_N3 JP4-61
+NET "gpio[4]"         LOC = C1; # L02_P3 JP4-57
+NET "gpio[5]"         LOC = D1; # L05_P3 JP4-53
+NET "gpio[6]"         LOC = E1; # L05_N3 JP4-51
+NET "gpio[7]"         LOC = G2; # L07_N3 JP4-47
+
+# --- SDRAM ---
+#NET "sdram_g_clk"  LOC = "A9";
+NET "sdram_cke"    LOC = "C16";
+NET "sdram_cmd<0>"   LOC = "F8";
+NET "sdram_cmd<1>"  LOC = "D11";
+NET "sdram_cmd<2>"  LOC = "E11";
+NET "sdram_cmd<3>"   LOC = "F13";
+NET "sdram_ldqm"   LOC = "B7";
+NET "sdram_udqm"   LOC = "C7";
+NET "sdram_a<0>"   LOC = "D14";
+NET "sdram_a<1>"   LOC = "F14";
+NET "sdram_a<2>"   LOC = "D15";
+NET "sdram_a<3>"   LOC = "G13";
+NET "sdram_a<4>"   LOC = "F12";
+NET "sdram_a<5>"   LOC = "F15";
+NET "sdram_a<6>"   LOC = "G14";
+NET "sdram_a<7>"   LOC = "A14";
+NET "sdram_a<8>"   LOC = "B14";
+NET "sdram_a<9>"   LOC = "C11";
+NET "sdram_a<10>"  LOC = "C15";
+NET "sdram_a<11>"  LOC = "A13";
+NET "sdram_a<12>"  LOC = "B13";
+NET "sdram_ba<0>"  LOC = "D9";
+NET "sdram_ba<1>"  LOC = "D10";
+NET "sdram_d<0>"   LOC = "A4";
+NET "sdram_d<1>"   LOC = "B4";
+NET "sdram_d<2>"   LOC = "A5";
+NET "sdram_d<3>"   LOC = "C3";
+NET "sdram_d<4>"   LOC = "C4";
+NET "sdram_d<5>"   LOC = "C5";
+NET "sdram_d<6>"   LOC = "D7";
+NET "sdram_d<7>"   LOC = "E8";
+NET "sdram_d<8>"   LOC = "E10";
+NET "sdram_d<9>"   LOC = "B10";
+NET "sdram_d<10>"  LOC = "A12";
+NET "sdram_d<11>"  LOC = "E7";
+NET "sdram_d<12>"  LOC = "A10";
+NET "sdram_d<13>"  LOC = "C6";
+NET "sdram_d<14>"  LOC = "A7";
+NET "sdram_d<15>"  LOC = "D6";
+
+# --- LEDs ---
+NET "led[0]" LOC = P14;
+NET "led[1]" LOC = R13;
+NET "led[2]" LOC = T13;
+NET "led[3]" LOC = P15;
+
+#-------------------------------
+# FrontPanel Host Interface pins
+#-------------------------------
+NET "hi_in[0]" LOC = F9;
+NET "hi_in[1]" LOC = N5;
+NET "hi_in[2]" LOC = T9;
+NET "hi_in[3]" LOC = M7;
+NET "hi_in[4]" LOC = P12;
+NET "hi_in[5]" LOC = P11;
+NET "hi_in[6]" LOC = P13;
+NET "hi_in[7]" LOC = N12;
+NET "hi_out[0]" LOC = P5;
+NET "hi_out[1]" LOC = N10;
+NET "hi_inout[0]" LOC = M8;
+NET "hi_inout[1]" LOC = L8;
+NET "hi_inout[2]" LOC = T8;
+NET "hi_inout[3]" LOC = N8;
+NET "hi_inout[4]" LOC = P8;
+NET "hi_inout[5]" LOC = P9;
+NET "hi_inout[6]" LOC = N9;
+NET "hi_inout[7]" LOC = M9;
+NET "hi_inout[8]" LOC = R11;
+NET "hi_inout[9]" LOC = R6;
+NET "hi_inout[10]" LOC = T5;
+NET "hi_inout[11]" LOC = T4;
+NET "hi_inout[12]" LOC = R4;
+NET "hi_inout[13]" LOC = M6;
+NET "hi_inout[14]" LOC = N6;
+NET "hi_inout[15]" LOC = P6;
+NET "hi_muxsel" LOC = L9;
+NET "i2c_sda" PULLUP;
+NET "i2c_sda" LOC = G15;
+NET "i2c_scl" PULLUP;
+NET "i2c_scl" LOC = G16;
+
+
+#-------------------------------
+# Clock domains
+#-------------------------------
+NET "clk" TNM_NET = "clk";
+TIMESPEC TS_clk = PERIOD "clk" 6 ns;
+NET "sdram_clk" TNM_NET = "sdram_clk";
+#TIMESPEC TS_sdram_clk = PERIOD "sdram_clk" 7.518800 ns;
+TIMESPEC TS_sdram_clk = PERIOD "sdram_clk" 10 ns;
+NET "hi_in[0]" TNM_NET = "hi_in[0]";
+TIMESPEC TS_ok_clk = PERIOD "hi_in[0]" 20 ns;
+
+
+#-------------------------------
+# edge sync timing
+#-------------------------------
+#INST "slow_tagger/input_block/chan_?/set" TNM_NET = "set_tnm";
+#INST "slow_tagger/input_block/chan_?/clr" TNM_NET = "clr_tnm";
+#TIMESPEC TS_crossed = FROM set_tnm TO clr_tnm 2 ns;
+#-------------------------------
+# Peripherals
+#-------------------------------
+# --- SPI FLASH
+#NET "SPI_CS"'      LOC = "P3";
+#NET "SPI_CLK"      LOC = "R16";
+#NET "SPI_DIN"      LOC = "N16";
+#NET "SPI_DOUT"     LOC = "R15";
+#NET "SPI_HOLD"     LOC = "R10";
+#NET "SPI_WP"       LOC = "P10";
+

@@ -1,0 +1,11 @@
+[Inputs]
+photon
+swap
+ssr
+reset
+[Outputs]
+flip
+[BiDir]
+[ATTRIBUTES]
+VeriModel ExtensionSingleShot
+

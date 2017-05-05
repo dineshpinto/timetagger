@@ -1,0 +1,273 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: University of Stuttgart
+// Engineer: Nikolas Abt
+// 
+// Create Date:    29.07.2015
+// Design Name: 
+// Module Name:    Bitstream 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description:	module to put out the bitstream to the shift register in dependence
+//						of the result from the flipper.
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+module Bitstream (
+	inout wire				flip,		//this is the result from the comparison of the two memories.
+	input wire				clock,	//external clock, which drives the output from the FPGA to the shift register and the shift_clock of the register
+	input wire [15:0]		data_one,	//this contains the highest five bits of the jump adress.
+	input wire [15:0] 	data_two,	//this contains the lower thirteen bits of the jump adress.
+	input wire				photons,	//incoming photons, needed for ExtensionSingleShot
+	input wire				swap,	//this is the laser signal
+	input wire				ssr,	//trigger for the ssr measurements
+	input wire				readout,	//this signal reads out the memories and leads to high or low on flipper
+	output wire				bitstream,	//this is the connection to the shift register where the 32 bit are sent.
+	output wire				latch_clock,	//the latch_clock latches the full 32bits to the output of the register if they are complete
+	output wire 			shift_reg_reset,	//this resets the shift register to make it ready for the next jump adresses
+	output wire				shift_clock,
+	output wire				testmemory,
+	input wire				clock_enable,
+	output wire				reset
+	);
+
+
+	reg clk;
+	reg half_clock;
+	reg quarter_clock;
+	reg quaver_clock;
+
+	reg [4:0] counter;
+	reg [15:0] temp_counter;
+	wire [3:0] select;
+	assign select = counter[3:0]; //only first four bits are needed for selection
+	reg selector;
+	
+	//wire reset; //this wire is needed for the reset of ExtensionSingleShot/Flipper
+
+	reg latch;
+	reg shift_reset;
+
+	wire	bitstream_one;
+	wire	bitstream_two;
+		
+	reg	select_bitstream;
+	reg	flip_it;
+	
+	wire flipper;	//wire for the output of ExtensionSingleShot
+	assign flip = flip_it;
+	//wire testmemory;	//random, not really needed but there
+
+	//Multiplexer for the selection of bits in data_one and data_two
+	MUX #( .N(5) ) multiplexer_one (
+		.data( data_one ),
+		.select( select ),
+		.bitstream( bitstream_one )
+	);
+	MUX #( .N(5) ) multiplexer_two (
+		.data( data_two ),
+		.select( select ),
+		.bitstream( bitstream_two )
+	);
+	
+	//ExtensionSingleShot for analysis of signal and flipper signal	
+	ExtensionSingleShot FlippingInside (
+		.photon( photons ), //incoming photons that increase counts in memory 
+		.swap( swap ), //this should be the signal of the laser
+		.ssr( ~ssr ), //this is the gate for the ssr. It is used to reset the memories
+		.readout( ~readout ), //readout the state of the memories, result reflected by flipper
+		.reset( flip_it ), //reset the flipper wire 
+		.flip( flipper ), //this is the output wire that is high when one of the memories is higher, i.e. memory one is higer, see ExtensionSingleShot
+		.testmem( testmemory ), //this is the current memory
+		.resetter( reset )
+	);
+	
+	//Testing ground for AWG communication.
+	//Count Photons and if certain threshold is reached/read out, send bit adress to switch register
+	//LaserHighLow LHL (
+	//	.photon( photons ),
+	//	.readout( ~readout ),
+	//	.reset( reset),
+	//	.flip( flipper )
+	//);
+	
+	reg [4:0] clk_ctr;
+		
+	always @(posedge clock) begin
+		if ( clk_ctr == 0 ) begin
+			 clk_ctr <= 0;
+			 clk <= ~clk;
+		end else begin
+			 clk_ctr <= clk_ctr - 1;
+			 clk <= clk;
+		end			 
+	end	
+	
+	always@(posedge clk) begin
+		if(clock_enable==1) begin
+			half_clock = 1'b0;
+		end
+		else begin
+			half_clock = ~half_clock;
+		end
+	end
+	
+	always@(posedge half_clock) begin
+		if(clock_enable==1) begin
+			quarter_clock = 1'b0;
+		end
+		else begin
+			quarter_clock = ~quarter_clock;
+		end
+	end
+	
+	always@(posedge quarter_clock) begin
+		if(clock_enable==1) begin
+			quaver_clock = 1'b0;
+		end
+		else begin
+			quaver_clock = ~quaver_clock;
+		end
+	end
+	
+	//assign all the wires which need to be carried out.
+	assign bitstream = select_bitstream;
+	assign latch_clock = latch;
+	assign shift_reg_reset = shift_reset;
+	//assign reset = flip_it; 
+	assign shift_clock = quaver_clock;
+		
+	always@(posedge clock) begin
+		if(~flipper) begin //when there is no flipper, set everything to zero
+			temp_counter = 8'b0;
+			flip_it = 1'b0;
+			latch = 1'b0; 
+			shift_reset = 1'b1;
+		end
+		else if(flipper) begin
+			//temp_count = temp_count + 6'b1;
+			temp_counter = temp_counter + 16'b1;
+			if((temp_counter==16'b1)&&(counter==5'b11111)) begin
+				temp_counter = 16'b0;
+			end
+			else if(temp_counter==16'b1111011) begin
+				latch = 1'b1;
+			end
+			else if(temp_counter==16'b1111100) begin
+				latch = 1'b1;
+				shift_reset = 1'b0;
+			end
+			else if(temp_counter==16'b1111101) begin
+				latch = 1'b0;
+				shift_reset = 1'b1;
+			end
+			else if(temp_counter==16'b11111011) begin
+				latch = 1'b1;
+			end
+			else if(temp_counter==16'b11111100) begin 
+				shift_reset = 1'b0; 
+				flip_it = 1'b1;
+			end
+		end
+	end	
+		
+	always@(posedge quaver_clock) begin
+		if(flipper) begin
+			counter = counter + 5'b1; //increase the counter with each clock. An increased higher counter means the next entry in data_one/two
+			case(counter)
+				5'b00000,5'b00001,5'b00010,5'b00011,5'b00100,5'b00101,5'b00110,5'b00111,5'b01000,5'b01001,5'b01010,5'b01011,5'b01100,5'b01101,5'b01110:	begin
+																																																			select_bitstream = bitstream_one;
+																																																		end
+				5'b01111:	begin
+									select_bitstream = bitstream_one;
+									//latch = 1'b1;
+									//shift_reset = 1'b1;
+								end
+				5'b10000:	begin
+									select_bitstream = bitstream_two;
+									//latch = 1'b0;
+									//shift_reset = 1'b0;
+								end
+				5'b10001,5'b10010,5'b10011,5'b10100,5'b10101,5'b10110,5'b10111,5'b11000,5'b11001,5'b11010,5'b11011,5'b11100,5'b11101,5'b11110:	begin
+																																																select_bitstream = bitstream_two;
+																																															end
+				5'b11111:	begin
+									select_bitstream = bitstream_two;
+									//latch = 1'b1;
+									//shift_reset = 1'b1;
+								end
+			endcase
+		end
+		else if(readout) begin 
+			counter = 5'b11111; //set the counter to maximum (so that first value is 5'b00000) that matches the first and the second information
+			select_bitstream = 1'b0;
+			selector = 1'b0; //selector is zero to start again with first 16bit
+		end
+		else begin //if nothing fits always send zero.
+			select_bitstream = 1'b0;
+		end
+	end
+
+	/*always@(posedge clock) begin
+		if(flip) begin
+			counter = counter + 5'b00001; //increase the counter with each clock. An increased higher counter means the next entry in data_one/two
+			if(counter < 5'b01101) begin
+				//selector = 1'b0;	//as long as the first 16bit are not send, stream data_one
+				select_bitstream = bitstream_one;
+			end
+			else if(counter == 5'b01101) begin
+				select_bitstream = bitstream_two;
+			end
+			else if(counter == 5'b01110) begin
+				select_bitstream = bitstream_two;
+			end
+			else if(counter==5'b01111) begin
+				latch = 1'b1;
+				shift_reset = 1'b1;
+				//selector = 1'b1;	//if we reach the 17th value, we want to stream data_two, select is automatically 0000
+			end
+			else if(counter > 5'b01111) begin
+				select_bitstream = bitstream_two;
+				latch = 1'b0;
+				shift_reset = 1'b0;
+			end
+			//else if(counter==5'b10001) begin
+			//	latch = 1'b0;
+			//	shift_reset = 1'b0;
+			//end
+			else if(counter==5'b11111) begin //when the last entry of data_two is reached, the latch signal should be send, 
+														//then the reset signal, flip needs to be at first set to one, but then again 
+														//needs to be zero, that it does not disturb ExtensionSingleShot. Also the selector 
+														//is set to zero for the next round
+				latch = 1'b1;
+				shift_reset = 1'b1;
+				//selector = 1'b0; //maybe shift to if(~flip)
+				flip_it = 1'b1; //
+				//THEY NEED ALL TO BE SET TO ZERO AFTERWARDS!!!! Should happen when ~flip
+			end
+			//case(selector) //select which data set to stream
+			//	1'b0: select_bitstream = bitstream_one;
+			//	1'b1: select_bitstream = bitstream_two;
+			//	default: select_bitstream = 1'b0;
+			//endcase
+		end
+		else if(~flip) begin
+			counter = 5'b11111; //set the counter to maximum (so that first value is 5'b00000) that matches the first and the second information
+			select_bitstream = 1'b0;
+			latch = 1'b0; //latch is zero, that means nothing is written on the output of the shift register
+			shift_reset = 1'b0; //the shift register is not resetted. happened when counter==5'b11111
+			flip_it = 1'b0; //flip was set to zero before when counter=5'b11111
+			selector = 1'b0; //selector is zero to start again with first 16bit
+		end
+		else begin //if nothing fits always send zero.
+			select_bitstream = 1'b0;
+		end
+	end*/
+
+endmodule

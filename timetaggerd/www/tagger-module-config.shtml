@@ -1,0 +1,382 @@
+<style>
+</style>
+
+<script>
+
+function config_sidebar() {
+
+	var self = {};
+	var $self;
+
+	// singleton
+	if (config_sidebar._instance) {
+		return config_sidebar._instance;
+	}
+	config_sidebar._instance=self;
+	
+	var $fields;
+	
+	function init() {
+		$self=$("#module-config");
+		$self.container({ title: "Edit Module", visible: false});
+
+		$fields=$(".module-config-fields", $self);
+		$(".cancel-btn", $self).button({
+				click: hide
+		});
+		$(".ok-btn", $self).button({});
+	}
+
+	function save_config() {
+		var parms={}
+		var validate_error=false;
+		
+		var $inputs=$("input", $self);
+	
+		for (var n=0; n<$inputs.length; ++n) {
+			var input=$($inputs[n]);
+			var name=input.attr("name");
+			var value=input.attr("value");
+			var type=input.attr("type");
+						
+			if (type=="radio") {	// must be: channel or opt_channel
+				var checked=input.attr("checked");
+				if (checked) {
+					parms[name]=parseInt(value);
+				}
+			} else if (type=="checkbox") {	// must be: channel_mask
+				var checked=input.attr("checked");
+				if (checked) {
+					var v=parseInt(value);
+					if (parms[name])
+						parms[name] |= v;
+					else
+						parms[name] = v;
+				} else {
+					if (typeof parms[name]=="undefined")
+						parms[name]=0;
+				}
+			} else {
+				var datatype=input.attr("datatype");
+				switch(datatype) {
+				case "int_number":
+					var v=Number(value);
+					if (String(v)=="NaN") {
+						input.next().text("bad number format");
+						validate_error=true;
+					}
+					parms[name]=v;
+					break;
+				case "long_number":	
+					var v=from_time(value);
+					if (String(v)=="NaN") {
+						input.next().text("bad time format");
+						validate_error=true;
+						return;						 
+					}
+					parms[name]=v;
+					break;
+				case "time_spec": /* not used yet */
+					var v=parseTime(value);
+					if (String(v)=="NaN") {
+						input.next().text("bad time format");
+						validate_error=true;
+						return;						 
+					}
+					parms[name]=v;
+					break;
+				default:
+					parms[name]=value;
+				break;
+				}
+			}
+		}
+
+		parms.device=self.device_id;
+		parms.module=self.module_id;
+
+		if (!validate_error) {
+			$self.container("begin");
+			$self.container("option", "title", "saving...");
+			self.callback(parms);
+		}		
+	}
+
+	function to_time(value) {
+		value=Number(value);
+		if (value==0) {
+			return "0";
+		}
+		if (value>=1e9) {
+			return (value/1e9).toFixed()+"ms";
+		} else if (value>=1e6) {
+			return (value/1e6).toFixed()+"us";
+		} else if (value>=1e3) {
+			return (value/1e3).toFixed()+"ns";			
+		} else {
+			return value+"ps";
+		}
+	}
+
+	function from_time(v) {
+		v=String(v).trim();
+		var s=v.substr(v.length-2);
+		console.log(s);
+		switch(s) {
+		case 'ps':
+			v=v.substr(0,v.length-2); break;
+		case 'ns':
+			v=v.substr(0,v.length-2)+"000"; break;
+		case 'us':
+			v=v.substr(0,v.length-2)+"000000"; break;
+		case 'ms':
+			v=v.substr(0,v.length-2)+"000000000"; break;
+		case 's':
+			v=v.substr(0,v.length-2)+"000000000000"; break;
+		}		
+		return Number(v);
+	}
+	
+	function edit_field(name, type, value) {
+		var d=$("<div/>");
+		d.append($("<span class='lcars-label'>"+name+":</span>"));
+
+		switch(type) {
+		case "text": 		e=$("<input class='lcars-input'>");
+							e.attr("name", name);
+							e.attr("value", value);
+							e.attr("datatype", type)
+							d.append(e); 
+							d.append($("<span class='lcars-error'/>"));
+							break;
+		case "long_number":	e=$("<input class='lcars-input'>");
+							e.attr("name", name);
+							e.attr("value", to_time(value));
+							e.attr("datatype", type)
+							d.append(e); 
+							d.append($("<span class='lcars-error'/>"));
+							break;
+		case "int_number":	e=$("<input class='lcars-input'>");
+							e.attr("name", name);
+							e.attr("value", value);
+							e.attr("datatype", type)
+							d.append(e); 
+							d.append($("<span class='lcars-error'/>"));
+							debugger;
+							break;
+							
+		case "opt_channel":
+		case "channel":		for (var c=0; c<8; ++c) {
+								e=$("<input class='lcars-check' type='radio'>");
+								e.attr("name", name); 
+								e.attr("value", c);
+								if (value==c)
+									e.attr("checked", "true");
+								d.append(e);
+								d.append($("<span>"+c+"</span>"));
+							}
+							if (type=="opt_channel") {
+								e=$("<input class='lcars-check' type='radio'>");
+								e.attr("name", name); e.attr("value", -1);
+								if (value==-1)
+									e.attr("checked", "true");
+								d.append(e);
+								d.append($("<span>none</span>"));
+							}
+							d.append($("<span class='lcars-error'/>"));
+							break;
+		case "channel-set":
+		case "channel_mask":for (var c=0; c<8; ++c) {
+								e=$("<input class='lcars-check' type='checkbox'>");
+								e.attr("name", name); 
+								e.attr("value", (1<<c));
+								if (value& (1<<c))
+									e.attr("checked", "true");
+								d.append(e);
+								d.append($("<span>"+c+"</span>"));
+							}
+							d.append($("<span class='lcars-error'/>"));
+							break;
+		default: {alert("bad type");alert(name);alert(name);debugger;	};
+		}
+		return d;
+	}
+		
+	function setup_fields(descriptor, config) {
+		$self.container("option", "title", "EDIT "+config.classname.toUpperCase());
+		$fields.empty();
+
+		var namefield=edit_field("name", "text", config.name);
+		$fields.append(namefield);
+
+		var e=$("<input type='hidden' name='module'>").attr("value", config.id);
+		$fields.append(e);
+		
+		var e=$("<input type='hidden' name='classname'>").attr("value", config.classname);
+		$fields.append(e);
+
+		for (var n=0; n<descriptor.length; ++n) {
+			var parm=descriptor[n];
+				
+			$fields.append(edit_field(parm.name, parm.type, config[parm.name]));
+		}
+		
+		$self.container("end");
+		$("input",namefield).focus();
+		
+		$self.container("end");
+	}
+	
+	function config_module(device_id, module_id) {
+
+		function cls_loaded(err, descriptor) {
+			//TODO
+			self.descriptor=descriptor;
+			setup_fields(self.descriptor, self.config);
+			$(".buttonset1", $self).show();
+			$(".buttonset2", $self).hide();
+		}
+
+		function cfg_loaded(err, config) {
+			//TODO
+			self.config=config;			
+			backend.getModuleClass(cls_loaded, {device: device_id, module: module_id});
+		}
+
+		$self.container("show");
+		$self.container("begin");
+		$self.container({ title: "loading config..", visible: true});		
+		backend.getModuleConfig(cfg_loaded, {device: device_id, module: module_id})
+	}
+
+	function create_module(class_descriptor) {
+		$self.container("show");
+		$self.container("begin");
+		$self.container({ title: "Creating "+class_descriptor.name.toUpperCase(), visible: true});
+
+		function has_name(list, name) {
+			for (var i=0; i<list.length; ++i) {
+				if (list[i].name.toLowerCase().trim()==name.toLowerCase())
+					return true;
+			}
+			return false;
+		}
+		
+		function modules_loaded(err, modules) {
+			//TODO
+
+			self.descriptor=class_descriptor.parameter;
+			self.config={};
+			for (var n=0; n<self.descriptor.length; ++n) {
+				self.config[self.descriptor[n].name]=self.descriptor[n]["default"];
+			}
+			self.config.classname=class_descriptor.name;
+
+			var name=class_descriptor.name;
+			if (has_name(modules, name)) {
+				for (var i=2; true; ++i) {
+					name=class_descriptor.name+"_"+i;
+					if (has_name(modules, name))
+						continue;
+					else
+						break;
+				}
+			}
+			self.config.name=name;
+
+			setup_fields(self.descriptor, self.config);
+			$(".buttonset1", $self).show();
+			$(".buttonset2", $self).hide();
+			
+		}
+
+		
+		backend.getModuleList(modules_loaded, {device: self.device_id});
+	}
+
+	function view_config(classname, config, descriptor) {
+
+		$self.container("show");
+		$self.container("begin");
+		setup_fields(descriptor, config);
+
+		$("input",$fields).attr("readonly","true").attr("disabled","true");
+		
+		$self.container("option", "title", "Settings for "+classname.toUpperCase());
+		$(".buttonset1", $self).hide();
+		$(".buttonset2", $self).show();
+		$self.container("end");		
+	}
+	
+	function view(cb, container, dataset) {
+		self.callback=cb;
+
+		delete self.module;
+		delete self.descriptor;
+		
+		container.append($self.container("widget"));
+		view_config(dataset.classname, dataset.config, dataset.descriptor);
+	}
+
+	function edit(cb, container, device_id, module_id) {
+		self.callback=cb;
+		self.device_id=device_id;
+		self.module_id=module_id;
+
+		delete self.module;
+		delete self.descriptor;
+		
+		container.append($self.container("widget"));
+		$(".ok-btn", $self).button("option", "click", save_config);
+		config_module(device_id, module_id);
+	}
+
+	function create(cb, container, device_id, class_descriptor) {
+		self.callback=cb;
+		self.device_id=device_id;
+		delete self.module_id;
+
+		delete self.module;
+		delete self.descriptor;
+		container.append($self.container("widget"));
+		$(".ok-btn", $self).button("option", "click", save_config);
+		create_module(class_descriptor);
+
+	}
+	
+	function hide() {
+		$self.container("hide");
+	}
+	
+	$.extend(self, {
+		edit: edit,
+		create: create,
+		view: view,
+		hide: hide,
+
+		_save: save_config
+	});
+	init();
+	return self;
+}
+
+
+</script>
+
+
+<div id="module-config">
+	<table cellspacing="0" cellpadding="0" height="100%"><tr>
+	<td><div class="module-config-fields">
+	</div>
+	</td>
+	<td valign="bottom"> 
+		<div class="buttonset1">
+			<span class="ok-btn">SAVE</span>
+			<span class="cancel-btn">CANCEL</span>
+		</div>
+		<div class="buttonset2">
+			<span class="cancel-btn">CLOSE</span>
+		</div>
+	</td>
+	</tr></table>
+</div>

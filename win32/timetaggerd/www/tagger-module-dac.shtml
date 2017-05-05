@@ -1,0 +1,220 @@
+<style>
+	.dac-slider {
+		margin-left: 12px;
+		margin-right: 12px;
+		background: #F5BD49;
+	}
+	input.dac-input {
+		width: 30px;
+	}
+	.dac-slider .ui-state-default {
+		background: #F5BD49;
+		border: 1px solid black;
+		color: #555;
+		font-weight: normal;
+	}	
+	.dac-slider .ui-state-default.ui-state-hover {
+		background: #CC6666;
+	}
+	.dac-slider .ui-state-focus.ui-state-default,
+	.dac-slider .ui-state-active.ui-state-default {
+		background: #CC6666 !important;
+		border: 1px solid white;
+	}
+</style>
+
+<script>
+
+function dac_subsystem() {
+
+	var self={};
+	var $self;
+
+	// singleton
+	if (dac_subsystem._instance) {
+		return dac_subsystem._instance;
+	}
+	dac_subsystem._instance=self;
+		
+	function init() {
+		$self=$("#dac-panel");
+		$self.container({ title: "Adjust DAC Settings", visible: false});
+
+		init_dac();
+	}
+
+	function nil() {}
+
+	function init_dac() {
+		var MAX=1;
+		var SCALE=100;
+		var tm=0;
+		
+		function set_dac_value(channel, value) {
+			if (tm) {
+				clearTimeout(tm);
+			}
+			tm=setTimeout(function() { 
+				backend.setDACValue(nil, {device: self.device.id, channel: channel, value: value }); 
+			}, 100);
+		}
+		
+		function slider_cb(event, ui) {
+			var id=$(this).slider("option","tag");
+			$(".dac-val"+id, $self).val(ui.value/SCALE);
+			set_dac_value(id, ui.value/SCALE);
+		}
+		function input_cb() {
+			var v=Number($(this).val());
+			var id=parseInt($(this).attr("tag"));
+			if (v.toString()=="NaN") {
+				$(this).val($(".dac-"+id,$self).slider("option", "value")/SCALE);				
+			} else {
+				v=Math.floor(Math.max(0,Math.min(MAX,v))*SCALE);
+				$(this).val(v/SCALE);
+				$(".dac-"+id,$self).slider("option", "value", v);
+				set_dac_value(id, v/SCALE); 
+			}
+			
+		}
+		function filter_cb() {
+		}
+
+		function set_defaults() {
+			for (var n=0; n<8; ++n) {				
+				$(".dac-"+n, $self).slider("option", "value", MAX*SCALE/2);
+				$(".dac-val"+n, $self).val(MAX/2);
+
+				backend.setDACValue(nil, {device: self.device.id, channel: n, value: MAX/2 });
+			}
+		}
+		
+		for (var n=0; n<8; ++n) {
+			$(".dac-"+n,$self).slider({
+					max: MAX*SCALE,
+					change: slider_cb,
+					slide: slider_cb,
+					tag: n
+			});
+			$(".dac-val"+n, $self)
+				.change(input_cb)
+				.attr("tag", n);
+		}
+
+		$(".laserfilter", $self).click(function() {
+			v= $(this).attr("checked") ? true:false;
+			backend.setFilter(nil, {device: self.device.id, laserfilter: v});
+		});
+		
+		$(".calibration", $self).click(function() {
+			var enable = $(this).attr("checked");
+			backend.setTestsignal(nil, {device: self.device.id, channel: 0, enable: enable});
+		});
+		
+		$(".dac-close",$self).button({
+			click: function() { $self.container("hide"); }
+		});
+		$(".dac-default",$self).button({
+			click: set_defaults
+		});
+	}
+
+	function setup_dac() {
+		function cb1(err, dac) {
+			//TODO
+			for (var n=0; n<8; ++n) {
+				$(".dac-"+n,$self).slider("option", "value", dac[n]*100);
+				$(".dac-val"+n,$self).val(dac[n]);	
+			}
+
+			backend.getFilter(cb2, { device: self.device.id });
+		}
+
+		function cb2(err, filter) {
+			if (filter.laserfilter) {
+				$(".laserfilter", $self).attr("checked", true);
+			} else {
+				$(".laserfilter", $self).removeAttr("checked");
+			}
+			$self.container("end");
+		}
+
+		$self.container("show");
+		$self.container("begin");
+		backend.getDACSettings(cb1, { device: self.device.id });
+	}
+
+
+	function show(cb, container, device) {
+		self.callback=cb;
+		self.device=device;
+		container.append($self.container("widget"));
+		setup_dac();
+	}
+	
+	function hide() {
+		$self.container("hide");
+	}
+	
+	$.extend(self, {
+		show: show,
+		hide: hide
+	});
+	init();
+	return self;
+}
+
+</script>
+
+
+<div id="dac-panel">
+	<table cellspacing="0" cellpadding="0" width="100%" border="0">
+	<tr>
+		<td width="10"><nobr>channel 0</nobr></td>
+		<td><div class="dac-0 dac-slider"></div></td>
+		<td width="10"><input class="dac-val0 lcars-input dac-input"></td>
+		<td width="10">&nbsp;</td>
+		<td width="10"><nobr>channel 4</nobr></td>
+		<td><div class="dac-4 dac-slider"></div></td>
+		<td width="10"><input class="dac-val4 lcars-input dac-input"></td>
+	</tr>
+	<tr>
+		<td width="10"><nobr>channel 1</nobr></td>
+		<td><div class="dac-1 dac-slider"></div></td>
+		<td width="10"><input class="dac-val1 lcars-input dac-input"></td>
+		<td width="10">&nbsp;</td>
+		<td width="10"><nobr>channel 5</nobr></td>
+		<td><div class="dac-5 dac-slider"></div></td>
+		<td width="10"><input class="dac-val5 lcars-input dac-input"></td>
+	</tr>
+	<tr>
+		<td width="10"><nobr>channel 2</nobr></td>
+		<td><div class="dac-2 dac-slider"></div></td>
+		<td width="10"><input class="dac-val2 lcars-input dac-input"></td>
+		<td width="10">&nbsp;</td>
+		<td width="10"><nobr>channel 6</nobr></td>
+		<td><div class="dac-6 dac-slider"></div></td>
+		<td width="10"><input class="dac-val6 lcars-input dac-input"></td>
+	</tr>
+	<tr>
+		<td width="10"><nobr>channel 3</nobr></td>
+		<td><div class="dac-3 dac-slider"></div></td>
+		<td width="10"><input class="dac-val3 lcars-input dac-input"></td>
+		<td width="10">&nbsp;</td>
+		<td width="10"><nobr>channel 7</nobr></td>
+		<td><div class="dac-7 dac-slider"></div></td>
+		<td width="10"><input class="dac-val7 lcars-input dac-input"></td>
+	</tr>
+	</table>
+	<table cellspacing="0" cellpadding="0" width="100%" border="0">
+	<tr>
+		<td width="50%">
+			<span class="dac-close">CLOSE</span>
+			<span class="dac-default">DEFAULTS</span>
+		</td>
+		<td width="50%"><input class="laserfilter" type="checkbox"></input>enable filter</td>
+		<td width="50%"><input class="calibration" type="checkbox"></input>enable calibration</td>
+	</tr>
+	</table>				
+</div>
+	

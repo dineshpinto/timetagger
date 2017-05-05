@@ -1,0 +1,52 @@
+How could the automatic Flipper be used?
+
+1. Initially load all modules and create an instance of the TimeTagger
+	from TimeTagger import createTimeTagger
+	tagger = createTimeTagger()
+2. Set the bit sequence that should be streamed to the AWG. It has 20 pins, 4 are ground, therefore we use 16 bit. It is
+	1	Random (always 0)
+	X2	Ground
+	3	Load
+	4	Data_Select
+	5	D0
+	6	D1
+	X7	Ground
+	8	D2
+	9	D3
+	10	D4
+	11	D5
+	12	D6
+	13	D7
+	X14	Ground
+	15	D8
+	16	D9
+	17	D10
+	18	D11
+	X19	Ground
+	20	D12
+
+   Data_Select: The data select signal controls which part of the 19 bit internal sequencer index is loaded from the Data_In pins. If Data_Select is 1 only the Data_In bits 5..0 are used to load bits 18..13 of the sequencer index. If Data_Select is 0 the Data_In bits 12..0 are loaded to internal sequencer index 12..0. To load the full 19 sequence index bits first the upper part needs to be loaded (Data_Select = 1) then the lower part.
+
+   Load: A rising edge on the Load signal latches the data present at the Data_In pins into the respective internal registers. If the Data_Select pin is low the loaded sequencer index is passed to the sequencer for execution.
+
+   If the Final address should be 3, it is binary(with 13 bits) 0000000000011. First, bit 18..13 are sent and we choose AWGDataOne as 0000000 000000(5...0) 1(Data_Select) 0(Load) 0(Random) = 4. In the next step, bit 12...0 are sent and we choose AWGDataTwo as 0000000000011(12...0) 0(Data_Select) 1(Load) 0(Random) = 26. 
+
+   Python Code:
+	tagger.setAWGDataOne(4)
+	tagger.setAWGDataTwo(26)
+
+4. When this is done, the pulse sequence can be started, e.g. look Pulse_Sequence_SSR_Feedforward.pdf.
+
+Usage of input and output from FPGA.
+	input:
+		0&1	photons
+		2	swap, i.e. laser signal
+		3	ssr, i.e. go to next ssr measurement
+		4	readout
+		5	external clock
+		6&7	not used yet	
+	output (gpio):
+		0	clock that shifts register
+		1	bitstream
+		2	latch clock that writes register states into output
+		3	reset signal for
