@@ -401,3 +401,51 @@ private:
 //     timestamp_t start;
 //     timestamp_t binwidth;
 // };
+
+/*
+MODIFIED CODE BEGINS HERE
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+
+int main(void){
+	const int n_ssr = 10;
+	std::vector<int> rpt_unit = {1, 2, 3, 2};
+
+
+	int rpt_unit_size = *std::max_element(rpt_unit.begin(), rpt_unit.end());
+	std::cout << rpt_unit_size << std::endl; 
+	std::vector<std::vector<int>> arr(n_ssr, std::vector<int>(rpt_unit_size, -1)); 
+
+	for(int i=0;i<n_ssr;i++){
+		for(int j=0;j<rpt_unit_size;j++){
+			std::cout << arr[i][j] << ' '; 
+		}
+		std::cout << std::endl;
+	}
+
+	int counter = 0;
+
+	// std::cout << rpt_unit.back() << std::endl;
+
+	for(int i=0;i<n_ssr;i++){
+		for(int j=0;j<rpt_unit[counter];j++){
+			arr[i][j] = 1;
+		}
+		counter += 1;
+		if (counter == rpt_unit.back()){
+			counter = 0;
+		}
+	}
+
+	for(int i=0;i<n_ssr;i++){
+		for(int j=0;j<rpt_unit_size;j++){
+			std::cout << arr[i][j] << ' '; 
+		}
+		std::cout << std::endl;
+	}
+
+}
+*/
