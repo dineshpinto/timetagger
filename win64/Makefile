@@ -46,17 +46,13 @@ dist:
 	@mkdir -p dist/system
 	@cp ../backend/TimeTaggerController.bit dist/system
 	@cp prequesits/okFrontPanel.dll dist/system
-	#@cp prequesits/vcredist_x86.exe dist/system
 	@cp prequesits/vcredist_x64.exe dist/system
 	@cp prequesits/Driver/okusb.inf dist/system
 	@mkdir -p dist/system/i386
-	#@cp ../win32/prequesits/Driver/i386/WdfCoInstaller01005.dll dist/system/i386
-	#@cp ../win32/prequesits/Driver/i386/WinUSBCoInstaller.dll dist/system/i386
 	@cp ../win32/prequesits/Driver/i386/WdfCoInstaller01009.dll dist/system/i386
 	@cp ../win32/prequesits/Driver/i386/WinUSBCoInstaller2.dll dist/system/i386
 	@mkdir -p dist/system/amd64
-	#@cp prequesits/Driver/amd64/WdfCoInstaller01005.dll dist/system/amd64
-	#@cp prequesits/Driver/amd64/WinUSBCoInstaller.dll dist/system/amd64
+
 	@cp prequesits/Driver/amd64/WdfCoInstaller01009.dll dist/system/amd64
 	@cp prequesits/Driver/amd64/WinUSBCoInstaller2.dll dist/system/amd64
 	
