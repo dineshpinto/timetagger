@@ -19,8 +19,8 @@ endif
 
 CFLAGS+=-g -O3 -Wall -std=c++11 -DNDEBUG -D_hypot=hypot 
 
+
 ifdef WIN32
-	# windows threads
 	CFLAGS+=-DWIN32
 	LFLAGS=-lwsock32 -lws2_32 -static -lpthread
 
@@ -34,7 +34,6 @@ ifdef WIN32
 endif
 
 ifdef WIN64
-	# windows threads
 	CFLAGS+=-DWIN32 -DMS_WIN64
 	LFLAGS=-lws2_32 -static -lpthread
 
@@ -46,6 +45,7 @@ ifdef WIN64
 		LFLAGS += ../build-depends/lib/python27.dll -lws2_32 -static-libstdc++ -static-libgcc
 	endif
 endif
+
 
 ifdef LINUX
 	CFLAGS+=-fPIC -DLINUX 

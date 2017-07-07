@@ -77,45 +77,45 @@ def escapeChar(match):
             return c
 
 def dumps(obj):
-    return unicode("".join([part for part in dumpParts (obj)]))
+    return str("".join([part for part in dumpParts (obj)]))
 
 def dumpParts (obj):
     objType = type(obj)
     if obj == None:
-       yield u'null'
+       yield 'null'
     elif objType is BooleanType:
         if obj:
-            yield u'true'
+            yield 'true'
         else:
-            yield u'false'
+            yield 'false'
     elif objType is DictionaryType:
-        yield u'{'
+        yield '{'
         isFirst=True
-        for (key, value) in obj.items():
+        for (key, value) in list(obj.items()):
             if isFirst:
                 isFirst=False
             else:
-                yield u","
-            yield u'"' + StringEscapeRE.sub(escapeChar, key) +u'":'
+                yield ","
+            yield '"' + StringEscapeRE.sub(escapeChar, key) +'":'
             for part in dumpParts (value):
                 yield part
-        yield u'}'
+        yield '}'
     elif objType in StringTypes:
-        yield u'"' + StringEscapeRE.sub(escapeChar, obj) +u'"'
+        yield '"' + StringEscapeRE.sub(escapeChar, obj) +'"'
 
     elif objType in [TupleType, ListType, GeneratorType]:
-        yield u'['
+        yield '['
         isFirst=True
         for item in obj:
             if isFirst:
                 isFirst=False
             else:
-                yield u","
+                yield ","
             for part in dumpParts (item):
                 yield part
-        yield u']'
+        yield ']'
     elif objType in [IntType, LongType, FloatType]:
-        yield unicode(obj)
+        yield str(obj)
     else:
         raise JSONEncodeException(obj)
     
@@ -130,28 +130,28 @@ def loads(s):
         while(1):
             skip = False
             if not currCharIsNext:
-                c = chars.next()
+                c = next(chars)
             while(c in [' ', '\t', '\r','\n']):
-                c = chars.next()
+                c = next(chars)
             currCharIsNext=False
             if c=='"':
                 value = ''
                 try:
-                    c=chars.next()
+                    c=next(chars)
                     while c != '"':
                         if c == '\\':
-                            c=chars.next()
+                            c=next(chars)
                             try:
                                 value+=EscapeCharToChar[c]
                             except KeyError:
                                 if c == 'u':
-                                    hexCode = chars.next() + chars.next() + chars.next() + chars.next()
-                                    value += unichr(int(hexCode,16))
+                                    hexCode = next(chars) + next(chars) + next(chars) + next(chars)
+                                    value += chr(int(hexCode,16))
                                 else:
                                     raise JSONDecodeException("Bad Escape Sequence Found")
                         else:
                             value+=c
-                        c=chars.next()
+                        c=next(chars)
                 except StopIteration:
                     raise JSONDecodeException("Expected end of String")
             elif c == '{':
@@ -168,28 +168,28 @@ def loads(s):
                 skip=True
             elif c in Digits or c == '-':
                 digits=[c]
-                c = chars.next()
+                c = next(chars)
                 numConv = int
                 try:
                     while c in Digits:
                         digits.append(c)
-                        c = chars.next()
+                        c = next(chars)
                     if c == ".":
                         numConv=float
                         digits.append(c)
-                        c = chars.next()
+                        c = next(chars)
                         while c in Digits:
                             digits.append(c)
-                            c = chars.next()
+                            c = next(chars)
                         if c.upper() == 'E':
                             digits.append(c)
-                            c = chars.next()
+                            c = next(chars)
                             if c in ['+','-']:
                                 digits.append(c)
-                                c = chars.next()
+                                c = next(chars)
                                 while c in Digits:
                                     digits.append(c)
-                                    c = chars.next()
+                                    c = next(chars)
                             else:
                                 raise JSONDecodeException("Expected + or -")
                 except StopIteration:
@@ -198,12 +198,12 @@ def loads(s):
                 currCharIsNext=True
 
             elif c in ['t','f','n']:
-                kw = c+ chars.next() + chars.next() + chars.next()
+                kw = c+ next(chars) + next(chars) + next(chars)
                 if kw == 'null':
                     value = None
                 elif kw == 'true':
                     value = True
-                elif kw == 'fals' and chars.next() == 'e':
+                elif kw == 'fals' and next(chars) == 'e':
                     value = False
                 else:
                     raise JSONDecodeException('Expected Null, False or True')

@@ -37,7 +37,7 @@ class TimeTaggerWrapper:
     def Start(self):
         #(int _length, int _binwidth, int _sequence_length, int _channel, int _shot_trigger=-1, int _sequence_trigger=-1) 
         self.tagger = TimeTagger.Pulsed(int(self.x/1.25), 1, int(self.y), 0, 2, 3)
-        print "Serial: ", TimeTagger._Tagger.getSerial()
+        print("Serial: ", TimeTagger._Tagger.getSerial())
         self.started = datetime.datetime.now()
     
     def GetSweeps(self):

@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TimeTagger", "TimeTagger\TimeTagger.vcxproj", "{783EDE97-E801-4AE7-B749-84D2200B9079}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Countrate", "Countrate\Countrate.vcxproj", "{F225703A-DB64-4291-BA08-F6C48B2B873C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{783EDE97-E801-4AE7-B749-84D2200B9079}.Debug|Win32.ActiveCfg = Debug|Win32
+		{783EDE97-E801-4AE7-B749-84D2200B9079}.Debug|Win32.Build.0 = Debug|Win32
+		{783EDE97-E801-4AE7-B749-84D2200B9079}.Release|Win32.ActiveCfg = Release|Win32
+		{783EDE97-E801-4AE7-B749-84D2200B9079}.Release|Win32.Build.0 = Release|Win32
+		{F225703A-DB64-4291-BA08-F6C48B2B873C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F225703A-DB64-4291-BA08-F6C48B2B873C}.Debug|Win32.Build.0 = Debug|Win32
+		{F225703A-DB64-4291-BA08-F6C48B2B873C}.Release|Win32.ActiveCfg = Release|Win32
+		{F225703A-DB64-4291-BA08-F6C48B2B873C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

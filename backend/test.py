@@ -43,7 +43,7 @@ for i in range(16):
 
 sleeptime = 10
 directory = 'Test-4'
-print 'which channel?'
+print('which channel?')
 channel = int(sys.stdin.readline())
 
 
@@ -51,15 +51,15 @@ c = TimeTagger.Counter(channel,1000**4)
 o = TimeTagger.OverFlow()
 
 while True:
-	print 'waiting, please press enter'
+	print('waiting, please press enter')
 	try:
 		sleeptime = int(sys.stdin.readline())
 		if sleeptime == 0:
 			break
-		print 'sleeptime set to %s s' % (sleeptime, )
+		print('sleeptime set to %s s' % (sleeptime, ))
 	except:
 		pass
-	print 'starting'
+	print('starting')
 	
 	h = TimeTagger.Histogram(channel,channel^8,10)
 	time.sleep(2)
@@ -72,34 +72,34 @@ while True:
 		d2[t] = n
 	d = d2
 
-	for i in range(d.keys()[0], d.keys()[-1], 10):
+	for i in range(list(d.keys())[0], list(d.keys())[-1], 10):
 		if not i in d:
 			d[i] = 0
 			
-	times = d.keys()
+	times = list(d.keys())
 	times.sort()
 	
 	counts = [d[i] for i in times]
 
 	s = sum(counts)
-	print 'Counts: %d' % (s,)
+	print('Counts: %d' % (s,))
 
-	m = sum([i[0]*i[1] for i in d.iteritems()])/float(s)
-	print "Mittelwert: %s ps" % (m,)
+	m = sum([i[0]*i[1] for i in d.items()])/float(s)
+	print("Mittelwert: %s ps" % (m,))
 
 	freq = 1e12 / m
-	print "Frequenz: %s Hz" % (freq,)
+	print("Frequenz: %s Hz" % (freq,))
 
-	o = math.sqrt(sum(map(lambda x: x[1]*(x[0]-m)**2, d.iteritems())) / s)
-	print "Standartabweichung: %s ps" % (o, )	
+	o = math.sqrt(sum([x[1]*(x[0]-m)**2 for x in iter(d.items())]) / s)
+	print("Standartabweichung: %s ps" % (o, ))	
 
-	print "effektive Abtastrate: %s ps" % (o*math.sqrt(6),)
+	print("effektive Abtastrate: %s ps" % (o*math.sqrt(6),))
 	
 	verteilung1 = TimeTagger._Tagger.getDistributionCount(channel)
 	verteilung2 = TimeTagger._Tagger.getDistributionCount(channel^8)
 	o_erwartet = math.sqrt(6000.0**2/12 * sum([i**3 for i in list(verteilung1) + list(verteilung2)]))
 	
-	print "erwartete Standartabweichung: %s ps" % (o_erwartet,)
+	print("erwartete Standartabweichung: %s ps" % (o_erwartet,))
 	
 
 	

@@ -12,7 +12,7 @@ for d in dirs:
         p = pickle.load(file(f))
         data[p['freq']] = p
         
-    freqs = data.keys()
+    freqs = list(data.keys())
     freqs.sort()
     
     jitter = [data[freq]['jitter'] for freq in freqs]
