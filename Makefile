@@ -22,11 +22,12 @@ endif
 
 all: 
 	@for i in $(SUBDIRS); do make -C $$i all || exit 1; done
-	make -C setup all;
+	make -C dist all
 
 clean:
-	@for i in $(SUBDIRS); do make -C $$i clean || exit 1; done	
+	@for i in $(SUBDIRS); do make -C $$i clean || exit 1; done
+	make -C dist clean	
 
 dist-clean:
 	@for i in $(SUBDIRS); do make -C $$i dist-clean || exit 1; done	
-
+	make -C dist clean	

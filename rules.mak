@@ -1,4 +1,3 @@
-
 ifdef TOOLCHAIN
 	CXX=$(TOOLCHAIN)-g++
 	CC=$(TOOLCHAIN)-gcc
@@ -24,12 +23,22 @@ ifdef WIN32
 	CFLAGS+=-DWIN32
 	LFLAGS=-lwsock32 -lws2_32 -static -lpthread
 
-	ifdef WITH_PYTHON
-		CFLAGS += -I ../build-depends/include 
-		CFLAGS += -I ../build-depends/include/python-2.7
-	
-		PYTHON_LIB=_TimeTagger.pyd
-		LFLAGS += ../build-depends/lib/python27.dll -lws2_32 -static-libstdc++ -static-libgcc
+	ifdef WITH_PYTHON 
+		ifdef WITH_PYTHON35 
+			CFLAGS += -I ../build-depends-3.5/include 
+			CFLAGS += -I ../build-depends-3.5/include/python-3.5
+		
+			PYTHON_LIB=_TimeTagger.pyd
+			LFLAGS += ../build-depends-3.5/lib/python35.dll -lws2_32 -static-libstdc++ -static-libgcc
+
+		else
+			CFLAGS += -I ../build-depends-2.7/include 
+			CFLAGS += -I ../build-depends-2.7/include/python-2.7
+		
+			PYTHON_LIB=_TimeTagger.pyd
+			LFLAGS += ../build-depends-2.7/lib/python27.dll -lws2_32 -static-libstdc++ -static-libgcc
+
+		endif
 	endif
 endif
 
@@ -38,11 +47,21 @@ ifdef WIN64
 	LFLAGS=-lws2_32 -static -lpthread
 
 	ifdef WITH_PYTHON
-		CFLAGS += -I ../build-depends/include 
-		CFLAGS += -I ../build-depends/include/python-2.7
-	
-		PYTHON_LIB=_TimeTagger.pyd
-		LFLAGS += ../build-depends/lib/python27.dll -lws2_32 -static-libstdc++ -static-libgcc
+		ifdef WITH_PYTHON35
+			CFLAGS += -I ../build-depends-3.5/include 
+			CFLAGS += -I ../build-depends-3.5/include/python-3.5
+
+			PYTHON_LIB=_TimeTagger.pyd
+			LFLAGS += ../build-depends-3.5/lib/python35.dll -lws2_32 -static-libstdc++ -static-libgcc
+
+		else
+			CFLAGS += -I ../build-depends-2.7/include 
+			CFLAGS += -I ../build-depends-2.7/include/python-2.7
+		
+			PYTHON_LIB=_TimeTagger.pyd
+			LFLAGS += ../build-depends-2.7/lib/python27.dll -lws2_32 -static-libstdc++ -static-libgcc
+
+		endif
 	endif
 endif
 

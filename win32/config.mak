@@ -21,6 +21,9 @@ TOOLCHAIN=i686-w64-mingw32
 # whether to build python bindings
 WITH_PYTHON=1
 
+# use python 3.5 instead of python 2.7
+# WITH_PYTHON35=1
+
 # whether to build documentation
 #WITH_DOXYGEN=1
 

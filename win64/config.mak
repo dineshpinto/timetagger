@@ -12,6 +12,7 @@ WIN64=1
 
 #TOOLCHAIN=i586-mingw32msvc
 TOOLCHAIN=x86_64-w64-mingw32
+
 # cross builds
 #WITH_WIN32=1
 #WITH_ARM=1
@@ -19,6 +20,9 @@ TOOLCHAIN=x86_64-w64-mingw32
 
 # whether to build python bindings
 WITH_PYTHON=1
+
+# use python 3.5 instead of python 2.7
+# WITH_PYTHON35=1
 
 # whether to build documentation
 #WITH_DOXYGEN=1

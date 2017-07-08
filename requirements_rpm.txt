@@ -1,0 +1,10 @@
+swig
+python-numpy
+mingw-gcc-c++
+mingw32-gcc
+mingw32-nsis
+mingw32-winpthreads
+mingw32-winpthreads-static
+mingw-w64
+mingw64-winpthreads
+mingw64-winpthreads-static 

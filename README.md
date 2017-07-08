@@ -1,21 +1,15 @@
 TimeTagger
 ==========
-*Modified INSTALL document written by D. Pinto.*
+*Modified README written by D. Pinto, University of Stuttgart*
 
 Building on Linux for Windows 32/64 bit systems.
 
-Dependencies (RPM)
+
+Dependencies (RPM) 
 ------------------
-    swig
-    python-numpy
-    mingw-gcc-c++  
-    mingw32-gcc
-    mingw32-nsis
-    mingw32-winpthreads
-    mingw32-winpthreads-static 
-    mingw-w64
-    mingw64-winpthreads
-    mingw64-winpthreads-static 
+Dependencies are stored in `requirements_rpm.txt` and can be 
+installed using `# dnf install $(cat requirements_rpm.txt)`
+
 
 Source-tree
 -----------
@@ -60,7 +54,7 @@ Make options
     WITH_PYTHON			set to build python bindings
     WITH_DOXYGEN		set to build documentation files
    
-    THREAD_PTHREADS		set to use BOOST threading library
+    THREAD_PTHREADS		set to use PTHREAD threading library
     THREAD_BOOST		set to use BOOST threading library
 
     WITH_EMBEDDED_DOCS 	set to embedd htms/css/image files into the timetaggerd binary
@@ -69,12 +63,27 @@ Make options
 
 Output
 ------
-A Windows executable located in `timetagger/setup/`.
+A packaged file in `timetagger/dist/TimeTagger.zip`. This file should (generally) be 
+placed under `<Drive>:\\Program Files (x86)\SwabianInstruments\`.
+
+Or optionally, a Windows executable located in `timetagger/setup/TimeTagger-x.x.exe`.
+To build a Windows executable:
+    Modify `timetagger/setup/timetagger.nsi` to correct Python version (default 2.7)
+    Run `make all` in `timetagger/setup`
+
+Python bindings
+---------------
+By default Python 2 will be used. However, Python 3.5 bindings are also supported. 
+Uncomment `WITH_PYTHON35` in the relevant `config.mak` files to enable.
+
 
 Issues 
 ------
-Compilation sometimes tends to fail after running dist-clean. This is likely due to the system being unable to build an index for the required build. 
-Currently the recommended solution is to avoid using `dist-clean` entirely.
+Compilation tends to fail after running `dist-clean`. This is likely due to the 
+system being unable to rebuild an index for the required build. Currently the recommended 
+solution is to avoid using `make dist-clean` entirely. Use `make clean` instead.
+
+
 
 
 ###############################################################################
@@ -206,15 +215,4 @@ As a result all files needed for the next buildstep are collected to WIN32/dist.
 go to folder setup
 run "makensis timetagger.nsi"
 copy resulting setup file TimeTagger-0.9.exe to windows machine and install
-
-
-
-
-
-runtree:
-    doc
-    examples
-    firmware
-    win32
-    win64
         

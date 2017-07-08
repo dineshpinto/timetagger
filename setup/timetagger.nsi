@@ -4,6 +4,9 @@
 !define PRODUCT_ROOT_KEY "HKLM"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
+!define PYTHON_VERSION "2.7"
+!define PYTHON_VERSION_VERBOSE "python27"
+
 
 SetCompressor lzma
 
@@ -177,20 +180,20 @@ Section "Python bindings" SEC03
 
   SetOverwrite on
 
-  SetOutPath "$INSTDIR\win32\python27"
+  SetOutPath "$INSTDIR\win32\${PYTHON_VERSION_VERBOSE}"
 
   File "..\win32\backend\_TimeTagger.pyd"
   File "..\backend\TimeTagger.py"
 
   SetRegView 32
-  WriteRegStr ${PRODUCT_ROOT_KEY} "Software\Python\PythonCore\2.7\PythonPath\TimeTagger_new" "" "$INSTDIR\win32\python27"
+  WriteRegStr ${PRODUCT_ROOT_KEY} "Software\Python\PythonCore\${PYTHON_VERSION}\PythonPath\TimeTagger_new" "" "$INSTDIR\win32\${PYTHON_VERSION_VERBOSE}"
   
   ${If} ${RunningX64}
-    SetOutPath "$INSTDIR\win64\python27"
+    SetOutPath "$INSTDIR\win64\${PYTHON_VERSION_VERBOSE}"
     File "..\win64\backend\_TimeTagger.pyd"
     File "..\backend\TimeTagger.py"
     SetRegView 64
-    WriteRegStr ${PRODUCT_ROOT_KEY} "Software\Python\PythonCore\2.7\PythonPath\TimeTagger_new" "" "$INSTDIR\win64\python27"
+    WriteRegStr ${PRODUCT_ROOT_KEY} "Software\Python\PythonCore\${PYTHON_VERSION}\PythonPath\TimeTagger_new" "" "$INSTDIR\win64\${PYTHON_VERSION_VERBOSE}"
   ${EndIf}
 
 ;  File "..\python\TimeTagger-1.0-python.chm"
@@ -282,7 +285,7 @@ SectionEnd
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} ""
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "include files and import libraries for Visual Studio"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "python package for Python 2.7"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "python package for Python ${PYTHON_VERSION}"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "TimeTagger Webserver"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
@@ -306,12 +309,12 @@ Section Uninstall
   RmDir /r "$APPDATA\TimeTagger"
 
   SetRegView 32
-  DeleteRegKey ${PRODUCT_ROOT_KEY} "Software\Python\PythonCore\2.7\PythonPath\TimeTagger"
+  DeleteRegKey ${PRODUCT_ROOT_KEY} "Software\Python\PythonCore\${PYTHON_VERSION}\PythonPath\TimeTagger"
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey ${PRODUCT_ROOT_KEY} "${PRODUCT_KEY}"
   
   SetRegView 64
-  DeleteRegKey ${PRODUCT_ROOT_KEY} "Software\Python\PythonCore\2.7\PythonPath\TimeTagger"
+  DeleteRegKey ${PRODUCT_ROOT_KEY} "Software\Python\PythonCore\${PYTHON_VERSION}\PythonPath\TimeTagger"
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey ${PRODUCT_ROOT_KEY} "${PRODUCT_KEY}"
   SetAutoClose true

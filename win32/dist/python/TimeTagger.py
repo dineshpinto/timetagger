@@ -25,7 +25,8 @@ elif _swig_python_version_info >= (2, 6, 0):
         import imp
         fp = None
         try:
-            fp, pathname, description = imp.find_module('_TimeTagger', [dirname(__file__)])
+            fp, pathname, description = imp.find_module(
+                '_TimeTagger', [dirname(__file__)])
         except ImportError:
             import _TimeTagger
             return _TimeTagger
@@ -45,6 +46,7 @@ try:
     import builtins as __builtin__
 except ImportError:
     import __builtin__
+
 
 def _swig_setattr_nondynamic(self, class_type, name, value, static=1):
     if (name == "thisown"):
@@ -72,7 +74,8 @@ def _swig_getattr(self, class_type, name):
     method = class_type.__swig_getmethods__.get(name, None)
     if method:
         return method(self)
-    raise AttributeError("'%s' object has no attribute '%s'" % (class_type.__name__, name))
+    raise AttributeError("'%s' object has no attribute '%s'" %
+                         (class_type.__name__, name))
 
 
 def _swig_repr(self):
@@ -82,11 +85,13 @@ def _swig_repr(self):
         strthis = ""
     return "<%s.%s; %s >" % (self.__class__.__module__, self.__class__.__name__, strthis,)
 
+
 class SwigPyIterator:
     """Proxy of C++ swig::SwigPyIterator class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, SwigPyIterator, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, SwigPyIterator, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, SwigPyIterator, name)
 
@@ -100,14 +105,12 @@ class SwigPyIterator:
         """value(self) -> PyObject *"""
         return _TimeTagger.SwigPyIterator_value(self)
 
-
     def incr(self, n=1):
         """
         incr(self, n=1) -> SwigPyIterator
         incr(self) -> SwigPyIterator
         """
         return _TimeTagger.SwigPyIterator_incr(self, n)
-
 
     def decr(self, n=1):
         """
@@ -116,66 +119,53 @@ class SwigPyIterator:
         """
         return _TimeTagger.SwigPyIterator_decr(self, n)
 
-
     def distance(self, x):
         """distance(self, x) -> ptrdiff_t"""
         return _TimeTagger.SwigPyIterator_distance(self, x)
-
 
     def equal(self, x):
         """equal(self, x) -> bool"""
         return _TimeTagger.SwigPyIterator_equal(self, x)
 
-
     def copy(self):
         """copy(self) -> SwigPyIterator"""
         return _TimeTagger.SwigPyIterator_copy(self)
-
 
     def next(self):
         """next(self) -> PyObject *"""
         return _TimeTagger.SwigPyIterator_next(self)
 
-
     def __next__(self):
         """__next__(self) -> PyObject *"""
         return _TimeTagger.SwigPyIterator___next__(self)
-
 
     def previous(self):
         """previous(self) -> PyObject *"""
         return _TimeTagger.SwigPyIterator_previous(self)
 
-
     def advance(self, n):
         """advance(self, n) -> SwigPyIterator"""
         return _TimeTagger.SwigPyIterator_advance(self, n)
-
 
     def __eq__(self, x):
         """__eq__(self, x) -> bool"""
         return _TimeTagger.SwigPyIterator___eq__(self, x)
 
-
     def __ne__(self, x):
         """__ne__(self, x) -> bool"""
         return _TimeTagger.SwigPyIterator___ne__(self, x)
-
 
     def __iadd__(self, n):
         """__iadd__(self, n) -> SwigPyIterator"""
         return _TimeTagger.SwigPyIterator___iadd__(self, n)
 
-
     def __isub__(self, n):
         """__isub__(self, n) -> SwigPyIterator"""
         return _TimeTagger.SwigPyIterator___isub__(self, n)
 
-
     def __add__(self, n):
         """__add__(self, n) -> SwigPyIterator"""
         return _TimeTagger.SwigPyIterator___add__(self, n)
-
 
     def __sub__(self, *args):
         """
@@ -189,11 +179,13 @@ class SwigPyIterator:
 SwigPyIterator_swigregister = _TimeTagger.SwigPyIterator_swigregister
 SwigPyIterator_swigregister(SwigPyIterator)
 
+
 class IntVector:
     """Proxy of C++ std::vector<(int)> class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, IntVector, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, IntVector, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, IntVector, name)
     __repr__ = _swig_repr
@@ -209,21 +201,17 @@ class IntVector:
         """__nonzero__(self) -> bool"""
         return _TimeTagger.IntVector___nonzero__(self)
 
-
     def __bool__(self):
         """__bool__(self) -> bool"""
         return _TimeTagger.IntVector___bool__(self)
-
 
     def __len__(self):
         """__len__(self) -> std::vector< int >::size_type"""
         return _TimeTagger.IntVector___len__(self)
 
-
     def __getslice__(self, i, j):
         """__getslice__(self, i, j) -> IntVector"""
         return _TimeTagger.IntVector___getslice__(self, i, j)
-
 
     def __setslice__(self, *args):
         """
@@ -232,11 +220,9 @@ class IntVector:
         """
         return _TimeTagger.IntVector___setslice__(self, *args)
 
-
     def __delslice__(self, i, j):
         """__delslice__(self, i, j)"""
         return _TimeTagger.IntVector___delslice__(self, i, j)
-
 
     def __delitem__(self, *args):
         """
@@ -245,14 +231,12 @@ class IntVector:
         """
         return _TimeTagger.IntVector___delitem__(self, *args)
 
-
     def __getitem__(self, *args):
         """
         __getitem__(self, slice) -> IntVector
         __getitem__(self, i) -> std::vector< int >::value_type const &
         """
         return _TimeTagger.IntVector___getitem__(self, *args)
-
 
     def __setitem__(self, *args):
         """
@@ -262,66 +246,53 @@ class IntVector:
         """
         return _TimeTagger.IntVector___setitem__(self, *args)
 
-
     def pop(self):
         """pop(self) -> std::vector< int >::value_type"""
         return _TimeTagger.IntVector_pop(self)
-
 
     def append(self, x):
         """append(self, x)"""
         return _TimeTagger.IntVector_append(self, x)
 
-
     def empty(self):
         """empty(self) -> bool"""
         return _TimeTagger.IntVector_empty(self)
-
 
     def size(self):
         """size(self) -> std::vector< int >::size_type"""
         return _TimeTagger.IntVector_size(self)
 
-
     def swap(self, v):
         """swap(self, v)"""
         return _TimeTagger.IntVector_swap(self, v)
-
 
     def begin(self):
         """begin(self) -> std::vector< int >::iterator"""
         return _TimeTagger.IntVector_begin(self)
 
-
     def end(self):
         """end(self) -> std::vector< int >::iterator"""
         return _TimeTagger.IntVector_end(self)
-
 
     def rbegin(self):
         """rbegin(self) -> std::vector< int >::reverse_iterator"""
         return _TimeTagger.IntVector_rbegin(self)
 
-
     def rend(self):
         """rend(self) -> std::vector< int >::reverse_iterator"""
         return _TimeTagger.IntVector_rend(self)
-
 
     def clear(self):
         """clear(self)"""
         return _TimeTagger.IntVector_clear(self)
 
-
     def get_allocator(self):
         """get_allocator(self) -> std::vector< int >::allocator_type"""
         return _TimeTagger.IntVector_get_allocator(self)
 
-
     def pop_back(self):
         """pop_back(self)"""
         return _TimeTagger.IntVector_pop_back(self)
-
 
     def erase(self, *args):
         """
@@ -329,7 +300,6 @@ class IntVector:
         erase(self, first, last) -> std::vector< int >::iterator
         """
         return _TimeTagger.IntVector_erase(self, *args)
-
 
     def __init__(self, *args):
         """
@@ -348,21 +318,17 @@ class IntVector:
         """push_back(self, x)"""
         return _TimeTagger.IntVector_push_back(self, x)
 
-
     def front(self):
         """front(self) -> std::vector< int >::value_type const &"""
         return _TimeTagger.IntVector_front(self)
-
 
     def back(self):
         """back(self) -> std::vector< int >::value_type const &"""
         return _TimeTagger.IntVector_back(self)
 
-
     def assign(self, n, x):
         """assign(self, n, x)"""
         return _TimeTagger.IntVector_assign(self, n, x)
-
 
     def resize(self, *args):
         """
@@ -371,7 +337,6 @@ class IntVector:
         """
         return _TimeTagger.IntVector_resize(self, *args)
 
-
     def insert(self, *args):
         """
         insert(self, pos, x) -> std::vector< int >::iterator
@@ -379,11 +344,9 @@ class IntVector:
         """
         return _TimeTagger.IntVector_insert(self, *args)
 
-
     def reserve(self, n):
         """reserve(self, n)"""
         return _TimeTagger.IntVector_reserve(self, n)
-
 
     def capacity(self):
         """capacity(self) -> std::vector< int >::size_type"""
@@ -394,11 +357,13 @@ class IntVector:
 IntVector_swigregister = _TimeTagger.IntVector_swigregister
 IntVector_swigregister(IntVector)
 
+
 class UIntVector:
     """Proxy of C++ std::vector<(unsigned int)> class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, UIntVector, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, UIntVector, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, UIntVector, name)
     __repr__ = _swig_repr
@@ -414,21 +379,17 @@ class UIntVector:
         """__nonzero__(self) -> bool"""
         return _TimeTagger.UIntVector___nonzero__(self)
 
-
     def __bool__(self):
         """__bool__(self) -> bool"""
         return _TimeTagger.UIntVector___bool__(self)
-
 
     def __len__(self):
         """__len__(self) -> std::vector< unsigned int >::size_type"""
         return _TimeTagger.UIntVector___len__(self)
 
-
     def __getslice__(self, i, j):
         """__getslice__(self, i, j) -> UIntVector"""
         return _TimeTagger.UIntVector___getslice__(self, i, j)
-
 
     def __setslice__(self, *args):
         """
@@ -437,11 +398,9 @@ class UIntVector:
         """
         return _TimeTagger.UIntVector___setslice__(self, *args)
 
-
     def __delslice__(self, i, j):
         """__delslice__(self, i, j)"""
         return _TimeTagger.UIntVector___delslice__(self, i, j)
-
 
     def __delitem__(self, *args):
         """
@@ -450,14 +409,12 @@ class UIntVector:
         """
         return _TimeTagger.UIntVector___delitem__(self, *args)
 
-
     def __getitem__(self, *args):
         """
         __getitem__(self, slice) -> UIntVector
         __getitem__(self, i) -> std::vector< unsigned int >::value_type const &
         """
         return _TimeTagger.UIntVector___getitem__(self, *args)
-
 
     def __setitem__(self, *args):
         """
@@ -467,66 +424,53 @@ class UIntVector:
         """
         return _TimeTagger.UIntVector___setitem__(self, *args)
 
-
     def pop(self):
         """pop(self) -> std::vector< unsigned int >::value_type"""
         return _TimeTagger.UIntVector_pop(self)
-
 
     def append(self, x):
         """append(self, x)"""
         return _TimeTagger.UIntVector_append(self, x)
 
-
     def empty(self):
         """empty(self) -> bool"""
         return _TimeTagger.UIntVector_empty(self)
-
 
     def size(self):
         """size(self) -> std::vector< unsigned int >::size_type"""
         return _TimeTagger.UIntVector_size(self)
 
-
     def swap(self, v):
         """swap(self, v)"""
         return _TimeTagger.UIntVector_swap(self, v)
-
 
     def begin(self):
         """begin(self) -> std::vector< unsigned int >::iterator"""
         return _TimeTagger.UIntVector_begin(self)
 
-
     def end(self):
         """end(self) -> std::vector< unsigned int >::iterator"""
         return _TimeTagger.UIntVector_end(self)
-
 
     def rbegin(self):
         """rbegin(self) -> std::vector< unsigned int >::reverse_iterator"""
         return _TimeTagger.UIntVector_rbegin(self)
 
-
     def rend(self):
         """rend(self) -> std::vector< unsigned int >::reverse_iterator"""
         return _TimeTagger.UIntVector_rend(self)
-
 
     def clear(self):
         """clear(self)"""
         return _TimeTagger.UIntVector_clear(self)
 
-
     def get_allocator(self):
         """get_allocator(self) -> std::vector< unsigned int >::allocator_type"""
         return _TimeTagger.UIntVector_get_allocator(self)
 
-
     def pop_back(self):
         """pop_back(self)"""
         return _TimeTagger.UIntVector_pop_back(self)
-
 
     def erase(self, *args):
         """
@@ -534,7 +478,6 @@ class UIntVector:
         erase(self, first, last) -> std::vector< unsigned int >::iterator
         """
         return _TimeTagger.UIntVector_erase(self, *args)
-
 
     def __init__(self, *args):
         """
@@ -553,21 +496,17 @@ class UIntVector:
         """push_back(self, x)"""
         return _TimeTagger.UIntVector_push_back(self, x)
 
-
     def front(self):
         """front(self) -> std::vector< unsigned int >::value_type const &"""
         return _TimeTagger.UIntVector_front(self)
-
 
     def back(self):
         """back(self) -> std::vector< unsigned int >::value_type const &"""
         return _TimeTagger.UIntVector_back(self)
 
-
     def assign(self, n, x):
         """assign(self, n, x)"""
         return _TimeTagger.UIntVector_assign(self, n, x)
-
 
     def resize(self, *args):
         """
@@ -576,7 +515,6 @@ class UIntVector:
         """
         return _TimeTagger.UIntVector_resize(self, *args)
 
-
     def insert(self, *args):
         """
         insert(self, pos, x) -> std::vector< unsigned int >::iterator
@@ -584,11 +522,9 @@ class UIntVector:
         """
         return _TimeTagger.UIntVector_insert(self, *args)
 
-
     def reserve(self, n):
         """reserve(self, n)"""
         return _TimeTagger.UIntVector_reserve(self, n)
-
 
     def capacity(self):
         """capacity(self) -> std::vector< unsigned int >::size_type"""
@@ -599,11 +535,13 @@ class UIntVector:
 UIntVector_swigregister = _TimeTagger.UIntVector_swigregister
 UIntVector_swigregister(UIntVector)
 
+
 class LongVector:
     """Proxy of C++ std::vector<(long long)> class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, LongVector, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, LongVector, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, LongVector, name)
     __repr__ = _swig_repr
@@ -619,21 +557,17 @@ class LongVector:
         """__nonzero__(self) -> bool"""
         return _TimeTagger.LongVector___nonzero__(self)
 
-
     def __bool__(self):
         """__bool__(self) -> bool"""
         return _TimeTagger.LongVector___bool__(self)
-
 
     def __len__(self):
         """__len__(self) -> std::vector< long long >::size_type"""
         return _TimeTagger.LongVector___len__(self)
 
-
     def __getslice__(self, i, j):
         """__getslice__(self, i, j) -> LongVector"""
         return _TimeTagger.LongVector___getslice__(self, i, j)
-
 
     def __setslice__(self, *args):
         """
@@ -642,11 +576,9 @@ class LongVector:
         """
         return _TimeTagger.LongVector___setslice__(self, *args)
 
-
     def __delslice__(self, i, j):
         """__delslice__(self, i, j)"""
         return _TimeTagger.LongVector___delslice__(self, i, j)
-
 
     def __delitem__(self, *args):
         """
@@ -655,14 +587,12 @@ class LongVector:
         """
         return _TimeTagger.LongVector___delitem__(self, *args)
 
-
     def __getitem__(self, *args):
         """
         __getitem__(self, slice) -> LongVector
         __getitem__(self, i) -> std::vector< long long >::value_type const &
         """
         return _TimeTagger.LongVector___getitem__(self, *args)
-
 
     def __setitem__(self, *args):
         """
@@ -672,66 +602,53 @@ class LongVector:
         """
         return _TimeTagger.LongVector___setitem__(self, *args)
 
-
     def pop(self):
         """pop(self) -> std::vector< long long >::value_type"""
         return _TimeTagger.LongVector_pop(self)
-
 
     def append(self, x):
         """append(self, x)"""
         return _TimeTagger.LongVector_append(self, x)
 
-
     def empty(self):
         """empty(self) -> bool"""
         return _TimeTagger.LongVector_empty(self)
-
 
     def size(self):
         """size(self) -> std::vector< long long >::size_type"""
         return _TimeTagger.LongVector_size(self)
 
-
     def swap(self, v):
         """swap(self, v)"""
         return _TimeTagger.LongVector_swap(self, v)
-
 
     def begin(self):
         """begin(self) -> std::vector< long long >::iterator"""
         return _TimeTagger.LongVector_begin(self)
 
-
     def end(self):
         """end(self) -> std::vector< long long >::iterator"""
         return _TimeTagger.LongVector_end(self)
-
 
     def rbegin(self):
         """rbegin(self) -> std::vector< long long >::reverse_iterator"""
         return _TimeTagger.LongVector_rbegin(self)
 
-
     def rend(self):
         """rend(self) -> std::vector< long long >::reverse_iterator"""
         return _TimeTagger.LongVector_rend(self)
-
 
     def clear(self):
         """clear(self)"""
         return _TimeTagger.LongVector_clear(self)
 
-
     def get_allocator(self):
         """get_allocator(self) -> std::vector< long long >::allocator_type"""
         return _TimeTagger.LongVector_get_allocator(self)
 
-
     def pop_back(self):
         """pop_back(self)"""
         return _TimeTagger.LongVector_pop_back(self)
-
 
     def erase(self, *args):
         """
@@ -739,7 +656,6 @@ class LongVector:
         erase(self, first, last) -> std::vector< long long >::iterator
         """
         return _TimeTagger.LongVector_erase(self, *args)
-
 
     def __init__(self, *args):
         """
@@ -758,21 +674,17 @@ class LongVector:
         """push_back(self, x)"""
         return _TimeTagger.LongVector_push_back(self, x)
 
-
     def front(self):
         """front(self) -> std::vector< long long >::value_type const &"""
         return _TimeTagger.LongVector_front(self)
-
 
     def back(self):
         """back(self) -> std::vector< long long >::value_type const &"""
         return _TimeTagger.LongVector_back(self)
 
-
     def assign(self, n, x):
         """assign(self, n, x)"""
         return _TimeTagger.LongVector_assign(self, n, x)
-
 
     def resize(self, *args):
         """
@@ -781,7 +693,6 @@ class LongVector:
         """
         return _TimeTagger.LongVector_resize(self, *args)
 
-
     def insert(self, *args):
         """
         insert(self, pos, x) -> std::vector< long long >::iterator
@@ -789,11 +700,9 @@ class LongVector:
         """
         return _TimeTagger.LongVector_insert(self, *args)
 
-
     def reserve(self, n):
         """reserve(self, n)"""
         return _TimeTagger.LongVector_reserve(self, n)
-
 
     def capacity(self):
         """capacity(self) -> std::vector< long long >::size_type"""
@@ -804,11 +713,13 @@ class LongVector:
 LongVector_swigregister = _TimeTagger.LongVector_swigregister
 LongVector_swigregister(LongVector)
 
+
 class ULongVector:
     """Proxy of C++ std::vector<(unsigned long long)> class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, ULongVector, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, ULongVector, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, ULongVector, name)
     __repr__ = _swig_repr
@@ -824,21 +735,17 @@ class ULongVector:
         """__nonzero__(self) -> bool"""
         return _TimeTagger.ULongVector___nonzero__(self)
 
-
     def __bool__(self):
         """__bool__(self) -> bool"""
         return _TimeTagger.ULongVector___bool__(self)
-
 
     def __len__(self):
         """__len__(self) -> std::vector< unsigned long long >::size_type"""
         return _TimeTagger.ULongVector___len__(self)
 
-
     def __getslice__(self, i, j):
         """__getslice__(self, i, j) -> ULongVector"""
         return _TimeTagger.ULongVector___getslice__(self, i, j)
-
 
     def __setslice__(self, *args):
         """
@@ -847,11 +754,9 @@ class ULongVector:
         """
         return _TimeTagger.ULongVector___setslice__(self, *args)
 
-
     def __delslice__(self, i, j):
         """__delslice__(self, i, j)"""
         return _TimeTagger.ULongVector___delslice__(self, i, j)
-
 
     def __delitem__(self, *args):
         """
@@ -860,14 +765,12 @@ class ULongVector:
         """
         return _TimeTagger.ULongVector___delitem__(self, *args)
 
-
     def __getitem__(self, *args):
         """
         __getitem__(self, slice) -> ULongVector
         __getitem__(self, i) -> std::vector< unsigned long long >::value_type const &
         """
         return _TimeTagger.ULongVector___getitem__(self, *args)
-
 
     def __setitem__(self, *args):
         """
@@ -877,66 +780,53 @@ class ULongVector:
         """
         return _TimeTagger.ULongVector___setitem__(self, *args)
 
-
     def pop(self):
         """pop(self) -> std::vector< unsigned long long >::value_type"""
         return _TimeTagger.ULongVector_pop(self)
-
 
     def append(self, x):
         """append(self, x)"""
         return _TimeTagger.ULongVector_append(self, x)
 
-
     def empty(self):
         """empty(self) -> bool"""
         return _TimeTagger.ULongVector_empty(self)
-
 
     def size(self):
         """size(self) -> std::vector< unsigned long long >::size_type"""
         return _TimeTagger.ULongVector_size(self)
 
-
     def swap(self, v):
         """swap(self, v)"""
         return _TimeTagger.ULongVector_swap(self, v)
-
 
     def begin(self):
         """begin(self) -> std::vector< unsigned long long >::iterator"""
         return _TimeTagger.ULongVector_begin(self)
 
-
     def end(self):
         """end(self) -> std::vector< unsigned long long >::iterator"""
         return _TimeTagger.ULongVector_end(self)
-
 
     def rbegin(self):
         """rbegin(self) -> std::vector< unsigned long long >::reverse_iterator"""
         return _TimeTagger.ULongVector_rbegin(self)
 
-
     def rend(self):
         """rend(self) -> std::vector< unsigned long long >::reverse_iterator"""
         return _TimeTagger.ULongVector_rend(self)
-
 
     def clear(self):
         """clear(self)"""
         return _TimeTagger.ULongVector_clear(self)
 
-
     def get_allocator(self):
         """get_allocator(self) -> std::vector< unsigned long long >::allocator_type"""
         return _TimeTagger.ULongVector_get_allocator(self)
 
-
     def pop_back(self):
         """pop_back(self)"""
         return _TimeTagger.ULongVector_pop_back(self)
-
 
     def erase(self, *args):
         """
@@ -944,7 +834,6 @@ class ULongVector:
         erase(self, first, last) -> std::vector< unsigned long long >::iterator
         """
         return _TimeTagger.ULongVector_erase(self, *args)
-
 
     def __init__(self, *args):
         """
@@ -963,21 +852,17 @@ class ULongVector:
         """push_back(self, x)"""
         return _TimeTagger.ULongVector_push_back(self, x)
 
-
     def front(self):
         """front(self) -> std::vector< unsigned long long >::value_type const &"""
         return _TimeTagger.ULongVector_front(self)
-
 
     def back(self):
         """back(self) -> std::vector< unsigned long long >::value_type const &"""
         return _TimeTagger.ULongVector_back(self)
 
-
     def assign(self, n, x):
         """assign(self, n, x)"""
         return _TimeTagger.ULongVector_assign(self, n, x)
-
 
     def resize(self, *args):
         """
@@ -986,7 +871,6 @@ class ULongVector:
         """
         return _TimeTagger.ULongVector_resize(self, *args)
 
-
     def insert(self, *args):
         """
         insert(self, pos, x) -> std::vector< unsigned long long >::iterator
@@ -994,11 +878,9 @@ class ULongVector:
         """
         return _TimeTagger.ULongVector_insert(self, *args)
 
-
     def reserve(self, n):
         """reserve(self, n)"""
         return _TimeTagger.ULongVector_reserve(self, n)
-
 
     def capacity(self):
         """capacity(self) -> std::vector< unsigned long long >::size_type"""
@@ -1014,6 +896,7 @@ STATE_IDLE = _TimeTagger.STATE_IDLE
 STATE_RUNNING = _TimeTagger.STATE_RUNNING
 STATE_ERROR = _TimeTagger.STATE_ERROR
 
+
 def createTimeTagger(*args):
     """
     createTimeTagger(serial) -> TimeTagger
@@ -1021,14 +904,18 @@ def createTimeTagger(*args):
     """
     return _TimeTagger.createTimeTagger(*args)
 
+
 def freeTimeTagger(tagger):
     """freeTimeTagger(tagger) -> bool"""
     return _TimeTagger.freeTimeTagger(tagger)
+
+
 class TimeTagger:
     """Proxy of C++ TimeTagger class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, TimeTagger, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, TimeTagger, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, TimeTagger, name)
 
@@ -1040,7 +927,6 @@ class TimeTagger:
         """setTriggerLevel(self, channel, voltage)"""
         return _TimeTagger.TimeTagger_setTriggerLevel(self, channel, voltage)
 
-
     def getTriggerLevel(self, *args):
         """
         getTriggerLevel(self, channel) -> double
@@ -1048,11 +934,9 @@ class TimeTagger:
         """
         return _TimeTagger.TimeTagger_getTriggerLevel(self, *args)
 
-
     def setLineDelay(self, channel, delay):
         """setLineDelay(self, channel, delay)"""
         return _TimeTagger.TimeTagger_setLineDelay(self, channel, delay)
-
 
     def getLineDelay(self, *args):
         """
@@ -1061,61 +945,49 @@ class TimeTagger:
         """
         return _TimeTagger.TimeTagger_getLineDelay(self, *args)
 
-
     def setFilter(self, state):
         """setFilter(self, state)"""
         return _TimeTagger.TimeTagger_setFilter(self, state)
-
 
     def setAWGDataOne(self, data_one):
         """setAWGDataOne(self, data_one)"""
         return _TimeTagger.TimeTagger_setAWGDataOne(self, data_one)
 
-
     def setAWGDataTwo(self, data_two):
         """setAWGDataTwo(self, data_two)"""
         return _TimeTagger.TimeTagger_setAWGDataTwo(self, data_two)
-
 
     def getFilter(self):
         """getFilter(self) -> bool"""
         return _TimeTagger.TimeTagger_getFilter(self)
 
-
     def setNormalization(self, state):
         """setNormalization(self, state)"""
         return _TimeTagger.TimeTagger_setNormalization(self, state)
-
 
     def getNormalization(self):
         """getNormalization(self) -> bool"""
         return _TimeTagger.TimeTagger_getNormalization(self)
 
-
     def setDeadtime(self, chan, deadtime):
         """setDeadtime(self, chan, deadtime) -> long long"""
         return _TimeTagger.TimeTagger_setDeadtime(self, chan, deadtime)
-
 
     def registerChannel(self, chan):
         """registerChannel(self, chan)"""
         return _TimeTagger.TimeTagger_registerChannel(self, chan)
 
-
     def unregisterChannel(self, chan):
         """unregisterChannel(self, chan)"""
         return _TimeTagger.TimeTagger_unregisterChannel(self, chan)
-
 
     def setTestsignal(self, chan, enabled):
         """setTestsignal(self, chan, enabled)"""
         return _TimeTagger.TimeTagger_setTestsignal(self, chan, enabled)
 
-
     def getTestsignal(self, chan):
         """getTestsignal(self, chan) -> bool"""
         return _TimeTagger.TimeTagger_getTestsignal(self, chan)
-
 
     def autoCalibration(self, verbose=True):
         """
@@ -1124,41 +996,33 @@ class TimeTagger:
         """
         return _TimeTagger.TimeTagger_autoCalibration(self, verbose)
 
-
     def getBoardModel(self):
         """getBoardModel(self) -> int"""
         return _TimeTagger.TimeTagger_getBoardModel(self)
-
 
     def getStatus(self):
         """getStatus(self) -> enum running_state"""
         return _TimeTagger.TimeTagger_getStatus(self)
 
-
     def getSerial(self):
         """getSerial(self) -> std::string"""
         return _TimeTagger.TimeTagger_getSerial(self)
-
 
     def getDistributionCount(self, chan):
         """getDistributionCount(self, chan)"""
         return _TimeTagger.TimeTagger_getDistributionCount(self, chan)
 
-
     def getDistributionPSecs(self, chan):
         """getDistributionPSecs(self, chan)"""
         return _TimeTagger.TimeTagger_getDistributionPSecs(self, chan)
-
 
     def getChannels(self):
         """getChannels(self) -> unsigned int"""
         return _TimeTagger.TimeTagger_getChannels(self)
 
-
     def getPsPerClock(self):
         """getPsPerClock(self) -> long long"""
         return _TimeTagger.TimeTagger_getPsPerClock(self)
-
 
     def sync(self):
         """sync(self)"""
@@ -1169,11 +1033,13 @@ TimeTagger_swigregister(TimeTagger)
 cvar = _TimeTagger.cvar
 CHANNEL_INVALID = cvar.CHANNEL_INVALID
 
+
 class Tag:
     """Proxy of C++ Tag class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Tag, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, Tag, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, Tag, name)
     __repr__ = _swig_repr
@@ -1196,11 +1062,13 @@ class Tag:
 Tag_swigregister = _TimeTagger.Tag_swigregister
 Tag_swigregister(Tag)
 
+
 class _Iterator:
     """Proxy of C++ _Iterator class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, _Iterator, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, _Iterator, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, _Iterator, name)
 
@@ -1214,26 +1082,21 @@ class _Iterator:
         """start(self)"""
         return _TimeTagger._Iterator_start(self)
 
-
     def stop(self):
         """stop(self)"""
         return _TimeTagger._Iterator_stop(self)
-
 
     def clear(self):
         """clear(self)"""
         return _TimeTagger._Iterator_clear(self)
 
-
     def status(self):
         """status(self) -> enum running_state"""
         return _TimeTagger._Iterator_status(self)
 
-
     def getOverflows(self):
         """getOverflows(self) -> long long"""
         return _TimeTagger._Iterator_getOverflows(self)
-
 
     def getDuration(self):
         """getDuration(self) -> long long"""
@@ -1242,13 +1105,15 @@ class _Iterator:
 _Iterator_swigregister = _TimeTagger._Iterator_swigregister
 _Iterator_swigregister(_Iterator)
 
+
 class Iterator(_Iterator):
     """Proxy of C++ Iterator class."""
 
     __swig_setmethods__ = {}
     for _s in [_Iterator]:
         __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Iterator, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, Iterator, name, value)
     __swig_getmethods__ = {}
     for _s in [_Iterator]:
         __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
@@ -1269,11 +1134,9 @@ class Iterator(_Iterator):
         """next(self) -> long long"""
         return _TimeTagger.Iterator_next(self)
 
-
     def size(self):
         """size(self) -> int"""
         return _TimeTagger.Iterator_size(self)
-
 
     def clear(self):
         """clear(self)"""
@@ -1282,13 +1145,15 @@ class Iterator(_Iterator):
 Iterator_swigregister = _TimeTagger.Iterator_swigregister
 Iterator_swigregister(Iterator)
 
+
 class Dump(_Iterator):
     """Proxy of C++ Dump class."""
 
     __swig_setmethods__ = {}
     for _s in [_Iterator]:
         __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Dump, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, Dump, name, value)
     __swig_getmethods__ = {}
     for _s in [_Iterator]:
         __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
@@ -1320,13 +1185,15 @@ class Dump(_Iterator):
 Dump_swigregister = _TimeTagger.Dump_swigregister
 Dump_swigregister(Dump)
 
+
 class StartStop(_Iterator):
     """Proxy of C++ StartStop class."""
 
     __swig_setmethods__ = {}
     for _s in [_Iterator]:
         __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, StartStop, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, StartStop, name, value)
     __swig_getmethods__ = {}
     for _s in [_Iterator]:
         __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
@@ -1351,7 +1218,6 @@ class StartStop(_Iterator):
         """start(self)"""
         return _TimeTagger.StartStop_start(self)
 
-
     def getData(self, *args):
         """
         getData(self)
@@ -1359,11 +1225,9 @@ class StartStop(_Iterator):
         """
         return _TimeTagger.StartStop_getData(self, *args)
 
-
     def getCounts(self):
         """getCounts(self) -> size_t"""
         return _TimeTagger.StartStop_getCounts(self)
-
 
     def clear(self):
         """clear(self)"""
@@ -1372,13 +1236,15 @@ class StartStop(_Iterator):
 StartStop_swigregister = _TimeTagger.StartStop_swigregister
 StartStop_swigregister(StartStop)
 
+
 class TimeDifferences(_Iterator):
     """Proxy of C++ TimeDifferences class."""
 
     __swig_setmethods__ = {}
     for _s in [_Iterator]:
         __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, TimeDifferences, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, TimeDifferences, name, value)
     __swig_getmethods__ = {}
     for _s in [_Iterator]:
         __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
@@ -1407,14 +1273,12 @@ class TimeDifferences(_Iterator):
         """start(self)"""
         return _TimeTagger.TimeDifferences_start(self)
 
-
     def getData(self, *args):
         """
         getData(self)
         getData(self, array_out)
         """
         return _TimeTagger.TimeDifferences_getData(self, *args)
-
 
     def getIndex(self, *args):
         """
@@ -1423,26 +1287,21 @@ class TimeDifferences(_Iterator):
         """
         return _TimeTagger.TimeDifferences_getIndex(self, *args)
 
-
     def setMaxCounts(self, c):
         """setMaxCounts(self, c)"""
         return _TimeTagger.TimeDifferences_setMaxCounts(self, c)
-
 
     def getCounts(self):
         """getCounts(self) -> int"""
         return _TimeTagger.TimeDifferences_getCounts(self)
 
-
     def getSweeps(self):
         """getSweeps(self) -> int"""
         return _TimeTagger.TimeDifferences_getSweeps(self)
 
-
     def ready(self):
         """ready(self) -> bool"""
         return _TimeTagger.TimeDifferences_ready(self)
-
 
     def clear(self):
         """clear(self)"""
@@ -1451,13 +1310,16 @@ class TimeDifferences(_Iterator):
 TimeDifferences_swigregister = _TimeTagger.TimeDifferences_swigregister
 TimeDifferences_swigregister(TimeDifferences)
 
+
 class TwoChannelTimeDifferences:
     """Proxy of C++ TwoChannelTimeDifferences class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, TwoChannelTimeDifferences, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, TwoChannelTimeDifferences, name, value)
     __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, TwoChannelTimeDifferences, name)
+    __getattr__ = lambda self, name: _swig_getattr(
+        self, TwoChannelTimeDifferences, name)
     __repr__ = _swig_repr
 
     def __init__(self, *args):
@@ -1480,26 +1342,21 @@ class TwoChannelTimeDifferences:
         """start(self)"""
         return _TimeTagger.TwoChannelTimeDifferences_start(self)
 
-
     def stop(self):
         """stop(self)"""
         return _TimeTagger.TwoChannelTimeDifferences_stop(self)
-
 
     def clear(self):
         """clear(self)"""
         return _TimeTagger.TwoChannelTimeDifferences_clear(self)
 
-
     def getCounts(self):
         """getCounts(self) -> int"""
         return _TimeTagger.TwoChannelTimeDifferences_getCounts(self)
 
-
     def setMaxCounts(self, c):
         """setMaxCounts(self, c)"""
         return _TimeTagger.TwoChannelTimeDifferences_setMaxCounts(self, c)
-
 
     def getData(self, *args):
         """
@@ -1507,7 +1364,6 @@ class TwoChannelTimeDifferences:
         getData(self, array_out)
         """
         return _TimeTagger.TwoChannelTimeDifferences_getData(self, *args)
-
 
     def getIndex(self, *args):
         """
@@ -1521,11 +1377,13 @@ class TwoChannelTimeDifferences:
 TwoChannelTimeDifferences_swigregister = _TimeTagger.TwoChannelTimeDifferences_swigregister
 TwoChannelTimeDifferences_swigregister(TwoChannelTimeDifferences)
 
+
 class Histogram:
     """Proxy of C++ Histogram class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Histogram, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, Histogram, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, Histogram, name)
     __repr__ = _swig_repr
@@ -1547,16 +1405,13 @@ class Histogram:
         """start(self)"""
         return _TimeTagger.Histogram_start(self)
 
-
     def stop(self):
         """stop(self)"""
         return _TimeTagger.Histogram_stop(self)
 
-
     def clear(self):
         """clear(self)"""
         return _TimeTagger.Histogram_clear(self)
-
 
     def getData(self, *args):
         """
@@ -1564,7 +1419,6 @@ class Histogram:
         getData(self, array_out)
         """
         return _TimeTagger.Histogram_getData(self, *args)
-
 
     def getIndex(self, *args):
         """
@@ -1580,11 +1434,13 @@ class Histogram:
 Histogram_swigregister = _TimeTagger.Histogram_swigregister
 Histogram_swigregister(Histogram)
 
+
 class Flim:
     """Proxy of C++ Flim class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Flim, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, Flim, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, Flim, name)
     __repr__ = _swig_repr
@@ -1596,7 +1452,8 @@ class Flim:
         __init__(self, tagger, _click_channel, _start_channel, _next_channel, _binwidth=1000) -> Flim
         __init__(self, tagger, _click_channel, _start_channel, _next_channel) -> Flim
         """
-        this = _TimeTagger.new_Flim(tagger, _click_channel, _start_channel, _next_channel, _binwidth, _n_bins, _n_histograms)
+        this = _TimeTagger.new_Flim(
+            tagger, _click_channel, _start_channel, _next_channel, _binwidth, _n_bins, _n_histograms)
         try:
             self.this.append(this)
         except __builtin__.Exception:
@@ -1606,16 +1463,13 @@ class Flim:
         """start(self)"""
         return _TimeTagger.Flim_start(self)
 
-
     def stop(self):
         """stop(self)"""
         return _TimeTagger.Flim_stop(self)
 
-
     def clear(self):
         """clear(self)"""
         return _TimeTagger.Flim_clear(self)
-
 
     def getData(self, *args):
         """
@@ -1623,7 +1477,6 @@ class Flim:
         getData(self, array_out)
         """
         return _TimeTagger.Flim_getData(self, *args)
-
 
     def getIndex(self, *args):
         """
@@ -1637,11 +1490,13 @@ class Flim:
 Flim_swigregister = _TimeTagger.Flim_swigregister
 Flim_swigregister(Flim)
 
+
 class Correlation:
     """Proxy of C++ Correlation class."""
 
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Correlation, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, Correlation, name, value)
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, Correlation, name)
     __repr__ = _swig_repr
@@ -1652,7 +1507,8 @@ class Correlation:
         __init__(self, tagger, _channel_1, _channel_2, _binwidth=1000) -> Correlation
         __init__(self, tagger, _channel_1, _channel_2) -> Correlation
         """
-        this = _TimeTagger.new_Correlation(tagger, _channel_1, _channel_2, _binwidth, _n_bins)
+        this = _TimeTagger.new_Correlation(
+            tagger, _channel_1, _channel_2, _binwidth, _n_bins)
         try:
             self.this.append(this)
         except __builtin__.Exception:
@@ -1662,16 +1518,13 @@ class Correlation:
         """start(self)"""
         return _TimeTagger.Correlation_start(self)
 
-
     def stop(self):
         """stop(self)"""
         return _TimeTagger.Correlation_stop(self)
 
-
     def clear(self):
         """clear(self)"""
         return _TimeTagger.Correlation_clear(self)
-
 
     def getData(self, *args):
         """
@@ -1679,7 +1532,6 @@ class Correlation:
         getData(self, array_out)
         """
         return _TimeTagger.Correlation_getData(self, *args)
-
 
     def getIndex(self, *args):
         """
@@ -1693,17 +1545,20 @@ class Correlation:
 Correlation_swigregister = _TimeTagger.Correlation_swigregister
 Correlation_swigregister(Correlation)
 
+
 class TimeDifferencesAFM(_Iterator):
     """Proxy of C++ TimeDifferencesAFM class."""
 
     __swig_setmethods__ = {}
     for _s in [_Iterator]:
         __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, TimeDifferencesAFM, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, TimeDifferencesAFM, name, value)
     __swig_getmethods__ = {}
     for _s in [_Iterator]:
         __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
-    __getattr__ = lambda self, name: _swig_getattr(self, TimeDifferencesAFM, name)
+    __getattr__ = lambda self, name: _swig_getattr(
+        self, TimeDifferencesAFM, name)
     __repr__ = _swig_repr
 
     def __init__(self, *args):
@@ -1736,7 +1591,6 @@ class TimeDifferencesAFM(_Iterator):
         """start(self)"""
         return _TimeTagger.TimeDifferencesAFM_start(self)
 
-
     def getData(self, *args):
         """
         getData(self)
@@ -1744,21 +1598,17 @@ class TimeDifferencesAFM(_Iterator):
         """
         return _TimeTagger.TimeDifferencesAFM_getData(self, *args)
 
-
     def setMaxCounts(self, c):
         """setMaxCounts(self, c)"""
         return _TimeTagger.TimeDifferencesAFM_setMaxCounts(self, c)
-
 
     def getCounts(self):
         """getCounts(self) -> int"""
         return _TimeTagger.TimeDifferencesAFM_getCounts(self)
 
-
     def ready(self):
         """ready(self) -> bool"""
         return _TimeTagger.TimeDifferencesAFM_ready(self)
-
 
     def clear(self):
         """clear(self)"""
@@ -1767,13 +1617,15 @@ class TimeDifferencesAFM(_Iterator):
 TimeDifferencesAFM_swigregister = _TimeTagger.TimeDifferencesAFM_swigregister
 TimeDifferencesAFM_swigregister(TimeDifferencesAFM)
 
+
 class ODMR(_Iterator):
     """Proxy of C++ ODMR class."""
 
     __swig_setmethods__ = {}
     for _s in [_Iterator]:
         __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, ODMR, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, ODMR, name, value)
     __swig_getmethods__ = {}
     for _s in [_Iterator]:
         __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
@@ -1782,7 +1634,8 @@ class ODMR(_Iterator):
 
     def __init__(self, tagger, _click_channel_apd1, _click_channel_apd2, _odmr_trigger, _freqswap_trigger, _n_odmr_samples):
         """__init__(self, tagger, _click_channel_apd1, _click_channel_apd2, _odmr_trigger, _freqswap_trigger, _n_odmr_samples) -> ODMR"""
-        this = _TimeTagger.new_ODMR(tagger, _click_channel_apd1, _click_channel_apd2, _odmr_trigger, _freqswap_trigger, _n_odmr_samples)
+        this = _TimeTagger.new_ODMR(tagger, _click_channel_apd1, _click_channel_apd2,
+                                    _odmr_trigger, _freqswap_trigger, _n_odmr_samples)
         try:
             self.this.append(this)
         except __builtin__.Exception:
@@ -1797,7 +1650,6 @@ class ODMR(_Iterator):
         """
         return _TimeTagger.ODMR_getData(self, *args)
 
-
     def getIndex(self, *args):
         """
         getIndex(self)
@@ -1805,21 +1657,17 @@ class ODMR(_Iterator):
         """
         return _TimeTagger.ODMR_getIndex(self, *args)
 
-
     def clear(self):
         """clear(self)"""
         return _TimeTagger.ODMR_clear(self)
-
 
     def getSample(self):
         """getSample(self) -> int"""
         return _TimeTagger.ODMR_getSample(self)
 
-
     def getNSamples(self):
         """getNSamples(self) -> int"""
         return _TimeTagger.ODMR_getNSamples(self)
-
 
     def getODMRRun(self):
         """getODMRRun(self) -> int"""
@@ -1828,13 +1676,15 @@ class ODMR(_Iterator):
 ODMR_swigregister = _TimeTagger.ODMR_swigregister
 ODMR_swigregister(ODMR)
 
+
 class SSRTimeTrace(_Iterator):
     """Proxy of C++ SSRTimeTrace class."""
 
     __swig_setmethods__ = {}
     for _s in [_Iterator]:
         __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, SSRTimeTrace, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, SSRTimeTrace, name, value)
     __swig_getmethods__ = {}
     for _s in [_Iterator]:
         __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
@@ -1843,7 +1693,8 @@ class SSRTimeTrace(_Iterator):
 
     def __init__(self, tagger, _click_channel_apd1, _click_channel_apd2, _ssr_trigger, _freqswap_trigger, _n_ssr, _n_memories):
         """__init__(self, tagger, _click_channel_apd1, _click_channel_apd2, _ssr_trigger, _freqswap_trigger, _n_ssr, _n_memories) -> SSRTimeTrace"""
-        this = _TimeTagger.new_SSRTimeTrace(tagger, _click_channel_apd1, _click_channel_apd2, _ssr_trigger, _freqswap_trigger, _n_ssr, _n_memories)
+        this = _TimeTagger.new_SSRTimeTrace(
+            tagger, _click_channel_apd1, _click_channel_apd2, _ssr_trigger, _freqswap_trigger, _n_ssr, _n_memories)
         try:
             self.this.append(this)
         except __builtin__.Exception:
@@ -1858,7 +1709,6 @@ class SSRTimeTrace(_Iterator):
         """
         return _TimeTagger.SSRTimeTrace_getData(self, *args)
 
-
     def getIndex(self, *args):
         """
         getIndex(self)
@@ -1866,26 +1716,21 @@ class SSRTimeTrace(_Iterator):
         """
         return _TimeTagger.SSRTimeTrace_getIndex(self, *args)
 
-
     def clear(self):
         """clear(self)"""
         return _TimeTagger.SSRTimeTrace_clear(self)
-
 
     def getMemory(self):
         """getMemory(self) -> int"""
         return _TimeTagger.SSRTimeTrace_getMemory(self)
 
-
     def getNMemory(self):
         """getNMemory(self) -> int"""
         return _TimeTagger.SSRTimeTrace_getNMemory(self)
 
-
     def getNSSR(self):
         """getNSSR(self) -> int"""
         return _TimeTagger.SSRTimeTrace_getNSSR(self)
-
 
     def getSSR(self):
         """getSSR(self) -> int"""
@@ -1894,17 +1739,20 @@ class SSRTimeTrace(_Iterator):
 SSRTimeTrace_swigregister = _TimeTagger.SSRTimeTrace_swigregister
 SSRTimeTrace_swigregister(SSRTimeTrace)
 
+
 class CountBetweenMarkers(_Iterator):
     """Proxy of C++ CountBetweenMarkers class."""
 
     __swig_setmethods__ = {}
     for _s in [_Iterator]:
         __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, CountBetweenMarkers, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, CountBetweenMarkers, name, value)
     __swig_getmethods__ = {}
     for _s in [_Iterator]:
         __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
-    __getattr__ = lambda self, name: _swig_getattr(self, CountBetweenMarkers, name)
+    __getattr__ = lambda self, name: _swig_getattr(
+        self, CountBetweenMarkers, name)
     __repr__ = _swig_repr
 
     def __init__(self, *args):
@@ -1925,11 +1773,9 @@ class CountBetweenMarkers(_Iterator):
         """clear(self)"""
         return _TimeTagger.CountBetweenMarkers_clear(self)
 
-
     def ready(self):
         """ready(self) -> bool"""
         return _TimeTagger.CountBetweenMarkers_ready(self)
-
 
     def getData(self, *args):
         """
@@ -1938,11 +1784,9 @@ class CountBetweenMarkers(_Iterator):
         """
         return _TimeTagger.CountBetweenMarkers_getData(self, *args)
 
-
     def getBinWidths(self):
         """getBinWidths(self)"""
         return _TimeTagger.CountBetweenMarkers_getBinWidths(self)
-
 
     def getDataBlocking(self, *args):
         """
@@ -1954,13 +1798,15 @@ class CountBetweenMarkers(_Iterator):
 CountBetweenMarkers_swigregister = _TimeTagger.CountBetweenMarkers_swigregister
 CountBetweenMarkers_swigregister(CountBetweenMarkers)
 
+
 class Counter(_Iterator):
     """Proxy of C++ Counter class."""
 
     __swig_setmethods__ = {}
     for _s in [_Iterator]:
         __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Counter, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, Counter, name, value)
     __swig_getmethods__ = {}
     for _s in [_Iterator]:
         __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
@@ -1985,14 +1831,12 @@ class Counter(_Iterator):
         """clear(self)"""
         return _TimeTagger.Counter_clear(self)
 
-
     def getData(self, *args):
         """
         getData(self)
         getData(self, array_out)
         """
         return _TimeTagger.Counter_getData(self, *args)
-
 
     def getIndex(self, *args):
         """
@@ -2004,13 +1848,15 @@ class Counter(_Iterator):
 Counter_swigregister = _TimeTagger.Counter_swigregister
 Counter_swigregister(Counter)
 
+
 class Countrate(_Iterator):
     """Proxy of C++ Countrate class."""
 
     __swig_setmethods__ = {}
     for _s in [_Iterator]:
         __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Countrate, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, Countrate, name, value)
     __swig_getmethods__ = {}
     for _s in [_Iterator]:
         __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
@@ -2034,7 +1880,6 @@ class Countrate(_Iterator):
         """
         return _TimeTagger.Countrate_getData(self, *args)
 
-
     def clear(self):
         """clear(self)"""
         return _TimeTagger.Countrate_clear(self)
@@ -2042,13 +1887,15 @@ class Countrate(_Iterator):
 Countrate_swigregister = _TimeTagger.Countrate_swigregister
 Countrate_swigregister(Countrate)
 
+
 class SingTag(_Iterator):
     """Proxy of C++ SingTag class."""
 
     __swig_setmethods__ = {}
     for _s in [_Iterator]:
         __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, SingTag, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(
+        self, SingTag, name, value)
     __swig_getmethods__ = {}
     for _s in [_Iterator]:
         __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
@@ -2075,6 +1922,3 @@ class SingTag(_Iterator):
 
 SingTag_swigregister = _TimeTagger.SingTag_swigregister
 SingTag_swigregister(SingTag)
-
-
-
