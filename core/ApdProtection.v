@@ -9,7 +9,8 @@
 // Project Name: 
 // Target Devices: 
 // Tool versions: 
-// Description: module to protect APDs by switching off the laser if the countrate exceeds a certain threshold. 
+// Description: module to protect APDs by switching off the laser if the countrate 
+// exceeds a certain threshold. 
 //
 // Dependencies: 
 //

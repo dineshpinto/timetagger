@@ -1,8 +1,8 @@
 INTSTYLE=ise
-INFILE=D:\TimeTagger\timetagger\core\TimeTaggerController.ncd
-OUTFILE=D:\TimeTagger\timetagger\core\TimeTaggerController.bit
+INFILE=/home/dpinto/timetagger/core/TimeTaggerController.ncd
+OUTFILE=/home/dpinto/timetagger/core/TimeTaggerController.bit
 FAMILY=Spartan3E
 PART=xc3s1200e-4ft256
-WORKINGDIR=D:\TimeTagger\timetagger\core
+WORKINGDIR=/home/dpinto/timetagger/core
 LICENSE=WebPack
-USER_INFO=211045688_0_0_514
+USER_INFO=211286851_0_0_658

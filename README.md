@@ -7,8 +7,7 @@ Building on Linux for Windows 32/64 bit systems.
 
 Dependencies (RPM) 
 ------------------
-Dependencies are stored in `requirements_rpm.txt` and can be 
-installed using `# dnf install $(cat requirements_rpm.txt)`
+Dependencies (for RPM based systems) are stored in `requirements_rpm.txt` and can be installed using `# dnf install $(cat requirements_rpm.txt)`
 
 
 Source-tree
@@ -84,11 +83,8 @@ system being unable to rebuild an index for the required build. Currently the re
 solution is to avoid using `make dist-clean` entirely. Use `make clean` instead.
 
 
-
-
-###############################################################################
-Original document INSTALL.txt
-###############################################################################
+Original document `INSTALL.txt`
+-------------------------------
 
 on linux:
 	the frontpanel libraray must be located either:

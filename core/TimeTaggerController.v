@@ -17,35 +17,35 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-//////////////////////////////////////////////////////////////////////////////////
-// top module of hte TimeTagger
+///////////////////////////////////////////////////////////////////////////////
+// top module of the TimeTagger
 // it connects three modules:
 // Tagger->Buffer->OpalKelly
-//////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 module TimeTaggerController #(parameter CHANNELS=8)(
-	input	 wire 						clk,		// tagger base clock
-	input	 wire [CHANNELS-1:0]		trig_ds_p,	// input line
-	input	 wire [CHANNELS-1:0]		trig_ds_n,
-   output 	 wire [7:0]                 gpio,
+	input	 wire 					clk,		// tagger base clock
+	input	 wire [CHANNELS-1:0]	trig_ds_p,	// input line
+	input	 wire [CHANNELS-1:0]	trig_ds_n,
+   output wire [7:0]          gpio,
 	
 	// Opal-Kelly Host Interface - USB chip connection
-	input	 wire [7:0]					hi_in,
-	output wire [1:0]					hi_out,
-	inout	 wire [15:0]				hi_inout,
-	output wire						hi_muxsel,
-	output wire						i2c_sda,
-	output wire						i2c_scl,
-	output wire [3:0]					led,
+	input	 wire [7:0]	 hi_in,
+	output wire [1:0]	 hi_out,
+	inout	 wire [15:0] hi_inout,
+	output wire			 hi_muxsel,
+	output wire			 i2c_sda,
+	output wire			 i2c_scl,
+	output wire [3:0]	 led,
 	
 	// SRAM connectors
-	input  wire						sdram_clk,
-	output wire [3:0]  				sdram_cmd,		
-	output wire [1:0]  				sdram_ba,
-	output wire [12:0] 				sdram_a,
-	inout  wire [15:0] 				sdram_d,
-	output wire 						sdram_ldqm,
-	output wire						sdram_udqm,
-	output wire						sdram_cke,
+	input  wire			 sdram_clk,
+	output wire [3:0]  sdram_cmd,		
+	output wire [1:0]  sdram_ba,
+	output wire [12:0] sdram_a,
+	inout  wire [15:0] sdram_d,
+	output wire 		 sdram_ldqm,
+	output wire			 sdram_udqm,
+	output wire			 sdram_cke,
 	
 	//DAC connector
 	output wire dac_sclk,
@@ -66,6 +66,7 @@ IBUFDS #(
 	.IFD_DELAY_VALUE("AUTO"),
 	.IOSTANDARD("DEFAULT")
 )
+
 lvds_input[CHANNELS-1:0] (
 	.I( trig_ds_p ),
 	.IB( trig_ds_n ),
@@ -73,76 +74,53 @@ lvds_input[CHANNELS-1:0] (
 );
 
 //////////////////
-// gpio         //
-//////////////////
-
-//version for t.oeckinghaus
-//assign gpio[0] = { trig[0] ^ trig[1] }; //first outout signal, copy photons
-//assign gpio[1] = { trig[0] ^ trig[1] };
-//assign gpio[2] = trig[6];
-//assign gpio[3+:5] = trig[7];
-
-//version t.häberle
-//assign gpio[0] = { trig[0] ^ trig[1] };
-//assign gpio[1+:7] = ~trig[2]; //just another routing of the input, negated due to negated output
-
-
-
-//////////////////
 // global wires //
 //////////////////
 
 wire 			tagger_enable;
-wire [31:0]		tagger_data;
+wire [31:0]	tagger_data;
 
 wire 			buffer_full;
 wire			buffer_empty;
-reg  [15:0]		buffer_dout;
+reg  [15:0]	buffer_dout;
 
 wire			ok_clk;
 wire			ok_read_enable;
-wire [15:0] 	ok_empty_thresh;
-wire [15:0] 	ok_enable_channel;
-wire [15:0]    ok_enable_calibration;
-wire		ok_enable_laser_filter;
+wire [15:0] ok_empty_thresh;
+wire [15:0] ok_enable_channel;
+wire [15:0] ok_enable_calibration;
+wire			ok_enable_laser_filter;
 
 wire			dac_wr_en;
-wire [31:0]		dac_din;
+wire [31:0]	dac_din;
 
 //==============================
-//added 17.06.2015, by n.abt
+
 wire			flipper;
-wire			photons;
 wire			testmemory;
+wire [15:0]	awg_data_part1;
+wire [15:0]	awg_data_part2;
+
+wire 			ssr;
+wire 			photon;
+wire 			swap;
+wire			readout;
+wire			reset_flipper;
+
+/*
 wire			flipper_reset;
-//added 30.07.2015, by n.abt
+wire			photons;
+*/
+
+// Shift register
+// added 30.07.2015, by n.abt
 wire			stream;
 wire			latch_clk;
 wire			shift_reset;
-wire [31:0]	awg_data_one;
-wire [15:0]	awg_data_two;
-//wire			flipper_extension;
-wire			reset_flipper;
-wire			shift_clock;
-
-//assign flipper_extension = flipper;
-
-assign photons = { trig[0] ^ trig[1] };
-
-//just photons at the output
-assign gpio[0] = { trig[0] ^ trig[1] };
-assign gpio[1+:7]  = ok_clk;
-
-//==============================
-//edited 17.06.2015, by n.abt
-//belongs to gpio, at this position, since flipper declaration is needed
-
-//assign gpio[0] = shift_clock; //clock that shifts the register and therefore writes in the bit sequence
-//assign gpio[2] = flipper;
-//assign gpio[3+:5] = reset_flipper;
-//assign gpio[1] = stream; //the bitstream is sent to the shift register, 30.07.2015
-//assign gpio[2] = latch_clk; //second output is for latching the shift register
-//assign gpio[3+:5] = shift_reset; //third ouput is for resetting the shift register
+// wire			flipper_extension;
+// wire [5:0]	count;
+wire count;
+// assign flipper_extension = flipper;
 
 
 ////////////////
@@ -157,7 +135,7 @@ TimeTagger #(.CHANNELS(CHANNELS*2)) tagger (
    .write_data(tagger_data), 
    .conf_enable_channel(ok_enable_channel),
    .conf_enable_laser_filter(ok_enable_laser_filter),
-	.conf_deadtimes(ok_deadtimes)
+   .conf_deadtimes(ok_deadtimes)
 );
 
 /////////////////
@@ -184,16 +162,16 @@ endgenerate
 ////////////
 // Buffer //
 ////////////
-wire [15:0] 	buffer_slow_data;
+wire [15:0] buffer_slow_data;
 wire			buffer_slow_empty;
 wire			buffer_out_full;
 wire			buffer_out_empty;
-wire [15:0] 	buffer_out_data;
+wire [15:0] buffer_out_data;
 reg 			buffer_send_empty;
-reg				buffer_clear_output;
+reg			buffer_clear_output;
+
 
 /*
-
 // small buffer in both clk domain, and convert 32bit to 16bit
 OutputBufferSmall output_buffer_small (
   .wr_clk(clk), // input wr_clk
@@ -212,7 +190,8 @@ OutputBuffer output_buffer (
   .clk(ok_clk), // input clk
   .din(buffer_slow_data), // input [15 : 0] din
   .wr_en(!buffer_out_full && !buffer_slow_empty), // input wr_en
-  .rd_en(ok_read_enable && !buffer_out_empty && !buffer_send_empty), // input rd_en
+	// input rd_en
+  .rd_en(ok_read_enable && !buffer_out_empty && !buffer_send_empty), 
   .prog_empty_thresh(ok_empty_thresh), // input [13 : 0] prog_empty_thresh
   .dout(buffer_out_data), // output [15 : 0] dout
   .full(buffer_out_full), // output full
@@ -249,7 +228,7 @@ RamFifo output_buffer (
     .sdram_a(sdram_a), 
     .sdram_d(sdram_d),
 	 .led(led)
-    );
+ );
 
 
 // if empty, send zeros
@@ -296,17 +275,18 @@ okHost okHI	(
 );
 
 // Opal Kelly output multiplexer
-okWireOR #(.N(N)) okOr ( ok2, ok2x );        // N = 3: 1 x okBTPipeOut pipe, 2 x okWireOut
+// N = 3: 1 x okBTPipeOut pipe, 2 x okWireOut
+okWireOR #(.N(N)) okOr ( ok2, ok2x );        
 
 // Opal Kelly block throttled output pipe
 okBTPipeOut okPipe ( 	
 	.ok1( ok1 ),
 	.ok2( ok2x[ 0*17 +: 17 ] ),
 	.ep_addr( 8'ha0 ),
-	.ep_datain( buffer_dout ),         // get data from fifo
-	.ep_read( ok_read_enable ),          // request data
+	.ep_datain( buffer_dout ),    // get data from fifo
+	.ep_read( ok_read_enable ),  	// request data
 	.ep_blockstrobe( ),
-	.ep_ready( !buffer_empty )        // fifo initalizes data transmission
+	.ep_ready( !buffer_empty )    // fifo initalizes data transmission
 );
 
 // fifo controllable full thresshold
@@ -324,14 +304,14 @@ okWireIn ep02 (
 
 // DAC data word
 okWireIn ep03 (
-        .ok1(ok1), 
-        .ep_addr(8'h03),
-        .ep_dataout( dac_din[15:0] )
+	  .ok1(ok1), 
+	  .ep_addr(8'h03),
+	  .ep_dataout( dac_din[15:0] )
 );
 okWireIn ep04 (
-        .ok1(ok1), 
-        .ep_addr(8'h04),
-        .ep_dataout( dac_din[31:16] )
+	  .ok1(ok1), 
+	  .ep_addr(8'h04),
+	  .ep_dataout( dac_din[31:16] )
 );
 
 // enable laser filter
@@ -374,12 +354,12 @@ okTriggerIn ep40 (
 DacDriver #(
     .CLK_DIV(0), // divide clock by two so we have 24 MHz (must be <50 MHz)
     .WIDTH(32),
-    .HOLD(3) // minimum sync high time is 80 ns, we use 125 ns
+    .HOLD(3)     // minimum sync high time is 80 ns, we use 125 ns
 )
 dac_driver (
-	.clk( ok_clk ), // 48 MHz clock
-	.din( dac_din),
-	.wr_en( dac_wr_en ),
+	.clk(ok_clk), // 48 MHz clock
+	.din(dac_din),
+	.wr_en(dac_wr_en),
 	.sclk(dac_sclk),
 	.sync(dac_sync),
 	.sdout(dac_sdout)
@@ -388,26 +368,21 @@ dac_driver (
 //===================== SSR =======================
 //added 17.06.2015 by n.abt
 
-//not needed when flipper_reset is used, but with this flipper can be set to zero and one
-//okWireIn FlipWireIn (
-//	.ok1( ok1 ),
-//	.ep_addr( 8'h07 ),
-//	.ep_dataout( flipper )
-//);
+// not needed when flipper_reset is used, but with this flipper can be set to 
+// zero and one set the flipper by hand
+/*okWireIn FlipWireIn (
+	.ok1( ok1 ),
+	.ep_addr( 8'h07 ),
+	.ep_dataout( flipper )
+);*/
 
-//if flipper_reset trigger comes, the flipper wire is set to zero, as well as the memories that count
+//if flipper_reset trigger comes, the flipper wire is set to zero, as well as 
+// the memories that count
 /*okWireIn FlipResetWireIn (
 	.ok1( ok1 ),
 	.ep_addr( 8'h09 ),
 	.ep_dataout( flipper_reset )
 );*/
-
-//set the flipper by hand
-//okWireIn FlipWireIn (
-//	.ok1( ok1 ),
-//	.ep_addr( 8'h07 ),
-//	.ep_dataout( flipper )
-//);
 
 //read the state of flipper out
 /*okWireOut FlipWireOut (
@@ -425,48 +400,89 @@ dac_driver (
 	.ep_datain( flipper_reset )
 );*/
 
-//ExtensionSingleShot Flipping (
-//	.photon( { trig[0] ^ trig[1] } ), //incoming photons that increase counts in memory 
-//	.swap( trig[2] ), //this should be the signal of the laser
-//	.ssr( trig[3] ), //this is the gate for the ssr. It is used to reset the memories
-//	.readout( trig[4] ), //this signal reads out the memories and leads to high or low on flipper
-//	.reset( reset_flipper ), //reset the flipper wire 
-//	.flip( flipper_extension ), //this is the output wire that is high when one of the memories is higher, i.e. memory one is higer, see ExtensionSingleShot
-//	.testmem( testmemory ) //this is the current memory
-//);
-
 //added 30.07.2015, serves for communication with AWG
-
 //provide the data which needs to sent to AWG as an adress in dynamic control. 
 
 okWireIn AWGDataOneWireIn (
 	.ok1( ok1 ),
 	.ep_addr( 8'h07 ),
-	.ep_dataout( awg_data_one )
+	.ep_dataout( awg_data_part1 )
 );
 
 okWireIn AWGDataTwoWireIn (
 	.ok1( ok1 ),
 	.ep_addr( 8'h08 ),
-	.ep_dataout( awg_data_two )
+	.ep_dataout( awg_data_part2 )
 );
 
-/*Bitstream BitstreamtoShiftRegister (
-	.flip( flipper ), //receives flipper
-	.clock( ok_clk ), //clock which is responsible for sending the 32 bits
-	.data_one( 16'b1100110011001100 ),
-	.data_two( 16'b1100110011001100 ),
-	.photons( { trig[0] ^ trig[1] } ), //incoming photons that increase counts in memory 
-	.swap( trig[2] ), //this should be the signal of the laser
-	.ssr( trig[3] ), //this is the gate for the ssr. It is used to reset the memories
-	.readout( trig[4] ), //this signal reads out the memories and leads to high or low on flipper
-	.bitstream( stream ), //this streams data_one/two to the shift_register
-	.latch_clock( latch_clk ), //latch the 16 bit to the output of the shift register
-	.shift_reg_reset( shift_reset ), //reset the shift_register for the next round
-	.shift_clock( shift_clock ), //clock that shifts the bits in the register and also is responsible for the output from bitstreamtoshiftregister
-	.testmemory( testmemory ),
-	.clock_enable( 0 ),
-	.reset( reset_flipper )
-);*/
+
+// Null signal for useless outputs
+(* keep="soft" *)
+wire null_wire;
+
+// Triggers are inverted by default
+assign ssr 				= ~trig[0];
+assign photon 			= ~trig[1];
+assign reset_flipper 	= ~trig[2];
+assign readout 		= ~trig[3];
+assign swap 			= ~trig[4];
+
+/*
+ExtensionSingleShot
+===================
+ssr		: Initializes the memories
+readout	: Tiggers memory readout
+swap		: Switches current_memory from 1 to 0 (or 0 to 1)
+photon	: Single photon count
+reset		: Resets flipper to 0
+flip		: Output of memories, HIGH when memory_one is higher  
+testmem	: Stores current_memory (testing only)
+*/
+
+ExtensionSingleShot Flipping (
+	.ssr(ssr), 
+	.readout(readout),
+	.swap(swap), 
+	.photon(photon), 
+	.reset(reset_flipper), 
+	.flip(flipper), 	
+	.testmem(testmemory) 
+);
+
+/*
+Bitstream
+=========
+flip					: Result of comparison of two memories
+clock 				: External clock driving output from FPGA 
+data_one				: Highest 5 bits of jump address 
+data_two				: Lower 13 bits of jump address
+reset_ss				: Resets flipper in ExtensionSingleShot, when all 32 bits are sent
+bitstream			: Streams data_one/data_two to the shift reg.
+shift_reg_reset	: Reset the shift_register
+latch_clock			: Latch the 16 bit to the output of the shift register
+count_it				: Test lowest bit of counter is switching between 0 & 1 
+						  with clock (testing only)
+*/
+/*
+Bitstream BitstreamtoShiftRegister (
+	.flip(flipper),
+	.clock(ok_clk),
+	.data_part1(awg_data_part1),
+	.data_part2(awg_data_part2),
+	.reset_singleshot(reset_flipper),
+	.select_bitstream_part(stream),
+	.shift_reg_reset(shift_reset),
+	.count_it(count)
+);
+*/
+//////////////////
+// gpio         //
+//////////////////
+
+// All trig signals are inverted by default
+assign gpio[0] = flipper;
+//assign gpio[1] = null_wire;
+//assign gpio[2] = stream;
+//assign gpio[3] = count;
 
 endmodule

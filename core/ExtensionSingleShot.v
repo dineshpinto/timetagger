@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Company: University of Stuttgart
 // Engineer: Nikolas Abt
 // 
@@ -17,123 +17,74 @@
 // Revision 0.01 - File Created
 // Additional Comments: 
 //
-//////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+/*
+ExtensionSingleShot
+===================
+ssr		: Initializes the memories
+readout	: Tiggers memory readout
+swap		: Switches current_memory from 1 to 0 (or 0 to 1)
+photon	: Single photon count
+reset		: Resets flipper to 0
+flip		: Output of memories, HIGH when memory_one is higher  
+testmem	: Stores current_memory (testing only)
+*/
+
 module ExtensionSingleShot (
-	input wire photon,
-	input wire swap,
 	input wire ssr,
 	input wire readout,
-	input reset,
+	input wire swap,
+	input wire photon,
+	input wire reset,
 	output wire flip,
-	output wire testmem,
-	output wire resetter
+	output wire testmem
 	);
-	
-	/*
-	module ExtensionSingleShot (parameter n_memories) ( 
-	add this if there will be more than two memories.
-	*/
-	
+		
 	reg [24:0] memory_one;
 	reg [24:0] memory_two;
-	
-	/*
-	reg [24:0] memory [n_memories:0]
-	This is the starting point for several memories. If multiple memories are used, one have to think about a new memory swap and diff to decide what to do
-	*/
-	
-	reg [23:0] diff;
-	reg swapper;
 	reg current_memory;
-	
 	reg flipper;
 	
-	/*
-	XOR operation. 
-	
-	current_memory | swapper| "new" current_memory
-	------------------------------------------
-			0				0		|			0
-			0				1		|			1
-			1				0		|			1
-			1				1		|			0
-			
-	This operation swaps the current memory in dependence of a swap signal. 
-	*/	
-
-	always@(posedge swap, posedge ssr) begin
-		if( ssr )
+	// Initialization of memory_one and memory_two by ssr to state 0 and 
+	// current_memory to state 1
+	always @(posedge ssr or posedge swap) begin
+		if (ssr)
 			current_memory <= 1'b1;
-		else if ( swap )
+		else if (swap)
 			current_memory <= !(current_memory);
-	end	
+	end
 	
-	//This is the signal that carries out the current memory
-	assign testmem = current_memory;
+	// Carries out the current memory
+	assign testmem = current_memory;	
 		
-	always@(posedge ssr, posedge photon, posedge testmem) begin
-		//if ssr is high, then the memories will be set to zero, to have a proper starting point.
-		//The current memory is set to one, because if the first laser swap comes, the memory should be the first one.
-		if( ssr ) 
-		begin
+	// Check state of current_memory and assign memory accordingly
+	always @(posedge ssr or posedge photon or posedge testmem) begin
+		if (ssr) begin
 			memory_one <= 23'b0;
 			memory_two <= 23'b0;
-			//current_memory <= 1'b1;
 		end
-		//else if(swap) begin
-		//	current_memory <= !(current_memory);
-		//end		
-		else
-		begin
-			//When the laser is on, the memory will be swapped to the other one.
-			/*if( swap )
-			begin
-				current_memory <= !(current_memory);
-			end*/
-			//If a photon comes, the respective memories will be increased.
-			if( photon )
-			begin
-				if(testmem)
-					memory_two <= memory_two + 23'b1;
-				else
-					memory_one <= memory_one + 23'b1;
-				//if(current_memory == 1'b0)
-				//	memory_one <= memory_one + 23'b1;
-				//else if(current_memory == 1'b1)
-				//	memory_two <= memory_two + 23'b1;
-			end
-		end
-	end
-	
-	/*
-	//This is another realization, without the possibility of reset with ssr.
-	always@(posedge swap) begin
-			current_memory = !(current_memory);
-	end	
-	always@(posedge photon) begin
-			if(current_memory == 1'b0)
+		else if (photon) begin
+			if (testmem)
 				memory_one <= memory_one + 23'b1;
-			else if(current_memory == 1'b1)
-				memory_two <= memory_two + 23'b1;
-	end
-	*/
-	
-	assign resetter = reset;
-	
-	//When the readout comes, we compare the two memories. When the first memory is higher, then a signal will be sent.
-	always @(posedge readout, posedge reset) begin
-		//diff = memory_one - memory_two;
-		if(readout) begin
-			if( memory_two < memory_one )
-				flipper = 1'b1;
 			else
-				flipper = 1'b0;
+				memory_two <= memory_two + 23'b1;
 		end
-		if(reset)
-			flipper = 1'b0;
-	end	
+	end
 	
-	//This is the output depending on the memories.
+	// Compare memories and set flipper HIGH is memory_one is larger
+	always @(posedge readout or posedge reset) begin
+		if (reset)
+			flipper <= 1'b0;
+		else if (readout) begin
+			if (memory_one > memory_two)
+				flipper <= 1'b1;		
+			else
+				flipper <= 1'b0;
+		end
+	end	
+
+	// Carries output of HIGH or LOW based on flipper
 	assign flip = flipper;
 	
 endmodule 

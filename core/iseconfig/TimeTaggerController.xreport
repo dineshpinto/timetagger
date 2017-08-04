@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2017-04-21T16:46:50</DateModified>
+  <DateModified>2017-08-04T12:40:11</DateModified>
   <ModuleName>TimeTaggerController</ModuleName>
-  <SummaryTimeStamp>2015-09-04T08:17:50</SummaryTimeStamp>
-  <SavedFilePath>D:/TimeTagger/timetagger/core/iseconfig/TimeTaggerController.xreport</SavedFilePath>
-  <ImplementationReportsDirectory>D:/TimeTagger/timetagger/core\</ImplementationReportsDirectory>
+  <SummaryTimeStamp>2017-08-04T12:38:49</SummaryTimeStamp>
+  <SavedFilePath>/home/dpinto/timetagger/core/iseconfig/TimeTaggerController.xreport</SavedFilePath>
+  <ImplementationReportsDirectory>/home/dpinto/timetagger/core/</ImplementationReportsDirectory>
   <DateInitialized>2015-05-08T11:31:49</DateInitialized>
   <EnableMessageFiltering>true</EnableMessageFiltering>
  </header>

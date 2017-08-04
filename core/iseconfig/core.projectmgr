@@ -7,30 +7,35 @@
    <ItemView engineview="SynthesisOnly" guiview="Source" compilemode="AutoCompile" >
       <ClosedNodes>
          <ClosedNodesVersion>2</ClosedNodesVersion>
+         <ClosedNode>/Bitstream |home|dinesh|HiWi|legacy|TimeTagger|timetagger|core|Bitstream.v</ClosedNode>
          <ClosedNode>/RamFifo C:|Users|User|Documents|TimeTagger|timetagger|core|RamFifo.v</ClosedNode>
+         <ClosedNode>/TaggerBcdConverter |home|dinesh|HiWi|current|timetagger|core|TaggerBcdConverter.v</ClosedNode>
          <ClosedNode>/TimeTagger C:|Users|User|Documents|TimeTagger|timetagger|core|TimeTagger.v/tagger_filter - TaggerFilter</ClosedNode>
          <ClosedNode>/TimeTagger C:|Users|User|Documents|TimeTagger|timetagger|core|TimeTagger.v/tagger_input - TaggerInput</ClosedNode>
          <ClosedNode>/TimeTagger C:|Users|User|Documents|TimeTagger|timetagger|core|TimeTagger.v/tagger_purifier - TaggerPurifier</ClosedNode>
          <ClosedNode>/TimeTaggerController C:|Users|User|Documents|TimeTagger|timetagger|core|TimeTaggerController.v/output_buffer - RamFifo</ClosedNode>
          <ClosedNode>/TimeTaggerController C:|Users|User|Documents|TimeTagger|timetagger|core|TimeTaggerController.v/tagger - TimeTagger/tagger_input - TaggerInput/falling - TaggerBcdConverterFalling</ClosedNode>
          <ClosedNode>/TimeTaggerController C:|Users|User|Documents|TimeTagger|timetagger|core|TimeTaggerController.v/tagger - TimeTagger/tagger_input - TaggerInput/raising - TaggerBcdConverterRaising</ClosedNode>
-         <ClosedNode>/TimeTaggerController D:|TimeTagger|timetagger|core|TimeTaggerController.v/tagger - TimeTagger/tagger_filter - TaggerFilter</ClosedNode>
-         <ClosedNode>/TimeTaggerController D:|TimeTagger|timetagger|core|TimeTaggerController.v/tagger - TimeTagger/tagger_input - TaggerInput</ClosedNode>
-         <ClosedNode>/TimeTaggerController D:|TimeTagger|timetagger|core|TimeTaggerController.v/tagger - TimeTagger/tagger_purifier - TaggerPurifier/tagger_buffer - TaggerBuffer</ClosedNode>
+         <ClosedNode>/TimeTaggerController |home|dinesh|HiWi|current|timetagger|core|TimeTaggerController.v/okHI - okHost</ClosedNode>
+         <ClosedNode>/TimeTaggerController |home|dinesh|HiWi|current|timetagger|core|TimeTaggerController.v/output_buffer - RamFifo</ClosedNode>
+         <ClosedNode>/TimeTaggerController |home|dinesh|HiWi|current|timetagger|core|TimeTaggerController.v/tagger - TimeTagger</ClosedNode>
+         <ClosedNode>/okHost_XEM5010 |home|dinesh|HiWi|current|timetagger|core|okLibrary.v</ClosedNode>
+         <ClosedNode>/okHost_XEM5010 |home|dinesh|HiWi|legacy|TimeTagger|timetagger|core|okLibrary.v</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem>TimeTaggerController (D:/TimeTagger/timetagger/core/TimeTaggerController.v)</SelectedItem>
+         <SelectedItem>TimeTaggerController (/home/dpinto/timetagger/core/TimeTaggerController.v)</SelectedItem>
       </SelectedItems>
-      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
+      <ScrollbarPosition orientation="vertical" >21</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000202000000010000000100000064000001cc000000020000000000000000000000000200000064ffffffff000000810000000300000002000001cc0000000100000003000000000000000100000003</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000202000000010000000100000064000002b7000000020000000000000000000000000200000064ffffffff000000810000000300000002000002b70000000100000003000000000000000100000003</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >true</UserChangedColumnWidths>
-      <CurrentItem>TimeTaggerController (D:/TimeTagger/timetagger/core/TimeTaggerController.v)</CurrentItem>
+      <CurrentItem>TimeTaggerController (/home/dpinto/timetagger/core/TimeTaggerController.v)</CurrentItem>
    </ItemView>
    <ItemView engineview="SynthesisOnly" sourcetype="DESUT_VERILOG" guiview="Process" >
       <ClosedNodes>
          <ClosedNodesVersion>1</ClosedNodesVersion>
          <ClosedNode>Configure Target Device</ClosedNode>
+         <ClosedNode>Design Utilities</ClosedNode>
          <ClosedNode>Implement Design/Map</ClosedNode>
          <ClosedNode>Implement Design/Map/Generate Post-Map Static Timing</ClosedNode>
          <ClosedNode>Implement Design/Place &amp; Route</ClosedNode>
@@ -41,9 +46,9 @@
       <SelectedItems>
          <SelectedItem>Generate Programming File</SelectedItem>
       </SelectedItems>
-      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
+      <ScrollbarPosition orientation="vertical" >5</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff0000000000000001000000010000000000000000000000000000000000000000000000017e000000010000000100000000000000000000000064ffffffff0000008100000000000000010000017e0000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000266000000010000000100000000000000000000000064ffffffff000000810000000000000001000002660000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
       <CurrentItem>Generate Programming File</CurrentItem>
    </ItemView>
@@ -52,11 +57,11 @@
          <ClosedNodesVersion>1</ClosedNodesVersion>
       </ClosedNodes>
       <SelectedItems/>
-      <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
+      <ScrollbarPosition orientation="vertical" >18</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000000000000010000000000000000000000000000000000000392000000040101000100000000000000000000000064ffffffff000000810000000000000004000000ab0000000100000000000000d70000000100000000000000660000000100000000000001aa0000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000000000000010000000000000000000000000000000000000390000000040101000100000000000000000000000064ffffffff000000810000000000000004000000ab0000000100000000000000d70000000100000000000000660000000100000000000001a80000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem>BcdConverterTest.v</CurrentItem>
+      <CurrentItem>ApdProtection.v</CurrentItem>
    </ItemView>
    <ItemView guiview="Library" >
       <ClosedNodes>
@@ -66,11 +71,11 @@
       <SelectedItems/>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000000000000010000000000000000000000000000000000000109000000010001000100000000000000000000000064ffffffff000000810000000000000001000001090000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff0000000000000001000000000000000001000000000000000000000000000000000000039f000000010001000100000000000000000000000064ffffffff0000008100000000000000010000039f0000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
       <CurrentItem>work</CurrentItem>
    </ItemView>
-   <SourceProcessView>000000ff0000000000000002000001f00000017601000000050100000002</SourceProcessView>
+   <SourceProcessView>000000ff00000000000000020000021e0000009101000000050100000002</SourceProcessView>
    <CurrentView>Implementation</CurrentView>
    <ItemView engineview="SynthesisOnly" sourcetype="" guiview="Process" >
       <ClosedNodes>
@@ -78,27 +83,26 @@
          <ClosedNode>Design Utilities</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem/>
+         <SelectedItem></SelectedItem>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff0000000000000001000000010000000000000000000000000000000000000000000000017e000000010000000100000000000000000000000064ffffffff0000008100000000000000010000017e0000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000275000000010000000100000000000000000000000064ffffffff000000810000000000000001000002750000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem/>
+      <CurrentItem></CurrentItem>
    </ItemView>
    <ItemView engineview="SynthesisOnly" sourcetype="DESUT_XCO" guiview="Process" >
       <ClosedNodes>
          <ClosedNodesVersion>1</ClosedNodesVersion>
-         <ClosedNode>CORE Generator</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem/>
+         <SelectedItem>CORE Generator</SelectedItem>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000000000000000001fe000000010000000100000000000000000000000064ffffffff000000810000000000000001000001fe0000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000275000000010000000100000000000000000000000064ffffffff000000810000000000000001000002750000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem/>
+      <CurrentItem>CORE Generator</CurrentItem>
    </ItemView>
    <ItemView engineview="SynthesisOnly" sourcetype="DESUT_UCF" guiview="Process" >
       <ClosedNodes>
@@ -106,33 +110,39 @@
          <ClosedNode>User Constraints</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem/>
+         <SelectedItem></SelectedItem>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000206000000010000000100000000000000000000000064ffffffff000000810000000000000001000002060000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000000000000000000275000000010000000100000000000000000000000064ffffffff000000810000000000000001000002750000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem/>
+      <CurrentItem></CurrentItem>
    </ItemView>
    <ItemView engineview="BehavioralSim" guiview="Source" compilemode="AutoCompile" >
       <ClosedNodes>
          <ClosedNodesVersion>2</ClosedNodesVersion>
          <ClosedNode>/BcdConverterTest C:|Users|User|Documents|TimeTagger|timetagger|core|BcdConverterTest.v</ClosedNode>
-         <ClosedNode>/BcdConverterTest D:|TimeTagger|timetagger|core|BcdConverterTest.v</ClosedNode>
+         <ClosedNode>/BcdConverterTest |home|dinesh|HiWi|current|timetagger|core|BcdConverterTest.v</ClosedNode>
+         <ClosedNode>/BcdConverterTest |home|dinesh|HiWi|current|timetagger|core|BcdConverterTest.v/tagger_bcd_converter - TaggerBcdConverterFalling</ClosedNode>
+         <ClosedNode>/Bitstream |home|dinesh|HiWi|current|timetagger|core|Bitstream.v</ClosedNode>
          <ClosedNode>/RamFifo C:|Users|User|Documents|TimeTagger|timetagger|core|RamFifo.v</ClosedNode>
+         <ClosedNode>/RamFifo |home|dinesh|HiWi|current|timetagger|core|RamFifo.v</ClosedNode>
          <ClosedNode>/TaggerBcdConverter C:|Users|User|Documents|TimeTagger|timetagger|core|TaggerBcdConverter.v</ClosedNode>
+         <ClosedNode>/TaggerBcdConverter |home|dinesh|HiWi|current|timetagger|core|TaggerBcdConverter.v</ClosedNode>
          <ClosedNode>/TimeTaggerTest C:|Users|User|Documents|TimeTagger|timetagger|core|TimeTaggerTest.v</ClosedNode>
+         <ClosedNode>/TimeTaggerTest |home|dinesh|HiWi|current|timetagger|core|TimeTaggerTest.v</ClosedNode>
          <ClosedNode>/okHost C:|Users|User|Documents|TimeTagger|timetagger|core|okLibrary.v</ClosedNode>
+         <ClosedNode>/okHost |home|dinesh|HiWi|current|timetagger|core|okLibrary.v</ClosedNode>
          <ClosedNode>/okHost_XEM5010 C:|Users|User|Documents|TimeTagger|timetagger|core|okLibrary.v</ClosedNode>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem>Left_Right_SSR - ExtensionSingleShot (D:/TimeTagger/timetagger/core/ExtensionSingleShot.v)</SelectedItem>
+         <SelectedItem>xc3s1200e-4ft256</SelectedItem>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000020200000001000000010000006400000254000000020000000000000000000000000200000064ffffffff000000810000000300000002000002540000000100000003000000000000000100000003</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff00000000000000010000000100000000000000000000000000000000020200000001000000010000006400000168000000020000000000000000000000000200000064ffffffff000000810000000300000002000001680000000100000003000000000000000100000003</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >true</UserChangedColumnWidths>
-      <CurrentItem>Left_Right_SSR - ExtensionSingleShot (D:/TimeTagger/timetagger/core/ExtensionSingleShot.v)</CurrentItem>
+      <CurrentItem>xc3s1200e-4ft256</CurrentItem>
    </ItemView>
    <ItemView engineview="BehavioralSim" sourcetype="" guiview="Process" >
       <ClosedNodes>
@@ -144,7 +154,7 @@
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff0000000000000001000000010000000000000000000000000000000000000000000000017e000000010000000100000000000000000000000064ffffffff0000008100000000000000010000017e0000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000000000000000001d8000000010000000100000000000000000000000064ffffffff000000810000000000000001000001d80000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
       <CurrentItem/>
    </ItemView>
@@ -153,13 +163,13 @@
          <ClosedNodesVersion>1</ClosedNodesVersion>
       </ClosedNodes>
       <SelectedItems>
-         <SelectedItem>Simulate Behavioral Model</SelectedItem>
+         <SelectedItem/>
       </SelectedItems>
       <ScrollbarPosition orientation="vertical" >0</ScrollbarPosition>
       <ScrollbarPosition orientation="horizontal" >0</ScrollbarPosition>
-      <ViewHeaderState orientation="horizontal" >000000ff0000000000000001000000010000000000000000000000000000000000000000000000017e000000010000000100000000000000000000000064ffffffff0000008100000000000000010000017e0000000100000000</ViewHeaderState>
+      <ViewHeaderState orientation="horizontal" >000000ff000000000000000100000001000000000000000000000000000000000000000000000001d8000000010000000100000000000000000000000064ffffffff000000810000000000000001000001d80000000100000000</ViewHeaderState>
       <UserChangedColumnWidths orientation="horizontal" >false</UserChangedColumnWidths>
-      <CurrentItem>Simulate Behavioral Model</CurrentItem>
+      <CurrentItem/>
    </ItemView>
    <ItemView engineview="PostTransSim" guiview="Source" compilemode="AutoCompile" >
       <ClosedNodes>
