@@ -2,7 +2,7 @@
 #include <iostream>
 #include <list>
 #include <thread>
-
+#include <vector>
 #include "TimeTagger.h"
 
 
@@ -314,6 +314,228 @@ private:
     int current_memory;
 
     int *data;
+};
+
+
+class SSRTimeTraceVM: public _Iterator 
+{
+    public:
+        /**
+        \brief Generalization of SSR to variable memory sizes
+        \author Dinesh Pinto <st151332@stud.uni-stuttgart.de>
+        *   @version 1.0
+
+        *   @param tagger               Reference to a TimeTagger instance
+        *   @param _click_channel_apd1  Channel counting photons from detector 1
+        *   @param _click_channel_apd2  Channel counting photons from detector 2
+        *   @param _ssr_trigger         Channel starting a SSR measurement
+        *   @param _freqswap_channel    Channel switching between memories at MW pulse
+        *   @param _n_ssr               Number of SSR measurements
+        *   @param _memories            Vector of memory sizes
+        **/
+
+        SSRTimeTraceVM(
+            TimeTagger* tagger, 
+            channel_t _click_channel_apd1, 
+            channel_t _click_channel_apd2, 
+            channel_t _ssr_trigger, 
+            channel_t _freqswap_trigger, 
+            int _n_ssr, 
+                std::vector<int> _memories
+        ) : _Iterator(tagger) 
+        {
+
+            click_channel_apd1 = _click_channel_apd1;
+            click_channel_apd2 = _click_channel_apd2;
+            ssr_trigger = _ssr_trigger;
+            freqswap_trigger = _freqswap_trigger;
+
+            n_ssr = _n_ssr;
+            memories = _memories;
+
+            swap_idx = 0;
+            mem_idx = 0;
+            current_ssr = -1;
+
+            registerChannel(click_channel_apd1);
+            registerChannel(click_channel_apd2);
+            registerChannel(ssr_trigger);
+            registerChannel(freqswap_trigger);
+
+            int n_memories = 0;
+            for (std::vector<int>::iterator it = 
+                memories.begin(); it != memories.end(); it++)
+            {
+                n_memories += *it;
+            }
+            std::vector<int> data(n_ssr * n_memories);
+
+            clear();
+
+            start();
+
+        }
+
+        virtual ~SSRTimeTraceVM() 
+        {
+            stop();
+            // if(data)
+            //     delete [] data;
+        }
+
+        // TimeDifferences method to get data
+        GET_DATA_2D(getData, int, array_out) 
+        {
+            // Pointer to array used internally by vector. 
+            // Pretends to be a C-style array for swig wrapper.
+            int* _data = &data[0];
+
+            if(!_data)
+            { 
+                return;
+            }
+
+            int *arr = array_out(n_ssr, n_memories);
+
+            if(!arr)
+            {
+                return;
+            }
+
+            lock();
+
+            for (int i=0;i<n_ssr*n_memories;i++) 
+            {
+                arr[i] = _data[i];
+            }
+
+            unlock();
+        }
+
+        GET_DATA_1D(getIndex, timestamp_t, array_out) 
+        {
+            timestamp_t* arr = array_out(n_ssr);
+
+            for (int i=0; i<n_ssr; i++) 
+            {
+                arr[i] = n_ssr;
+            }
+        }  
+
+        virtual void clear() 
+        {
+            lock();
+
+            std::fill(data.begin(), data.end(), 0);
+
+            swap_idx = 0;
+            mem_idx = 0;
+            current_ssr = -1;
+
+            unlock();
+        }
+
+        std::tuple<int, int> getMemory() 
+        {
+            lock();
+            return {mem_idx, swap_idx};
+            unlock();
+        }
+
+        int getNMemory() 
+        {
+            lock();
+            return n_memories;
+            unlock();
+        }
+
+        int getNSSR() 
+        {
+            lock();
+            return n_ssr;
+            unlock();
+        }
+
+        int getSSR() 
+        {
+            lock();
+            return current_ssr;
+            unlock();
+        }
+
+    protected:
+        virtual void next(Tag* list, int count, timestamp_t time) 
+        {
+            for (int i=0;i<count;i++)
+            {
+                Tag t = list[i];
+                if (current_ssr < n_ssr)
+                {
+                    if (t.chan == ssr_trigger)
+                    {
+                        current_ssr++;
+                        swap_idx = 0;
+                        mem_idx = 0;
+
+                        for (int i=0;i<current_ssr;i++)
+                        {
+                            mem_idx += memories[i];  
+                        }
+                    }
+
+                    if (t.chan == freqswap_trigger)
+                    {
+                        if (current_ssr == -1)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            swap_idx++;
+                            if (swap_idx == 
+                                memories[(current_ssr) % memories.size()])
+                            {  
+                                swap_idx = 0;
+                            }
+                        }
+                    }
+
+                    if (t.chan == click_channel_apd1 || 
+                        t.chan == click_channel_apd2)
+                    {
+                        if (current_ssr == -1)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            data[mem_idx + swap_idx]++;
+                        }
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+            }  
+        }
+
+    private:
+        channel_t click_channel_apd1;
+        channel_t click_channel_apd2;
+        channel_t ssr_trigger;
+        channel_t freqswap_trigger;
+
+        std::vector<int> memories;
+        std::vector<int> data;
+
+        int n_ssr;
+        int n_memories;
+
+        int swap_idx;
+        int mem_idx;
+        int current_ssr;
+
 };
 
 

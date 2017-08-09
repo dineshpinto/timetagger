@@ -1894,6 +1894,72 @@ class SSRTimeTrace(_Iterator):
 SSRTimeTrace_swigregister = _TimeTagger.SSRTimeTrace_swigregister
 SSRTimeTrace_swigregister(SSRTimeTrace)
 
+class SSRTimeTraceVM(_Iterator):
+    """Proxy of C++ SSRTimeTraceVM class."""
+
+    __swig_setmethods__ = {}
+    for _s in [_Iterator]:
+        __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, SSRTimeTraceVM, name, value)
+    __swig_getmethods__ = {}
+    for _s in [_Iterator]:
+        __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
+    __getattr__ = lambda self, name: _swig_getattr(self, SSRTimeTraceVM, name)
+    __repr__ = _swig_repr
+
+    def __init__(self, tagger, _click_channel_apd1, _click_channel_apd2, _ssr_trigger, _freqswap_trigger, _n_ssr, _memories):
+        """__init__(self, tagger, _click_channel_apd1, _click_channel_apd2, _ssr_trigger, _freqswap_trigger, _n_ssr, _memories) -> SSRTimeTraceVM"""
+        this = _TimeTagger.new_SSRTimeTraceVM(tagger, _click_channel_apd1, _click_channel_apd2, _ssr_trigger, _freqswap_trigger, _n_ssr, _memories)
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+    __swig_destroy__ = _TimeTagger.delete_SSRTimeTraceVM
+    __del__ = lambda self: None
+
+    def getData(self, *args):
+        """
+        getData(self)
+        getData(self, array_out)
+        """
+        return _TimeTagger.SSRTimeTraceVM_getData(self, *args)
+
+
+    def getIndex(self, *args):
+        """
+        getIndex(self)
+        getIndex(self, array_out)
+        """
+        return _TimeTagger.SSRTimeTraceVM_getIndex(self, *args)
+
+
+    def clear(self):
+        """clear(self)"""
+        return _TimeTagger.SSRTimeTraceVM_clear(self)
+
+
+    def getMemory(self):
+        """getMemory(self) -> std::tuple< int,int >"""
+        return _TimeTagger.SSRTimeTraceVM_getMemory(self)
+
+
+    def getNMemory(self):
+        """getNMemory(self) -> int"""
+        return _TimeTagger.SSRTimeTraceVM_getNMemory(self)
+
+
+    def getNSSR(self):
+        """getNSSR(self) -> int"""
+        return _TimeTagger.SSRTimeTraceVM_getNSSR(self)
+
+
+    def getSSR(self):
+        """getSSR(self) -> int"""
+        return _TimeTagger.SSRTimeTraceVM_getSSR(self)
+
+SSRTimeTraceVM_swigregister = _TimeTagger.SSRTimeTraceVM_swigregister
+SSRTimeTraceVM_swigregister(SSRTimeTraceVM)
+
 class CountBetweenMarkers(_Iterator):
     """Proxy of C++ CountBetweenMarkers class."""
 

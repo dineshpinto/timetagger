@@ -1,7 +1,7 @@
 /*
     backend for TimeTagger, an OpalKelly based single photon counting library
     Copyright (C) 2011  Markus Wick <wickmarkus@web.de>
-    Copyright (C) 2013  Mario Gliewe <mag@bonitaposse.net>
+    Copyright (C) 2013  Mario Gliewe <mag@bonitapo	e.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
