@@ -6,8 +6,11 @@ Building on Linux with a Windows 32/64 bit system build target.
 
 Dependencies (RPM) 
 ------------------
-Dependencies (for RPM based systems) are stored in `requirements_rpm.txt` and can be installed using `# dnf install $(cat requirements_rpm.txt)`
+Dependencies (for RPM based systems) are stored in `requirements_rpm.txt` and can be installed using 
 
+```shell
+dnf install $(cat requirements_rpm.txt)
+```
 
 Source-tree
 -----------
@@ -37,19 +40,19 @@ Make targets:
 -------------
     all:			- build backend, timetaggerd and documentation
     clean:			- cleanup sourcetree for clean build
-    dist-clean			- tidy sourcetree for repository check-in (see Issues)
+    dist-clean		- tidy sourcetree for repository check-in (see Issues)
     dist:			- collect ditribution files
-    install:			- install backend (linux only)
+    install:		- install backend (linux only)
 
 Make options
 ------------
-    I586_LINUX			set, for linux build. on the root level, this should always be set.
+    I586_LINUX		set, for linux build. on the root level, this should always be set.
 
-    WITH_WIN32			set to use mingw win32 cross compile
-    WITH_WIN64			set to use mingw win64 cross compile
-    ARM_LINUX:			set for cross compile for ARM. **not tested** 
+    WITH_WIN32		set to use mingw win32 cross compile
+    WITH_WIN64		set to use mingw win64 cross compile
+    ARM_LINUX:		set for cross compile for ARM. **not tested** 
    
-    WITH_PYTHON			set to build python bindings
+    WITH_PYTHON		set to build python bindings
     WITH_DOXYGEN		set to build documentation files
    
     THREAD_PTHREADS		set to use PTHREAD threading library
@@ -57,7 +60,7 @@ Make options
 
     WITH_EMBEDDED_DOCS 	set to embedd htms/css/image files into the timetaggerd binary
 
-    SOURCE_ROOT			location of source tree for cross compiling 
+    SOURCE_ROOT		location of source tree for cross compiling 
 
 Output
 ------
